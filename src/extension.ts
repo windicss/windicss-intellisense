@@ -1,4 +1,4 @@
-import { languages, workspace, Range, Position, CompletionItem, CompletionItemKind } from 'vscode';
+import { languages, workspace, Range, Position, CompletionItem, CompletionItemKind, Hover } from 'vscode';
 import { generate } from './core';
 import { fileTypes } from './filetypes';
 import type { Generator } from './interfaces';
@@ -47,16 +47,32 @@ export async function activate(context: ExtensionContext) {
             .split(pattern.splitCharacter) ?? [];
 
           const staticCompletion = Object.keys(GENERATOR.staticUtilities).filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
-            return new CompletionItem(classItem, CompletionItemKind.Constant);
+            const item = new CompletionItem(classItem, CompletionItemKind.Constant);
+            item.detail = GENERATOR.processor?.interpret(classItem).styleSheet.build();
+            return item;
           });
 
+          // Object.keys(GENERATOR.dynamicUtilities).filter()
+
           const variantsCompletion = Object.keys(GENERATOR.variants).map(variant => {
-            return new CompletionItem(variant + ':', CompletionItemKind.Module);
+            const item = new CompletionItem(variant + ':', CompletionItemKind.Module);
+            const style = GENERATOR.variants[variant]();
+            style.selector = '&';
+            item.detail = style.build();
+            return item;
           });
 
           return [...variantsCompletion, ...staticCompletion];
+        },
+      
+      }, ...TRIGGERS)).concat(languages.registerHoverProvider(extension, {
+        provideHover: (document, position, token) => {
+          const word = document.getText(document.getWordRangeAtPosition(position));
+          // console.log(position.)
+          const style = GENERATOR.processor?.interpret(word);
+          if (style && style.ignored.length === 0) { return new Hover(`\`\`\`css\n${style?.styleSheet.build()}\n\`\`\``); }
         }
-      }, ...TRIGGERS));
+      }));
     });
   };
   context.subscriptions.push(...disposables);

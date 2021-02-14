@@ -13,6 +13,7 @@ export async function generate():Promise<Generator> {
     const staticUtilities = processor.resolveStaticUtilities(true);
     const dynamicUtilities = processor.resolveDynamicUtilities(true);
     return {
+      processor,
       variants,
       staticUtilities,
       dynamicUtilities
