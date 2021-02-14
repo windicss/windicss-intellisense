@@ -5,7 +5,7 @@ import type { Generator } from './interfaces';
 import type { ExtensionContext, Disposable } from 'vscode';
 
 let GENERATOR:Generator = {variants: {}, staticUtilities: {}, dynamicUtilities: {}};
-const TRIGGERS = ['"', "'", ' ', '\n', ':', '\t', '.'];
+const TRIGGERS = ['"', "'", ' ', ':', '.'];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -59,6 +59,10 @@ export async function activate(context: ExtensionContext) {
             const style = GENERATOR.variants[variant]();
             style.selector = '&';
             item.detail = style.build();
+            item.command = {
+              command: 'editor.action.triggerSuggest',
+              title: variant + ':'
+            };
             return item;
           });
 
