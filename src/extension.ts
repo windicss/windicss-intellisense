@@ -11,7 +11,7 @@ const TRIGGERS = ['"', "'", ' ', '.'];
 export async function activate(context: ExtensionContext) {
   // Generate classes and set them on activation
   CLASSES = await generateClasses();
-  const fileSystemWatcher = workspace.createFileSystemWatcher('**/{tailwind,windi}.config.js')
+  const fileSystemWatcher = workspace.createFileSystemWatcher('**/{tailwind,windi}.config.js');
 
   // Changes configuration should invalidate above cache
   fileSystemWatcher.onDidChange(async () => {
@@ -33,9 +33,10 @@ export async function activate(context: ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('"windicss-intellisense" is now active!');
 
+  let disposables: Disposable[] = [];
   for (const { extension, patterns } of fileTypes) {
     patterns.forEach(pattern => {
-      context.subscriptions.push(languages.registerCompletionItemProvider(extension, {
+      disposables = disposables.concat(languages.registerCompletionItemProvider(extension, {
         provideCompletionItems: (document, position) => {
           // Get range including all characters in the current line
           //  till the current position
@@ -51,13 +52,14 @@ export async function activate(context: ExtensionContext) {
           return CLASSES.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
             return new CompletionItem(
               classItem,
-              CompletionItemKind.Class
+              CompletionItemKind.Variable
             );
           });
         }
       }, ...TRIGGERS));
     });
-  }
+  };
+  context.subscriptions.push(...disposables);
 }
 
 // this method is called when your extension is deactivated
