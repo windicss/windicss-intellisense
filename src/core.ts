@@ -1,17 +1,24 @@
 import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
+import type { Generator } from './interfaces';
 
-export async function generateClasses():Promise<string[]> {
+
+export async function generate():Promise<Generator> {
   try {
     const files = await workspace.findFiles('{tailwind,windi}.config.js', '**​/node_modules/**');
     const config = files[0] ? require(resolve(files[0].fsPath)) : undefined;
     const processor = new Processor(config);
-    const staticClasses = processor.resolveStaticUtilities(true);
-    const dynamicClasses = processor.resolveDynamicUtilities(true);
-    return Object.keys(staticClasses);
+    const variants = processor.resolveVariants();
+    const staticUtilities = processor.resolveStaticUtilities(true);
+    const dynamicUtilities = processor.resolveDynamicUtilities(true);
+    return {
+      variants,
+      staticUtilities,
+      dynamicUtilities
+    };
   } catch (error) {
     console.log(error);
-    return [];
+    return {variants: {}, staticUtilities: {}, dynamicUtilities: {}};
   }
 }

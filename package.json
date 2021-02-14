@@ -10,7 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:windicss-intellisense.helloWorld"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -24,7 +24,7 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "PUBLISH=true rollup -c",
-		"watch": "rollup -cw",
+		"watch": "rollup -c",
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
