@@ -67,8 +67,7 @@ export async function activate(context: ExtensionContext) {
       
       }, ...TRIGGERS)).concat(languages.registerHoverProvider(extension, {
         provideHover: (document, position, token) => {
-          const word = document.getText(document.getWordRangeAtPosition(position));
-          // console.log(position.)
+          const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@/]+/));
           const style = GENERATOR.processor?.interpret(word);
           if (style && style.ignored.length === 0) { return new Hover(`\`\`\`css\n${style?.styleSheet.build()}\n\`\`\``); }
         }
