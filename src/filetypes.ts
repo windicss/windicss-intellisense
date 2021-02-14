@@ -1,7 +1,7 @@
 const classRegex = /class=["|']([\w- ]*$)/;
 const classNameRegex = /className=["|']([\w- ]*$)/;
 const applyRegex = /@apply ([\.\w- ]*$)/;
-const emmetRegex = /(?=\.)([\w-\. ]*$)/;
+// const emmetRegex = /(?=\.)([\w-\. ]*$)/;
 
 const jsPatterns = [
   {
@@ -12,10 +12,10 @@ const jsPatterns = [
     regex: classNameRegex,
     splitCharacter: ' '
   },
-  {
-    regex: emmetRegex,
-    splitCharacter: '.'
-  }
+  // {
+  //   regex: emmetRegex,
+  //   splitCharacter: '.'
+  // }
 ];
 
 const htmlPatterns = [
@@ -23,10 +23,10 @@ const htmlPatterns = [
     regex: classRegex,
     splitCharacter: ' '
   },
-  {
-    regex: emmetRegex,
-    splitCharacter: '.'
-  }
+  // {
+  //   regex: emmetRegex,
+  //   splitCharacter: '.'
+  // }
 ];
 
 const stylesPatterns = [
