@@ -1,6 +1,6 @@
-const classRegex = /class=["|']([\w- ]*$)/;
-const classNameRegex = /className=["|']([\w- ]*$)/;
-const applyRegex = /@apply ([\.\w- ]*$)/;
+const classRegex = /class=["|']([.\w-+@:/ ]*$)/;
+const classNameRegex = /className=["|']([.\w-+@:/ ]*$)/;
+const applyRegex = /@apply ([\.\w-+@:/ ]*$)/;
 // const emmetRegex = /(?=\.)([\w-\. ]*$)/;
 
 const jsPatterns = [

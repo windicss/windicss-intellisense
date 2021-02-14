@@ -4,11 +4,14 @@ import type { Processor } from "windicss/lib";
 
 export interface Generator {
   processor?: Processor,
+  colors: {
+    [key:string]: string
+  },
   variants: {
     [key: string]: () => Style;
-  };
+  },
   staticUtilities: {
     [key: string]: Style[];
-  };
+  },
   dynamicUtilities: DynamicUtility;
 }
