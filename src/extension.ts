@@ -1,6 +1,6 @@
 import { languages, workspace, Range, Position, CompletionItem, CompletionItemKind, Hover, ColorPresentation, ColorInformation, Color } from 'vscode';
 import { generate } from './core';
-import { highlightCSS, isColor } from './utils';
+import { highlightCSS, isColor, hex2RGB } from './utils';
 import { fileTypes } from './filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import type { Generator } from './interfaces';
@@ -52,9 +52,24 @@ export async function activate(context: ExtensionContext) {
             return item;
           });
 
+          const variantsCompletion = Object.keys(GENERATOR.variants).map(variant => {
+            const item = new CompletionItem(variant + ':', CompletionItemKind.Module);
+            const style = GENERATOR.variants[variant]();
+            style.selector = '&';
+            item.documentation = highlightCSS(style.build().replace(`{\n  & {}\n}`, '{\n  ...\n}').replace('{}', '{\n  ...\n}'));
+            // trigger suggestion after select variant
+            item.command = {
+              command: 'editor.action.triggerSuggest',
+              title: variant
+            };
+            return item;
+          });
+
           // Object.keys(GENERATOR.dynamicUtilities).filter()
 
-          const dynamicComplection = ['p-${size}', 'p-${int}'].map(utility => {
+          const dynamic = ['p-${size}', 'p-${int}', 'bg-${color}'];
+
+          const dynamicCompletion = dynamic.filter(i => !i.endsWith('${color}')).map(utility => {
             const item = new CompletionItem(utility, CompletionItemKind.Variable);
             // item.documentation = highlightCSS(GENERATOR.processor?.interpret())
             const start = utility.search(/\$/);
@@ -70,23 +85,18 @@ export async function activate(context: ExtensionContext) {
             return item;
           });
 
-          const variantsCompletion = Object.keys(GENERATOR.variants).map(variant => {
-            const item = new CompletionItem(variant + ':', CompletionItemKind.Module);
-            const style = GENERATOR.variants[variant]();
-            style.selector = '&';
-            item.documentation = highlightCSS(style.build().replace(`{\n  & {}\n}`, '{\n  ...\n}').replace('{}', '{\n  ...\n}'));
-            // trigger suggestion after select variant
-            item.command = {
-              command: 'editor.action.triggerSuggest',
-              title: variant
-            };
-            return item;
+          const colorsCompletion: CompletionItem[] = [];
+          dynamic.filter(i => i.endsWith('${color}')).map(utility => {
+            const head = utility.replace('${color}', '');
+            for (const [key, value] of Object.entries(GENERATOR.colors)) {
+              const color = new CompletionItem(head + key, CompletionItemKind.Color);
+              color.detail = GENERATOR.processor?.interpret(head + key).styleSheet.build();
+              color.documentation = ['transparent', 'currentColor'].includes(value)? value: `rgb(${hex2RGB(value)?.join(', ')})`;
+              colorsCompletion.push(color);
+            }
           });
 
-          const color = new CompletionItem('bg-red-500', CompletionItemKind.Color);
-          color.detail = GENERATOR.processor?.interpret('bg-red-500').styleSheet.build();
-          color.documentation = 'rgb(239, 68, 68)';
-          return [...variantsCompletion, ...staticCompletion, ...dynamicComplection, color];
+          return [...variantsCompletion, ...staticCompletion, ...colorsCompletion, ...dynamicCompletion];
         },
       
       }, ...TRIGGERS)).concat(languages.registerHoverProvider(extension, {
