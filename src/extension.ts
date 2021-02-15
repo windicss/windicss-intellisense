@@ -67,6 +67,7 @@ export async function activate(context: ExtensionContext) {
 
           // Object.keys(GENERATOR.dynamicUtilities).filter()
 
+          // handle dynamic utilities
           const dynamic = ['p-${size}', 'p-${int}', 'bg-${color}'];
 
           const dynamicCompletion = dynamic.filter(i => !i.endsWith('${color}')).map(utility => {
