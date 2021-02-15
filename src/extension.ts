@@ -54,6 +54,22 @@ export async function activate(context: ExtensionContext) {
 
           // Object.keys(GENERATOR.dynamicUtilities).filter()
 
+          const dynamicComplection = ['p-${size}', 'p-${int}'].map(utility => {
+            const item = new CompletionItem(utility, CompletionItemKind.Variable);
+            // item.documentation = highlightCSS(GENERATOR.processor?.interpret())
+            const start = utility.search(/\$/);
+            item.command = {
+              command: 'cursorMove',
+              arguments: [{
+                to: "left",
+                select: true,
+                value: start === -1 ? 0 : utility.length - start,
+              }],
+              title: utility
+            };
+            return item;
+          });
+
           const variantsCompletion = Object.keys(GENERATOR.variants).map(variant => {
             const item = new CompletionItem(variant + ':', CompletionItemKind.Module);
             const style = GENERATOR.variants[variant]();
@@ -70,7 +86,7 @@ export async function activate(context: ExtensionContext) {
           const color = new CompletionItem('bg-red-500', CompletionItemKind.Color);
           color.detail = GENERATOR.processor?.interpret('bg-red-500').styleSheet.build();
           color.documentation = 'rgb(239, 68, 68)';
-          return [...variantsCompletion, ...staticCompletion, color];
+          return [...variantsCompletion, ...staticCompletion, ...dynamicComplection, color];
         },
       
       }, ...TRIGGERS)).concat(languages.registerHoverProvider(extension, {
