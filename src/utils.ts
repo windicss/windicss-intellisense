@@ -1,3 +1,4 @@
+import type { DeepNestDictStr, DictStr } from "./interfaces";
 import { MarkdownString } from "vscode";
 
 export function highlightCSS(css?:string): MarkdownString | undefined {
@@ -6,19 +7,17 @@ export function highlightCSS(css?:string): MarkdownString | undefined {
   }
 }
 
-export function flatColors(colors: {[key:string]:string|{[key:string]:string}}) {
-  const flatten: {[key:string]:string} = {};
+export function flatColors(colors: DeepNestDictStr, head?: string): DictStr {
+  let flatten: { [ key:string ]: string } = {};
   for (const [key, value] of Object.entries(colors)) {
     if (typeof value === 'string') {
-      flatten[key] = value;
+      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}`: key] = value;
     } else {
-      for (const [skey, svalue] of Object.entries(value)) {
-        flatten[`${key}-${skey}`] = svalue;
-      };
+      flatten = { ...flatten, ...flatColors(value, head ? `${head}-${key}`: key) };
     }
   }
   return flatten;
-};
+}
 
 export function isColor(className:string, colors: {[key:string]:string}): number[] | undefined {
   for (const [key, value] of Object.entries(colors)) {
