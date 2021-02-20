@@ -1,5 +1,3 @@
-import type { DynamicUtility } from 'windicss/types/interfaces';
-import type { Style } from 'windicss/types/utils/style';
 import type { Processor } from "windicss/lib";
 import type { MarkdownString } from "vscode";
 

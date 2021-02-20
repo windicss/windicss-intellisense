@@ -1,6 +1,6 @@
 import { languages, workspace, Range, Position, CompletionItem, CompletionItemKind, Hover, ColorPresentation, ColorInformation, Color } from 'vscode';
 import { generate } from './core';
-import { highlightCSS, isColor, hex2RGB } from './utils';
+import { highlightCSS, isColor } from './utils';
 import { fileTypes } from './filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import type { Generator } from './interfaces';
