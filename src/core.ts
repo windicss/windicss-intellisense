@@ -14,6 +14,8 @@ export async function generate():Promise<Generator> {
     const variants = processor.resolveVariants();
     const staticUtilities = processor.resolveStaticUtilities(true);
 
+    const staticCompletion = Object.keys(staticUtilities);
+
     const variantsCompletion = Object.keys(variants).map(variant => {
       const style = variants[variant]();
       style.selector = '&';
@@ -35,12 +37,21 @@ export async function generate():Promise<Generator> {
       }
     });
 
-    const dynamicCompletions = dynamic.filter(i => !i.endsWith('${color}')).map(utility => {
+    const dynamicCompletions: {
+      label: string;
+      position: number;
+    }[] = [];
+    
+    dynamic.filter(i => !i.endsWith('${color}')).map(utility => {
       const start = utility.search(/\$/);
-      return {
-        label: utility,
-        position: start === -1 ? 0 : utility.length - start,
-      };
+      if (start === -1) {
+        staticCompletion.push(utility);
+      } else {
+        dynamicCompletions.push({
+          label: utility,
+          position: start === -1 ? 0 : utility.length - start,
+        });
+      }
     });
 
     return {
@@ -48,7 +59,7 @@ export async function generate():Promise<Generator> {
       colors,
       variants: variantsCompletion,
       colorsUtilities: colorsCompletions,
-      staticUtilities: Object.keys(staticUtilities),
+      staticUtilities: staticCompletion,
       dynamicUtilities: dynamicCompletions,
     };
   } catch (error) {
