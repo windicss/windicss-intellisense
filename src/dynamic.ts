@@ -1,4 +1,4 @@
-[
+const utilities: string[] = [
   // Layout
   "container",
   "inset-0",
@@ -695,3 +695,5 @@
   "filter-${key}",
   "backdrop-${key}"
 ];
+
+export default utilities;

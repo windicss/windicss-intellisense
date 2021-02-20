@@ -6,7 +6,7 @@ import { ClassParser } from 'windicss/utils/parser';
 import type { Generator } from './interfaces';
 import type { ExtensionContext, Disposable } from 'vscode';
 
-let GENERATOR:Generator = {colors:{}, variants: {}, staticUtilities: {}, dynamicUtilities: {}};
+let GENERATOR:Generator = { colors: {}, variants: [], staticUtilities: [], colorsUtilities: [], dynamicUtilities: [] };
 const TRIGGERS = ['"', "'", ' ', ':'];
 
 // this method is called when your extension is activated
@@ -46,55 +46,43 @@ export async function activate(context: ExtensionContext) {
             .match(pattern.regex)?.[1]
             .split(pattern.splitCharacter) ?? [];
 
-          const staticCompletion = Object.keys(GENERATOR.staticUtilities).filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
+          const staticCompletion = GENERATOR.staticUtilities.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
             const item = new CompletionItem(classItem, CompletionItemKind.Constant);
             item.documentation = highlightCSS(GENERATOR.processor?.interpret(classItem).styleSheet.build());
             return item;
           });
 
-          const variantsCompletion = Object.keys(GENERATOR.variants).map(variant => {
-            const item = new CompletionItem(variant + ':', CompletionItemKind.Module);
-            const style = GENERATOR.variants[variant]();
-            style.selector = '&';
-            item.documentation = highlightCSS(style.build().replace(`{\n  & {}\n}`, '{\n  ...\n}').replace('{}', '{\n  ...\n}'));
+          const variantsCompletion = GENERATOR.variants.map(({ label, documentation }) => {
+            const item = new CompletionItem(label, CompletionItemKind.Module);
+            item.documentation = documentation;
             // trigger suggestion after select variant
             item.command = {
               command: 'editor.action.triggerSuggest',
-              title: variant
+              title: label
             };
             return item;
           });
 
-          // Object.keys(GENERATOR.dynamicUtilities).filter()
-
-          // handle dynamic utilities
-          const dynamic = ['p-${size}', 'p-${int}', 'bg-${color}'];
-
-          const dynamicCompletion = dynamic.filter(i => !i.endsWith('${color}')).map(utility => {
-            const item = new CompletionItem(utility, CompletionItemKind.Variable);
+          const dynamicCompletion = GENERATOR.dynamicUtilities.map(({ label, position }) => {
+            const item = new CompletionItem(label, CompletionItemKind.Variable);
             // item.documentation = highlightCSS(GENERATOR.processor?.interpret())
-            const start = utility.search(/\$/);
             item.command = {
               command: 'cursorMove',
               arguments: [{
                 to: "left",
                 select: true,
-                value: start === -1 ? 0 : utility.length - start,
+                value: position,
               }],
-              title: utility
+              title: label
             };
             return item;
           });
 
-          const colorsCompletion: CompletionItem[] = [];
-          dynamic.filter(i => i.endsWith('${color}')).map(utility => {
-            const head = utility.replace('${color}', '');
-            for (const [key, value] of Object.entries(GENERATOR.colors)) {
-              const color = new CompletionItem(head + key, CompletionItemKind.Color);
-              color.detail = GENERATOR.processor?.interpret(head + key).styleSheet.build();
-              color.documentation = ['transparent', 'currentColor'].includes(value)? value: `rgb(${hex2RGB(value)?.join(', ')})`;
-              colorsCompletion.push(color);
-            }
+          const colorsCompletion = GENERATOR.colorsUtilities.map(({ label, detail, documentation}) => {
+            const color = new CompletionItem(label, CompletionItemKind.Color);
+            color.detail = detail;
+            color.documentation = documentation;
+            return color;
           });
 
           return [...variantsCompletion, ...staticCompletion, ...colorsCompletion, ...dynamicCompletion];
