@@ -2,7 +2,7 @@ import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
 import { flatColors, hex2RGB, highlightCSS } from './utils';
-import dynamic from './dynamic';
+import { utilities as dynamic } from './dynamic';
 import type { Generator } from './interfaces';
 
 export async function generate():Promise<Generator> {
