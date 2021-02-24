@@ -8,17 +8,17 @@ export type DeepNestDictStr = { [key:string]: string | DeepNestDictStr };
 export interface Generator {
   processor?: Processor,
   colors: DictStr,
-  variants: {
+  variantCompletions: {
     label: string;
     documentation: MarkdownString | undefined;
   }[],
-  staticUtilities: string[],
-  colorsUtilities: {
+  staticCompletions: string[],
+  colorCompletions: {
     label: string;
     detail: string;
     documentation: string;
   }[],
-  dynamicUtilities: {
+  dynamicCompletions: {
     label: string;
     position: number;
   }[];

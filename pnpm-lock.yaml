@@ -15,7 +15,7 @@ devDependencies:
   tslib: 2.1.0
   typescript: 4.1.5
   vscode-test: 1.5.1
-  windicss: 2.1.16
+  windicss: 2.2.0
 lockfileVersion: 5.2
 packages:
   /@babel/code-frame/7.12.11:
@@ -1781,13 +1781,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-QGkOQc8XL6Bt5PwnsExKBPuMKBxnGxWWW3fU55Xt4feHozMUhdUMaBCk290qpm/wG5u/RSKzwdAC4i51YigihA==
-  /windicss/2.1.16:
+  /windicss/2.2.0:
     dev: true
     engines:
       node: '>= 12'
     hasBin: true
     resolution:
-      integrity: sha512-nhKsjdLe8Tkf9oYFh+ZuNxo1N7PVQeRlbjePF+3F87Ti4/TD+EPH4TvAlepDMpQaDo0HqPD6h0oyTLp2ZZDhVQ==
+      integrity: sha512-UuPhwe/NMgGOmUMnaTR+64eMeoiRCYb/zKJfo4pm9XUb4BRFlaFMm1x0KF1RF8EtK/8jKvDlXMc/J6UPBj8/OA==
   /word-wrap/1.2.3:
     dev: true
     engines:
@@ -1876,4 +1876,4 @@ specifiers:
   tslib: ^2.1.0
   typescript: ^4.1.3
   vscode-test: ^1.5.0
-  windicss: ^2.1.16
+  windicss: ^2.2.0

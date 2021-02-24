@@ -6,8 +6,8 @@ import { ClassParser } from 'windicss/utils/parser';
 import type { Generator } from './interfaces';
 import type { ExtensionContext, Disposable } from 'vscode';
 
-let GENERATOR:Generator = { colors: {}, variants: [], staticUtilities: [], colorsUtilities: [], dynamicUtilities: [] };
-const TRIGGERS = ['"', "'", ' ', ':'];
+let GENERATOR:Generator = { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
+const TRIGGERS = ['"', "'", ' ', ':', ''];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -46,13 +46,13 @@ export async function activate(context: ExtensionContext) {
             .match(pattern.regex)?.[1]
             .split(pattern.splitCharacter) ?? [];
 
-          const staticCompletion = GENERATOR.staticUtilities.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
+          const staticCompletion = GENERATOR.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
             const item = new CompletionItem(classItem, CompletionItemKind.Constant);
             item.documentation = highlightCSS(GENERATOR.processor?.interpret(classItem).styleSheet.build());
             return item;
           });
 
-          const variantsCompletion = GENERATOR.variants.map(({ label, documentation }) => {
+          const variantsCompletion = GENERATOR.variantCompletions.map(({ label, documentation }) => {
             const item = new CompletionItem(label, CompletionItemKind.Module);
             item.documentation = documentation;
             // trigger suggestion after select variant
@@ -63,7 +63,7 @@ export async function activate(context: ExtensionContext) {
             return item;
           });
 
-          const dynamicCompletion = GENERATOR.dynamicUtilities.map(({ label, position }) => {
+          const dynamicCompletion = GENERATOR.dynamicCompletions.map(({ label, position }) => {
             const item = new CompletionItem(label, CompletionItemKind.Variable);
             // item.documentation = highlightCSS(GENERATOR.processor?.interpret())
             item.command = {
@@ -78,14 +78,14 @@ export async function activate(context: ExtensionContext) {
             return item;
           });
 
-          const colorsCompletion = GENERATOR.colorsUtilities.map(({ label, detail, documentation}) => {
+          const colorsCompletion = GENERATOR.colorCompletions.map(({ label, detail, documentation}) => {
             const color = new CompletionItem(label, CompletionItemKind.Color);
             color.detail = detail;
             color.documentation = documentation;
             return color;
           });
 
-          return [...variantsCompletion, ...staticCompletion, ...colorsCompletion, ...dynamicCompletion];
+          return [...variantsCompletion, ...colorsCompletion, ...staticCompletion, ...dynamicCompletion];
         },
       
       }, ...TRIGGERS)).concat(languages.registerHoverProvider(extension, {
@@ -105,7 +105,7 @@ export async function activate(context: ExtensionContext) {
               const matched = text.match(/(?<=class=["|'])[^"']*/);
               if (matched && matched.index) {
                 const offset = matched.index; 
-                const elements = new ClassParser(matched[0]).parse();
+                const elements = new ClassParser(matched[0]).parse(false);
                 elements.forEach(element => {
                   if (typeof element.content === 'string') {
                     const color = isColor(element.raw, GENERATOR.colors);

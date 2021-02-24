@@ -2,21 +2,21 @@ import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
 import { flatColors, hex2RGB, highlightCSS } from './utils';
-import { utilities as dynamic } from './dynamic';
+import { utilities as dynamic, negative } from './dynamic';
 import type { Generator } from './interfaces';
 
 export async function generate():Promise<Generator> {
   try {
     const files = await workspace.findFiles('{tailwind,windi}.config.js', '**​/node_modules/**');
-    const config = files[0] ? require(resolve(files[0].fsPath)) : undefined;
+    const configFile = resolve(files[0].fsPath);
+    console.log(`Loading Config File: ${configFile}`);
+    const config = files[0] ? require(configFile) : undefined;
     const processor = new Processor(config);
     const colors = flatColors(processor.theme('colors') as {[key:string]:string|{[key:string]:string}});
     const variants = processor.resolveVariants();
     const staticUtilities = processor.resolveStaticUtilities(true);
 
-    const staticCompletion = Object.keys(staticUtilities);
-
-    const variantsCompletion = Object.keys(variants).map(variant => {
+    const variantCompletions = Object.keys(variants).map(variant => {
       const style = variants[variant]();
       style.selector = '&';
       return {
@@ -25,45 +25,63 @@ export async function generate():Promise<Generator> {
       };
     });
 
-    const colorsCompletions: {label: string, detail: string, documentation: string}[] = [];
-    dynamic.filter(i => i.endsWith('${color}')).map(utility => {
-      const head = utility.replace('${color}', '');
-      for (const [key, value] of Object.entries(colors)) {
-        colorsCompletions.push({
-          label: head + key,
-          detail: processor.interpret(head + key).styleSheet.build(),
-          documentation: ['transparent', 'currentColor'].includes(value) ? value: `rgb(${hex2RGB(value)?.join(', ')})`,
-        });
-      }
-    });
+    let staticCompletions = Object.keys(staticUtilities);
+    let colorCompletions: {label: string, detail: string, documentation: string}[] = [];
+    let dynamicCompletions: {label: string, position: number}[] = [];
 
-    const dynamicCompletions: {
-      label: string;
-      position: number;
-    }[] = [];
-    
-    dynamic.filter(i => !i.endsWith('${color}')).map(utility => {
-      const start = utility.search(/\$/);
-      if (start === -1) {
-        staticCompletion.push(utility);
-      } else {
-        dynamicCompletions.push({
-          label: utility,
-          position: start === -1 ? 0 : utility.length - start,
-        });
-      }
-    });
+    for (const [config, list] of Object.entries(dynamic)) {
+      list.forEach(utility => {
+        const mark = utility.search(/\$/);
+        if (mark === -1) {
+          staticCompletions.push(utility);
+        } else {
+          const prefix = utility.slice(0, mark-1);
+          const suffix = utility.slice(mark);
+          switch(suffix) {
+            case '${static}':
+              const staticConfig = Object.keys(processor.theme(config, {}) as {});
+              let complections = staticConfig.map(i => i === 'DEFAULT'? prefix : `${prefix}-${i}`);
+              if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
+              staticCompletions = staticCompletions.concat(complections);              
+              break;
+            case '${color}':
+              const colorConfig = flatColors(processor.theme(config, colors) as {});
+              for (const [k, v] of Object.entries(colorConfig)) {
+                const name = `${prefix}-${k}`;
+                colorCompletions.push({
+                  label: name,
+                  detail: processor.interpret(name).styleSheet.build(),
+                  documentation: ['transparent', 'currentColor'].includes(v) ? v: `rgb(${hex2RGB(v)?.join(', ')})`,
+                });
+              }
+              break;
+            default:
+              dynamicCompletions.push({
+                label: utility,
+                position: utility.length - mark,
+              });
+              if (config in negative) {
+                dynamicCompletions.push({
+                  label: `-${utility}`,
+                  position: utility.length + 1 - mark,
+                });
+              }
+              break;
+          }
+        }
+      });
+    };
 
     return {
       processor,
       colors,
-      variants: variantsCompletion,
-      colorsUtilities: colorsCompletions,
-      staticUtilities: staticCompletion,
-      dynamicUtilities: dynamicCompletions,
+      variantCompletions,
+      colorCompletions,
+      staticCompletions,
+      dynamicCompletions,
     };
   } catch (error) {
     console.log(error);
-    return { colors: {}, variants: [], staticUtilities: [], colorsUtilities: [], dynamicUtilities: [] };
+    return { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
   }
 }
