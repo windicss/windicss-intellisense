@@ -155,6 +155,16 @@
 					"type": "number",
 					"default": 25,
 					"description": "Used by foldByLength"
+				},
+				"windicss.hiddenText": {
+					"type": "string",
+					"default": " ...",
+					"description": "Placeholder used when folding code."
+				},
+				"windicss.hiddenTextColor": {
+					"type": "string",
+					"default": "#AED0A4",
+					"description": "Placeholder Color"
 				}
 			}
 		}

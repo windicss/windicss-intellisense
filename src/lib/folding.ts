@@ -1,6 +1,6 @@
 
-import { decorateWithLength, decorateWithCount, connectList } from '../utils';
-import { window, workspace } from 'vscode';
+import { decorateWithLength, decorateWithCount, connectList, getConfig } from '../utils';
+import { TextEdit, window, workspace } from 'vscode';
 import type { TextEditor, ExtensionContext, DecorationOptions } from 'vscode';
 
 export function registerCodeFolding(ctx: ExtensionContext): void {
@@ -20,8 +20,11 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     if (!EDITOR) return;
     const document = EDITOR.document;
     for (const index of Array.from(Array(document.lineCount).keys())) {
-      DECORATIONS[index] = await decorateWithCount(index, document.lineAt(index).text);
-      // DECORATIONS[index] = await decorateWithLength(index, document.lineAt(index).text);
+      if (getConfig("windicss.foldByLength")) {
+        DECORATIONS[index] = await decorateWithLength(index, document.lineAt(index).text, getConfig("windicss.foldLength"), getConfig("windicss.hiddenTextColor"), getConfig("windicss.hiddenText"));
+      } else {
+        DECORATIONS[index] = await decorateWithCount(index, document.lineAt(index).text, getConfig("windicss.foldCount"), getConfig("windicss.hiddenTextColor"), getConfig("windicss.hiddenText"));
+      }
     }
     EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS)));
   }
@@ -33,6 +36,15 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     if (PREVFOCUSLINE) DECORATIONS[PREVFOCUSLINE] = await decorateWithCount(PREVFOCUSLINE, EDITOR.document.lineAt(PREVFOCUSLINE).text); // update prev focus line
     PREVFOCUSLINE = index;
   };
+
+  async function _removeDecorations() {
+    EDITOR = window.activeTextEditor;
+    if (!EDITOR) return;
+    DECORATIONS = [];
+    EDITOR.setDecorations(HIDETEXT, []);
+  }
+
+  if (!getConfig("windicss.enableCodeFolding")) return;
 
   window.visibleTextEditors.forEach(editor => {
     _createDecorations(editor);
@@ -56,4 +68,12 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     const editor = window.activeTextEditor;
     if (editor) _updateDecorations(editor);
   });
+
+  workspace.onDidChangeConfiguration(() => {
+    if (getConfig("windicss.enableCodeFolding") as boolean) {
+      _createDecorations();
+    } else {
+      _removeDecorations();
+    }
+  }, null, ctx.subscriptions);
 }
