@@ -14,37 +14,37 @@ This plugin packs a windicss compiler, so you can use it without installing wind
 
 Intelligent suggestions for utilities and variants.
 
-<img src="https://github.com/windicss/windicss-intellisense/blob/main/screenshots/completion.png" alt="Auto Complete"/>
+<img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/completion.png" alt="Auto Complete"/>
 
 ### Hover Preview
 
 See the complete CSS for a class name by hovering over it.
 
-<img src="https://github.com/windicss/windicss-intellisense/blob/main/screenshots/hover.png" alt="Hover Preview"/>
+<img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/hover.png" alt="Hover Preview"/>
 
 ### Syntax Highlighting
 
 Highlight utilities, variants and importants.
 
-<img src="https://github.com/windicss/windicss-intellisense/blob/main/screenshots/highlight.png" alt="Syntax Highlighting"/>
+<img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/highlight.png" alt="Syntax Highlighting"/>
 
 ### Color Preview
 
 Preview color and spectrum.
 
-<img src="https://github.com/windicss/windicss-intellisense/blob/main/screenshots/color.png" alt="Color Preview"/>
+<img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/color.png" alt="Color Preview"/>
 
 ### Code Folding
 
 Fold overly long classes to increase readability.
 
-<img src="https://github.com/windicss/windicss-intellisense/blob/main/screenshots/highlight.png" alt="Code Folding"/>
+<img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/highlight.png" alt="Code Folding"/>
 
 ### Compile Commands
 
 Built-in commands, one-key operation.
 
-<img src="https://github.com/windicss/windicss-intellisense/blob/main/screenshots/commands.png" alt="Compile Commands"/>
+<img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/commands.png" alt="Compile Commands"/>
 
 ## Extension Settings
 
