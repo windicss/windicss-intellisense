@@ -1,7 +1,7 @@
 import { ClassParser } from 'windicss/utils/parser';
 import { MarkdownString, Range, Position, DecorationOptions } from 'vscode';
 import { HTMLParser } from './parser';
-import type { DeepNestDictStr, DictStr } from './interfaces';
+import type { DeepNestDictStr, DictStr } from '../interfaces';
 
 export function highlightCSS(css?:string): MarkdownString | undefined {
   if (css) {

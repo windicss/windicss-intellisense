@@ -5,7 +5,7 @@ export type DictStr = { [key: string]: string };
 
 export type DeepNestDictStr = { [key:string]: string | DeepNestDictStr };
 
-export interface Generator {
+export interface Core {
   processor?: Processor,
   colors: DictStr,
   variantCompletions: {

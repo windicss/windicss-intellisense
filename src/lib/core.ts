@@ -1,11 +1,11 @@
 import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
-import { flatColors, hex2RGB, highlightCSS } from './utils';
-import { utilities as dynamic, negative } from './dynamic';
-import type { Generator } from './interfaces';
+import { flatColors, hex2RGB, highlightCSS } from '../utils';
+import { utilities as dynamic, negative } from '../utils/dynamic';
+import type { Core } from '../interfaces';
 
-export async function generate():Promise<Generator> {
+export async function init():Promise<Core> {
   try {
     const files = await workspace.findFiles('{tailwind,windi}.config.js', '**​/node_modules/**');
     const configFile = resolve(files[0].fsPath);

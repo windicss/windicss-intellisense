@@ -1,12 +1,14 @@
 
-import { decorateWithLength, decorateWithCount, connectList } from './utils';
-import { window, workspace, Range, Position } from 'vscode';
+import { decorateWithLength, decorateWithCount, connectList } from '../utils';
+import { window, workspace } from 'vscode';
 import type { TextEditor, ExtensionContext, DecorationOptions } from 'vscode';
 
 export function registerCodeFolding(ctx: ExtensionContext): void {
   let EDITOR: TextEditor | undefined;
 
   let DECORATIONS: { [key:number]: DecorationOptions[] } = {};
+
+  let PREVFOCUSLINE = 0;
 
   const HIDETEXT = window.createTextEditorDecorationType({
     textDecoration: 'none; display: none;',
@@ -28,6 +30,8 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     EDITOR = editor;
     const index = EDITOR.document.lineAt(EDITOR.selection.active).lineNumber;
     EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS).filter((_, id) => id !== index)));
+    if (PREVFOCUSLINE) DECORATIONS[PREVFOCUSLINE] = await decorateWithCount(PREVFOCUSLINE, EDITOR.document.lineAt(PREVFOCUSLINE).text); // update prev focus line
+    PREVFOCUSLINE = index;
   };
 
   window.visibleTextEditors.forEach(editor => {
@@ -41,7 +45,7 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
 
   workspace.onDidChangeTextDocument(e => {
     if (window.activeTextEditor && e.document === window.activeTextEditor.document)
-      _createDecorations();
+      _updateDecorations(window.activeTextEditor);
   }, null, ctx.subscriptions);
 
   window.onDidChangeActiveTextEditor(e => {
