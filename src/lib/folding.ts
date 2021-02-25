@@ -1,6 +1,6 @@
 
 import { decorateWithLength, decorateWithCount, connectList, getConfig } from '../utils';
-import { TextEdit, window, workspace } from 'vscode';
+import { window, workspace } from 'vscode';
 import type { TextEditor, ExtensionContext, DecorationOptions } from 'vscode';
 
 export function registerCodeFolding(ctx: ExtensionContext): void {
