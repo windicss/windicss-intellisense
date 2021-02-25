@@ -1,0 +1,43 @@
+{
+  "scopeName": "source.windicss",
+  "injectionSelector": "L:meta.attribute.class, L:meta.property-list.css",
+  "patterns": [
+    {
+      "include": "#variant"
+    },
+		{
+			"include": "#separator"
+		},
+		{
+			"include": "#utility"
+		},
+		{
+			"include": "#important"
+		},
+		{
+			"include": "#bracket"
+		}
+  ],
+  "repository": {
+    "variant": {
+      "match": "(\\w|-|\\+)+?(?=:)",
+      "name": "support.class.windicss"
+    },
+		"separator": {
+			"match": "(?<=\\w+?):",
+			"name": "keyword.variant.windicss"
+		},
+		"utility": {
+			"match": "(\\w|-)+?",
+			"name": "constant.numeric.windicss"
+		},
+		"important": {
+			"match": "(?<=\\s|\"|'|`)!(\\w|-|:)+",
+			"name": "string.regexp.windicss"
+		},
+		"bracket": {
+			"match": "\\(|\\)",
+			"name": "constant.character.escape.windicss"
+		}
+  }
+}

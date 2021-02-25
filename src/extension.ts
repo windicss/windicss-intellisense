@@ -1,8 +1,10 @@
-import { languages, workspace, Range, Position, CompletionItem, CompletionItemKind, Hover, ColorPresentation, ColorInformation, Color } from 'vscode';
+import { languages, workspace, window, Range, Position, CompletionItem, CompletionItemKind, Hover, ColorPresentation, ColorInformation, Color, commands, DocumentHighlight, DocumentHighlightKind, TextEdit } from 'vscode';
 import { generate } from './core';
 import { highlightCSS, isColor } from './utils';
 import { fileTypes } from './filetypes';
-import { ClassParser } from 'windicss/utils/parser';
+import { updateDecorations } from './annotation';
+import { registerHighlight } from './hightlight';
+import { ClassParser, HTMLParser } from 'windicss/utils/parser';
 import type { Generator } from './interfaces';
 import type { ExtensionContext, Disposable } from 'vscode';
 
@@ -11,7 +13,7 @@ const TRIGGERS = ['"', "'", ' ', ':', ''];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export async function activate(context: ExtensionContext) {
+export async function activate(ctx: ExtensionContext) {
   // Generate utilities&variants and set them on activation
   GENERATOR = await generate();
   const fileSystemWatcher = workspace.createFileSystemWatcher('**/{tailwind,windi}.config.js');
@@ -91,7 +93,7 @@ export async function activate(context: ExtensionContext) {
       }, ...TRIGGERS)).concat(languages.registerHoverProvider(extension, {
         // hover class show css preview
         provideHover: (document, position, token) => {
-          const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@/]+/));
+          const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
           const style = GENERATOR.processor?.interpret(word);
           if (style && style.ignored.length === 0) { return new Hover(highlightCSS(style.styleSheet.build()) ?? ''); }
         }
@@ -120,13 +122,52 @@ export async function activate(context: ExtensionContext) {
           }
           return colors;
         },
-        provideColorPresentations: (color, context, token) => {
+        provideColorPresentations: (color, ctx, token) => {
           return [];
         }
       }));
     });
   };
-  context.subscriptions.push(...disposables);
+  // updateDecorations(ctx);
+
+  // const filePath = (window.activeTextEditor?.document.uri.fsPath);
+  commands.registerTextEditorCommand("windicss.interpret", (textEditor, textEdit) => {
+    console.log(textEditor.document.uri.fsPath);
+  });
+
+  commands.registerTextEditorCommand("windicss.compile", (textEditor, textEdit) => {
+    console.log(textEditor.document.uri.fsPath);
+  });
+  
+  // commands.registerTextEditorCommand("windicss.sort", (textEditor, textEdit) => {
+  //   // console.log(textEditor.document.uri.fsPath);
+  //   const document = textEditor.document;
+  //   const text = document.getText();
+  //   const parser = new HTMLParser(text);
+  //   parser.parseClasses().forEach(({start, end, result}) => {
+  //     // console.log(result);
+  //     const utilities:string[] = [];
+  //     const ignored:string[] = [];
+  //     const ast = new ClassParser(result).parse();
+  //     ast.forEach(obj => {
+  //       if (obj.type === 'utility' && typeof obj.content === 'string') {
+  //         utilities.push(obj.raw);
+  //       } else if (obj.type === 'group') {
+
+  //       } else {
+  //         ignored.push(obj.raw);
+  //       }
+  //     })
+  //     console.log(classes);
+  //     textEdit.replace(new Range(document.positionAt(start), document.positionAt(end)), '234');
+  //   });
+  //   // textEditor.document.lineCount
+
+  //   // textEdit.replace(new Range(new Position(0, 0), new Position(textEditor.document.lineCount, textEditor.document.)), '');
+  //   // console.log(text);
+  // });
+  // registerHighlight(ctx);
+  ctx.subscriptions.push(...disposables);
   console.log('"windicss-intellisense" is now active!');
 }
 

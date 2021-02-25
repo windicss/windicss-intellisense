@@ -1,4 +1,4 @@
-const classRegex = /class=["|']([.\w-+@:/ ]*$)/;
+const classRegex = /class=["|']([.\w-+@!:/ ]*$)/;
 const classNameRegex = /className=["|']([.\w-+@:/ ]*$)/;
 const applyRegex = /@apply ([\.\w-+@:/ ]*$)/;
 // const emmetRegex = /(?=\.)([\w-\. ]*$)/;
@@ -70,13 +70,5 @@ export const fileTypes: {
   {
     extension: 'svelte',
     patterns: htmlPatterns
-  },
-  {
-    extension: 'css',
-    patterns: stylesPatterns
-  },
-  {
-    extension: 'scss',
-    patterns: stylesPatterns
   }
 ];
