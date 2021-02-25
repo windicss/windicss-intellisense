@@ -1,9 +1,10 @@
 {
 	"name": "windicss-intellisense",
-	"displayName": "Windi CSS IntelliSense",
+	"displayName": "WindiCSS IntelliSense",
 	"description": "Intelligent WindiCSS tooling for VS Code",
 	"publisher": "voorjaar",
 	"version": "0.0.1",
+	"license": "MIT",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -33,6 +34,13 @@
     "onLanguage:svelte",
     "onLanguage:html"
   ],
+	"repository": {
+    "type": "git",
+    "url": "https://github.com/windicss/windicss-intellisense"
+  },
+  "homepage": "https://github.com/windicss/windicss-intellisense",
+  "bugs": "https://github.com/windicss/windicss-intellisense/issues",
+  "icon": "res/logo.png",
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
@@ -65,14 +73,65 @@
 				"scopeName": "source.windicss",
 				"path": "./syntax/windicss.lang.json"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "WindiCSS IntelliSense",
+			"properties": {
+				"windi.enableColorDecorators": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable Color Decorators."
+				},
+				"windi.enableHoverPreview": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable hover className to show preview of CSS."
+				},
+				"windi.enableUtilityCompletion": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable Utility Completion."
+				},
+				"windi.enableVariantCompletion": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable Variant Completion."
+				},
+				"windi.enableDynamicCompletion": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable Dynamic Utilities Completion like p-${int}."
+				},
+				"windi.enableCodeFolding": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable ClassNames Code Folding."
+				},
+				"windi.foldByLength": {
+					"type": "boolean",
+					"default": false,
+					"description": "Folding code by length. Default option is false, will fold by utility count."
+				},
+				"windi.foldCount": {
+					"type": "number",
+					"default": 3,
+					"description": "Used by foldByCount."
+				},
+				"windi.foldLength": {
+					"type": "number",
+					"default": 25,
+					"description": "Used by foldByLength"
+				}
+			}
+		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
+		"vscode:prepublish": "pnpm compile",
 		"compile": "PUBLISH=true rollup -c",
 		"build": "rollup -c",
 		"watch": "rollup -cw",
-		"pretest": "npm run compile && npm run lint",
+		"pretest": "pnpm compile && pnpm lint",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
 	},
