@@ -2,8 +2,7 @@ import { languages, workspace, window, Range, Position, CompletionItem, Completi
 import { generate } from './core';
 import { highlightCSS, isColor } from './utils';
 import { fileTypes } from './filetypes';
-import { updateDecorations } from './annotation';
-import { registerHighlight } from './hightlight';
+import { registerCodeFolding } from './folding';
 import { ClassParser, HTMLParser } from 'windicss/utils/parser';
 import type { Generator } from './interfaces';
 import type { ExtensionContext, Disposable } from 'vscode';
@@ -129,6 +128,7 @@ export async function activate(ctx: ExtensionContext) {
     });
   };
   // updateDecorations(ctx);
+  registerCodeFolding(ctx);
 
   // const filePath = (window.activeTextEditor?.document.uri.fsPath);
   commands.registerTextEditorCommand("windicss.interpret", (textEditor, textEdit) => {

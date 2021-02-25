@@ -1,5 +1,7 @@
-import { MarkdownString, Range, Position } from "vscode";
-import type { DeepNestDictStr, DictStr } from "./interfaces";
+import { ClassParser } from 'windicss/utils/parser';
+import { MarkdownString, Range, Position, DecorationOptions } from 'vscode';
+import { HTMLParser } from './parser';
+import type { DeepNestDictStr, DictStr } from './interfaces';
 
 export function highlightCSS(css?:string): MarkdownString | undefined {
   if (css) {
@@ -45,35 +47,37 @@ export function connectList<T>(list: T[][]) {
   return list.reduce((previous, current) => previous.concat(current), []);
 }
 
-export function parseVariants(str: string) {
-  const variants: {
-    start: number,
-    end: number,
-    text: string
-  }[] = [];
-  let index = 0;
-  while (str.length > 0) {
-    const variant = str.slice(index,).match(/\w+?(?=:)/);
-    if (!(variant && variant.index)) break;
-    const start = index + variant.index;
-    const end = index + variant.index + variant[0].length;
-    variants.push({ start, end, text: variant[0] });
-    index = end + 1;
-  }
-  console.log(variants);
-  return variants;
-};
-
-export async function decorateVariants(index: number, line: string) {
-  return await parseVariants(line).map(({ start, end, text }) => {
+export async function decorateWithLength(index: number, line: string, length = 25, color = '#AED0A4', text = '...') {
+  return await new HTMLParser(line).parseClasses().filter(({ result }) => result.length > length).map(({ start, end, result }) => {
     return {
-      range: new Range(new Position(index, start), new Position(index, end)),
+      range: new Range(new Position(index, start + length), new Position(index, end)),
       renderOptions: {
         after: {
-          color: '#06B6D4',
+          color,
           contentText: text,
-        },
+        }
       },
+      hoverMessage: result.slice(length,),
     };
   });
+}
+
+export async function decorateWithCount(index: number, line: string, count = 3, color = '#AED0A4', text = ' ...') {
+  const decorations: DecorationOptions[] = [];
+  await new HTMLParser(line).parseClasses().forEach(({ start, end, result }) => {
+    const classes = new ClassParser(result).parse();
+    if (classes[count]) {
+      decorations.push({
+        range: new Range(new Position(index, start + classes[count].start - 1), new Position(index, end)),
+        renderOptions: {
+          after: {
+            color,
+            contentText: text,
+          }
+        },
+        hoverMessage: result.slice(classes[count].start,),
+      });
+    }
+  });
+  return decorations;
 }
