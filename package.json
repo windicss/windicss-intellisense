@@ -11,36 +11,36 @@
 	"keywords": [
 		"windi",
 		"windicss",
-    "tailwind",
-    "tailwindcss",
-    "css",
-    "intellisense",
-    "autocomplete",
-    "vscode"
-  ],
+		"tailwind",
+		"tailwindcss",
+		"css",
+		"intellisense",
+		"autocomplete",
+		"vscode"
+	],
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
-    "workspaceContains:tailwind.config.js",
+		"workspaceContains:tailwind.config.js",
 		"workspaceContains:tailwind.config.ts",
 		"workspaceContains:windi.config.js",
 		"workspaceContains:windi.config.ts",
-    "onLanguage:vue",
-    "onLanguage:javascript",
-    "onLanguage:javascriptreact",
-    "onLanguage:typescript",
-    "onLanguage:typescriptreact",
-    "onLanguage:svelte",
-    "onLanguage:html"
-  ],
+		"onLanguage:vue",
+		"onLanguage:javascript",
+		"onLanguage:javascriptreact",
+		"onLanguage:typescript",
+		"onLanguage:typescriptreact",
+		"onLanguage:svelte",
+		"onLanguage:html"
+	],
 	"repository": {
-    "type": "git",
-    "url": "https://github.com/windicss/windicss-intellisense"
-  },
-  "homepage": "https://github.com/windicss/windicss-intellisense",
-  "bugs": "https://github.com/windicss/windicss-intellisense/issues",
-  "icon": "res/logo.png",
+		"type": "git",
+		"url": "https://github.com/windicss/windicss-intellisense"
+	},
+	"homepage": "https://github.com/windicss/windicss-intellisense",
+	"bugs": "https://github.com/windicss/windicss-intellisense/issues",
+	"icon": "res/logo.png",
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
@@ -170,11 +170,11 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "pnpm compile",
+		"vscode:prepublish": "npm run compile",
 		"compile": "PUBLISH=true rollup -c",
 		"build": "rollup -c",
 		"watch": "rollup -cw",
-		"pretest": "pnpm compile && pnpm lint",
+		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
 	},
