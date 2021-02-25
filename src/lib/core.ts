@@ -8,9 +8,12 @@ import type { Core } from '../interfaces';
 export async function init():Promise<Core> {
   try {
     const files = await workspace.findFiles('{tailwind,windi}.config.js', '**​/node_modules/**');
-    const configFile = resolve(files[0].fsPath);
-    console.log(`Loading Config File: ${configFile}`);
-    const config = files[0] ? require(configFile) : undefined;
+    let configFile;
+    if (files[0]) {
+      configFile = resolve(files[0].fsPath);
+      console.log(`Loading Config File: ${configFile}`);
+    }
+    const config = configFile? require(configFile) : undefined;
     const processor = new Processor(config);
     const colors = flatColors(processor.theme('colors') as {[key:string]:string|{[key:string]:string}});
     const variants = processor.resolveVariants();
