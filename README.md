@@ -48,6 +48,21 @@ Built-in commands, one-key operation.
 
 ## Extension Settings
 
+| Settings                           | type    | default  | description                                                  |
+| :--------------------------------- | :------ | :------- | :----------------------------------------------------------- |
+| `windicss.enableColorDecorators`   | boolean | true     | Enable Color Decorators.                                     |
+| `windicss.enableHoverPreview`      | boolean | true     | Enable hover className to show preview of CSS.               |
+| `windicss.enableCodeCompletion`    | boolean | true     | Enable/Disable all code completions.                         |
+| `windicss.enableUtilityCompletion` | boolean | true     | Enable Utility Completion.                                   |
+| `windicss.enableVariantCompletion` | boolean | true     | Enable Variant Completion.                                   |
+| `windicss.enableDynamicCompletion` | boolean | true     | Enable Dynamic Utilities Completion like p-${int}.           |
+| `windicss.enableCodeFolding`       | boolean | true     | Enable ClassNames Code Folding.                              |
+| `windicss.foldByLength`            | boolean | false    | Folding code by length. Default option is false, will fold by utility count. |
+| `windicss.foldCount`               | number  | 3        | Used by foldByCount.                                         |
+| `windicss.foldLength`              | number  | 25       | Used by foldByLength                                         |
+| `windicss.hiddenText`              | string  | ` ...`   | Placeholder used when folding code.                          |
+| `windicss.hiddenTextColor`         | string  | \#AED0A4 | Placeholder Color.                                           |
+
 ## For more information
 
 * [Windi CSS](https://github.com/windicss/windicss)
