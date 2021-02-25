@@ -1,34 +1,13 @@
-import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from "vscode";
-import { init } from './core';
+import { ExtensionContext, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from "vscode";
 import { highlightCSS, isColor } from '../utils';
 import { fileTypes } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
-let CORE: Core = { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
 const TRIGGERS = ['"', "'", ' ', ':', ''];
 
-export async function registerCompletions(ctx: ExtensionContext): Promise<void> {
-  CORE = await init();
-  const fileSystemWatcher = workspace.createFileSystemWatcher('**/{tailwind,windi}.config.js');
-
-  // Changes configuration should invalidate above cache
-  fileSystemWatcher.onDidChange(async () => {
-    CORE = await init();
-  });
-
-  // This handles the case where the project didn't have config file
-  // but was created after VS Code was initialized
-  fileSystemWatcher.onDidCreate(async () => {
-    CORE = await init();
-  });
-
-  // If the config is deleted, utilities&variants should be regenerated
-  fileSystemWatcher.onDidDelete(async () => {
-    CORE = await init();
-  });
-
+export async function registerCompletions(ctx: ExtensionContext, core: Core): Promise<void> {
   let disposables: Disposable[] = [];
   for (const { extension, patterns } of fileTypes) {
     patterns.forEach(pattern => {
@@ -43,13 +22,13 @@ export async function registerCompletions(ctx: ExtensionContext): Promise<void> 
             .match(pattern.regex)?.[1]
             .split(pattern.splitCharacter) ?? [];
 
-          const staticCompletion = CORE.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
+          const staticCompletion = core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
             const item = new CompletionItem(classItem, CompletionItemKind.Constant);
-            item.documentation = highlightCSS(CORE.processor?.interpret(classItem).styleSheet.build());
+            item.documentation = highlightCSS(core.processor?.interpret(classItem).styleSheet.build());
             return item;
           });
 
-          const variantsCompletion = CORE.variantCompletions.map(({ label, documentation }) => {
+          const variantsCompletion = core.variantCompletions.map(({ label, documentation }) => {
             const item = new CompletionItem(label, CompletionItemKind.Module);
             item.documentation = documentation;
             // trigger suggestion after select variant
@@ -60,9 +39,9 @@ export async function registerCompletions(ctx: ExtensionContext): Promise<void> 
             return item;
           });
 
-          const dynamicCompletion = CORE.dynamicCompletions.map(({ label, position }) => {
+          const dynamicCompletion = core.dynamicCompletions.map(({ label, position }) => {
             const item = new CompletionItem(label, CompletionItemKind.Variable);
-            // item.documentation = highlightCSS(CORE.processor?.interpret())
+            // item.documentation = highlightCSS(core.processor?.interpret())
             item.command = {
               command: 'cursorMove',
               arguments: [{
@@ -75,7 +54,7 @@ export async function registerCompletions(ctx: ExtensionContext): Promise<void> 
             return item;
           });
 
-          const colorsCompletion = CORE.colorCompletions.map(({ label, detail, documentation}) => {
+          const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation}) => {
             const color = new CompletionItem(label, CompletionItemKind.Color);
             color.detail = detail;
             color.documentation = documentation;
@@ -89,7 +68,7 @@ export async function registerCompletions(ctx: ExtensionContext): Promise<void> 
         // hover class show css preview
         provideHover: (document, position, token) => {
           const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
-          const style = CORE.processor?.interpret(word);
+          const style = core.processor?.interpret(word);
           if (style && style.ignored.length === 0) { return new Hover(highlightCSS(style.styleSheet.build()) ?? ''); }
         }
       })).concat(languages.registerColorProvider(extension, {
@@ -105,7 +84,7 @@ export async function registerCompletions(ctx: ExtensionContext): Promise<void> 
                 const elements = new ClassParser(matched[0]).parse(false);
                 elements.forEach(element => {
                   if (typeof element.content === 'string') {
-                    const color = isColor(element.raw, CORE.colors);
+                    const color = isColor(element.raw, core.colors);
                     if (color) {
                       const char = element.start + offset;
                       colors.push(new ColorInformation(new Range(new Position(line, char), new Position(line, char + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));

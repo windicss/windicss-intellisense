@@ -6,7 +6,7 @@ Windi CSS IntelliSense enhances the Windi development experience by providing Vi
 
 **[Install via the Visual Studio Code Marketplace →](https://marketplace.visualstudio.com/items?itemName=voorjaar.windicss-intellisense)**
 
-This plugin packs a windicss compiler, so you can use it without installing windicss, and it also supports the configuration file tailwind/windi.config.js.
+This plugin packs a windicss compiler, so you can use it without installing windicss, and it also supports the configuration file `tailwind/windi.config.js`.
 
 ## Features
 
@@ -53,6 +53,4 @@ Built-in commands, one-key operation.
 * [Windi CSS](https://github.com/windicss/windicss)
 * [Documentation](https://windicss.netlify.app/)
 * [Discussions](https://github.com/windicss/windicss/discussions)
-* [Issues](https://github.com/windicss/windicss-intellisense)
-
-**Enjoy!**
+* [Issues](https://github.com/windicss/windicss-intellisense/issues)
