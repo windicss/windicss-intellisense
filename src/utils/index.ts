@@ -1,5 +1,5 @@
 import { ClassParser } from 'windicss/utils/parser';
-import { MarkdownString, Range, Position, DecorationOptions } from 'vscode';
+import { workspace, MarkdownString, Range, Position, DecorationOptions } from 'vscode';
 import { HTMLParser } from './parser';
 import { keyOrder } from './order';
 import type { DeepNestDictStr, DictStr } from '../interfaces';
@@ -93,4 +93,21 @@ export function sortClassNames(classNames: string, variantsMap: {[key:string]: n
     if (key === null) return { raw, weight: offset };
     return { raw, weight: (keyOrder[key[0]] ?? 300 ) + offset };
   }).sort((a, b) => a.weight - b.weight).map(i => i.raw).join(' ');
+}
+
+export function getConfig<T = any>(key: string): T | undefined {
+  return workspace
+    .getConfiguration()
+    .get<T>(key);
+}
+
+export async function setConfig(key: string, value: any, isGlobal = true) {
+  return await workspace
+    .getConfiguration()
+    .update(key, value, isGlobal);
+}
+
+export function toggleConfig(key: string) {
+  const config = getConfig(key) as boolean;
+  setConfig(key, !config);
 }

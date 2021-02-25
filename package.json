@@ -46,15 +46,43 @@
 		"commands": [
 			{
 				"command": "windicss.interpret",
-				"title": "Windi CSS: Compile CSS [Interpretation Mode]"
+				"category": "Windi CSS",
+				"title": "Compile CSS [Interpretation Mode]"
 			},
 			{
 				"command": "windicss.compile",
-				"title": "Windi CSS: Compile CSS [Compilation Mode]"
+				"category": "Windi CSS",
+				"title": "Compile CSS [Compilation Mode]"
 			},
 			{
 				"command": "windicss.sort",
-				"title": "Windi CSS: Sort Utilities"
+				"category": "Windi CSS",
+				"title": "Sort Utilities"
+			},
+			{
+				"command": "windicss.toggle-folding",
+				"category": "Windi CSS",
+				"title": "Toggle Code Folding"
+			},
+			{
+				"command": "windicss.toggle-decorators",
+				"category": "Windi CSS",
+				"title": "Toggle Color Decorators"
+			},
+			{
+				"command": "windicss.toggle-preview",
+				"category": "Windi CSS",
+				"title": "Toggle Hover Preview"
+			},
+			{
+				"command": "windicss.toggle-completion",
+				"category": "Windi CSS",
+				"title": "Enable/Disable All Code Completion"
+			},
+			{
+				"command": "windicss.toggle-dynamic-completion",
+				"category": "Windi CSS",
+				"title": "Toggle Dynamic Utilities Completion"
 			}
 		],
 		"grammars": [
@@ -78,47 +106,52 @@
 			"type": "object",
 			"title": "WindiCSS IntelliSense",
 			"properties": {
-				"windi.enableColorDecorators": {
+				"windicss.enableColorDecorators": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable Color Decorators."
 				},
-				"windi.enableHoverPreview": {
+				"windicss.enableHoverPreview": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable hover className to show preview of CSS."
 				},
-				"windi.enableUtilityCompletion": {
+				"windicss.enableCodeCompletion": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable/Disable all code completions."
+				},
+				"windicss.enableUtilityCompletion": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable Utility Completion."
 				},
-				"windi.enableVariantCompletion": {
+				"windicss.enableVariantCompletion": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable Variant Completion."
 				},
-				"windi.enableDynamicCompletion": {
+				"windicss.enableDynamicCompletion": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable Dynamic Utilities Completion like p-${int}."
 				},
-				"windi.enableCodeFolding": {
+				"windicss.enableCodeFolding": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable ClassNames Code Folding."
 				},
-				"windi.foldByLength": {
+				"windicss.foldByLength": {
 					"type": "boolean",
 					"default": false,
 					"description": "Folding code by length. Default option is false, will fold by utility count."
 				},
-				"windi.foldCount": {
+				"windicss.foldCount": {
 					"type": "number",
 					"default": 3,
 					"description": "Used by foldByCount."
 				},
-				"windi.foldLength": {
+				"windicss.foldLength": {
 					"type": "number",
 					"default": 25,
 					"description": "Used by foldByLength"

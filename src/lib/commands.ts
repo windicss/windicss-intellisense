@@ -1,13 +1,11 @@
 import { commands, Range, Position } from 'vscode';
 import { HTMLParser } from '../utils/parser';
-import { keyOrder } from '../utils/order';
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
-import { ClassParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import type { ExtensionContext } from 'vscode';
 import type { Core } from '../interfaces';
-import { sortClassNames } from '../utils';
+import { sortClassNames, toggleConfig } from '../utils';
 
 export function registerCommands(ctx: ExtensionContext, core: Core): void {
   ctx.subscriptions.push(
@@ -68,5 +66,25 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
 
       textEdit.replace(new Range(new Position(0, 0), textEditor.document.lineAt(textEditor.document.lineCount-1).range.end), outputHTML.join(''));
     })
+  );
+
+  ctx.subscriptions.push(
+    commands.registerCommand("windicss.toggle-folding", () => toggleConfig("windicss.enableCodeFolding"))
+  );
+
+  ctx.subscriptions.push(
+    commands.registerCommand("windicss.toggle-decorators", () => toggleConfig("windicss.enableColorDecorators"))
+  );
+
+  ctx.subscriptions.push(
+    commands.registerCommand("windicss.toggle-preview", () => toggleConfig("windicss.enableHoverPreview"))
+  );
+
+  ctx.subscriptions.push(
+    commands.registerCommand("windicss.toggle-completion", () => toggleConfig("windicss.enableCodeCompletion"))
+  );
+
+  ctx.subscriptions.push(
+    commands.registerCommand("windicss.toggle-dynamic-completion", () => toggleConfig("enableDynamicCompletion"))
   );
 }
