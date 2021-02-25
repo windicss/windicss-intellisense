@@ -1,6 +1,7 @@
 import { ClassParser } from 'windicss/utils/parser';
 import { MarkdownString, Range, Position, DecorationOptions } from 'vscode';
 import { HTMLParser } from './parser';
+import { keyOrder } from './order';
 import type { DeepNestDictStr, DictStr } from '../interfaces';
 
 export function highlightCSS(css?:string): MarkdownString | undefined {
@@ -80,4 +81,16 @@ export async function decorateWithCount(index: number, line: string, count = 3, 
     }
   });
   return decorations;
+}
+
+export function sortClassNames(classNames: string, variantsMap: {[key:string]: number}) {
+  const ast = new ClassParser(classNames).parse();
+  return ast.map(({ raw, variants, important }) => {
+    const head = variants.join(':') + ':';
+    const utility = raw.replace(head, '');
+    const key = utility.match(/\w+/);
+    const offset =  variants.map(i => variantsMap[i] * 100).reduce((p, c) => p + c, 0) + (important ? 500: 0);
+    if (key === null) return { raw, weight: offset };
+    return { raw, weight: (keyOrder[key[0]] ?? 300 ) + offset };
+  }).sort((a, b) => a.weight - b.weight).map(i => i.raw).join(' ');
 }

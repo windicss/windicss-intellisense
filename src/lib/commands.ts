@@ -1,10 +1,13 @@
 import { commands, Range, Position } from 'vscode';
 import { HTMLParser } from '../utils/parser';
+import { keyOrder } from '../utils/order';
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
+import { ClassParser } from 'windicss/utils/parser';
 import { StyleSheet } from 'windicss/utils/style';
 import type { ExtensionContext } from 'vscode';
 import type { Core } from '../interfaces';
+import { sortClassNames } from '../utils';
 
 export function registerCommands(ctx: ExtensionContext, core: Core): void {
   ctx.subscriptions.push(
@@ -45,34 +48,25 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
   );
 
   ctx.subscriptions.push(
-    
+    commands.registerTextEditorCommand("windicss.sort", (textEditor, textEdit) => {
+      const text = textEditor.document.getText();
+      const parser = new HTMLParser(text);
+      const outputHTML: string[] = [];
+
+      let indexStart = 0;
+
+      const classes = parser.parseClasses();
+      const variants = Object.keys(core.processor?.resolveVariants() ?? {});
+      const variantsMap = Object.assign({}, ...variants.map((value, index) => ({[value]: index + 1})));
+
+      for (const p of classes) {
+        outputHTML.push(text.substring(indexStart, p.start));
+        outputHTML.push(sortClassNames(p.result, variantsMap));
+        indexStart = p.end;
+      }
+      outputHTML.push(text.substring(indexStart));
+
+      textEdit.replace(new Range(new Position(0, 0), textEditor.document.lineAt(textEditor.document.lineCount-1).range.end), outputHTML.join(''));
+    })
   );
-  
-  // commands.registerTextEditorCommand("windicss.sort", (textEditor, textEdit) => {
-  //   // console.log(textEditor.document.uri.fsPath);
-  //   const document = textEditor.document;
-  //   const text = document.getText();
-  //   const parser = new HTMLParser(text);
-  //   parser.parseClasses().forEach(({start, end, result}) => {
-  //     // console.log(result);
-  //     const utilities:string[] = [];
-  //     const ignored:string[] = [];
-  //     const ast = new ClassParser(result).parse();
-  //     ast.forEach(obj => {
-  //       if (obj.type === 'utility' && typeof obj.content === 'string') {
-  //         utilities.push(obj.raw);
-  //       } else if (obj.type === 'group') {
-
-  //       } else {
-  //         ignored.push(obj.raw);
-  //       }
-  //     })
-  //     console.log(classes);
-  //     textEdit.replace(new Range(document.positionAt(start), document.positionAt(end)), '234');
-  //   });
-  //   // textEditor.document.lineCount
-
-  //   // textEdit.replace(new Range(new Position(0, 0), new Position(textEditor.document.lineCount, textEditor.document.)), '');
-  //   // console.log(text);
-  // });
 }
