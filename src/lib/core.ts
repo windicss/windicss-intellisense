@@ -2,7 +2,7 @@ import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
 import { flatColors, hex2RGB, highlightCSS } from '../utils';
-import { utilities as dynamic, negative } from '../utils/dynamic';
+import { utilities as dynamic, negative } from '../utils/utilities';
 import type { Core } from '../interfaces';
 
 export async function init():Promise<Core> {

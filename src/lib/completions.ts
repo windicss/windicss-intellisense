@@ -6,7 +6,7 @@ import { ClassParser } from 'windicss/utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
-let CORE:Core = { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
+let CORE: Core = { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
 const TRIGGERS = ['"', "'", ' ', ':', ''];
 
 export async function registerCompletions(ctx: ExtensionContext): Promise<void> {

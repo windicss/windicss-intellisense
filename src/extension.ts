@@ -7,7 +7,7 @@ export async function activate(ctx: ExtensionContext) {
   registerCompletions(ctx);
   registerCodeFolding(ctx);
   registerCommands(ctx);
-  console.log('"windicss-intellisense" is now active!');
+  console.log('Windi CSS Intellisense is now active!');
 }
 
 export function deactivate() {}

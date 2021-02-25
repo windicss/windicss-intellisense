@@ -1,70 +1,46 @@
-# windicss-intellisense README
+# Windi CSS Intellisense
 
-This is the README for your extension "windicss-intellisense". After writing up a brief description, we recommend including the following sections.
+Windi CSS IntelliSense enhances the Windi development experience by providing Visual Studio Code users with advanced features such as autocomplete, syntax highlighting, code folding, and building.
+
+## Installation
+
+**[Install via the Visual Studio Code Marketplace →](https://marketplace.visualstudio.com/items?itemName=voorjaar.windicss-intellisense)**
+
+This plugin packs a windicss compiler, so you can use it without installing windicss, and it also supports the configuration file tailwind/windi.config.js.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Autocomplete
 
-For example if there is an image subfolder under your extension project workspace:
+Intelligent suggestions for utilities and variants.
 
-\!\[feature X\]\(images/feature-x.png\)
+### Hover Preview
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+See the complete CSS for a class name by hovering over it.
 
-## Requirements
+### Syntax Highlighting
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+Highlight utilities, variants and importants.
+
+### Color Preview
+
+Preview color and spectrum.
+
+### Code Folding
+
+Fold overly long classes to increase readability.
+
+### Compile Commands
+
+Built-in commands, one-key operation.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+## For more information
 
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+* [Windi CSS](https://github.com/windicss/windicss)
+* [Documentation](https://windicss.netlify.app/)
+* [Discussions](https://github.com/windicss/windicss/discussions)
+* [Issues](https://github.com/windicss/windicss-intellisense)
 
 **Enjoy!**
