@@ -1,204 +1,204 @@
 {
-	"name": "windicss-intellisense",
-	"displayName": "WindiCSS IntelliSense",
-	"description": "Intelligent WindiCSS tooling for VS Code",
-	"publisher": "voorjaar",
-	"version": "0.0.4",
-	"license": "MIT",
-	"engines": {
-		"vscode": "^1.53.0"
-	},
-	"keywords": [
-		"windi",
-		"windicss",
-		"tailwind",
-		"tailwindcss",
-		"css",
-		"intellisense",
-		"autocomplete",
-		"vscode"
-	],
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"workspaceContains:tailwind.config.js",
-		"workspaceContains:tailwind.config.ts",
-		"workspaceContains:windi.config.js",
-		"workspaceContains:windi.config.ts",
-		"onLanguage:vue",
-		"onLanguage:javascript",
-		"onLanguage:javascriptreact",
-		"onLanguage:typescript",
-		"onLanguage:typescriptreact",
-		"onLanguage:svelte",
-		"onLanguage:html"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/windicss/windicss-intellisense"
-	},
-	"homepage": "https://github.com/windicss/windicss-intellisense",
-	"bugs": "https://github.com/windicss/windicss-intellisense/issues",
-	"icon": "res/logo.png",
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "windicss.interpret",
-				"category": "Windi CSS",
-				"title": "Compile CSS [Interpretation Mode]"
-			},
-			{
-				"command": "windicss.compile",
-				"category": "Windi CSS",
-				"title": "Compile CSS [Compilation Mode]"
-			},
-			{
-				"command": "windicss.sort",
-				"category": "Windi CSS",
-				"title": "Sort Utilities"
-			},
-			{
-				"command": "windicss.toggle-folding",
-				"category": "Windi CSS",
-				"title": "Toggle Code Folding"
-			},
-			{
-				"command": "windicss.toggle-decorators",
-				"category": "Windi CSS",
-				"title": "Toggle Color Decorators"
-			},
-			{
-				"command": "windicss.toggle-preview",
-				"category": "Windi CSS",
-				"title": "Toggle Hover Preview"
-			},
-			{
-				"command": "windicss.toggle-completion",
-				"category": "Windi CSS",
-				"title": "Enable/Disable All Code Completion"
-			},
-			{
-				"command": "windicss.toggle-dynamic-completion",
-				"category": "Windi CSS",
-				"title": "Toggle Dynamic Utilities Completion"
-			}
-		],
-		"grammars": [
-			{
-				"injectTo": [
-					"source.html",
-					"source.js",
-					"source.js.jsx",
-					"source.jsx",
-					"source.ts",
-					"source.tsx",
-					"source.vue",
-					"source.svelte",
-					"text.html"
-				],
-				"scopeName": "source.windicss",
-				"path": "./syntax/windicss.lang.json"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "WindiCSS IntelliSense",
-			"properties": {
-				"windicss.enableColorDecorators": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable Color Decorators."
-				},
-				"windicss.enableHoverPreview": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable hover className to show preview of CSS."
-				},
-				"windicss.enableCodeCompletion": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable/Disable all code completions."
-				},
-				"windicss.enableUtilityCompletion": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable Utility Completion."
-				},
-				"windicss.enableVariantCompletion": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable Variant Completion."
-				},
-				"windicss.enableDynamicCompletion": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable Dynamic Utilities Completion like p-${int}."
-				},
-				"windicss.enableCodeFolding": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable ClassNames Code Folding."
-				},
-				"windicss.foldByLength": {
-					"type": "boolean",
-					"default": false,
-					"description": "Folding code by length. Default option is false, will fold by utility count."
-				},
-				"windicss.foldCount": {
-					"type": "number",
-					"default": 3,
-					"description": "Used by foldByCount."
-				},
-				"windicss.foldLength": {
-					"type": "number",
-					"default": 25,
-					"description": "Used by foldByLength"
-				},
-				"windicss.hiddenText": {
-					"type": "string",
-					"default": " ...",
-					"description": "Placeholder used when folding code."
-				},
-				"windicss.hiddenTextColor": {
-					"type": "string",
-					"default": "#AED0A4",
-					"description": "Placeholder Color"
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "cross-env NODE_ENV=production rollup -c",
-		"build": "rollup -c",
-		"watch": "rollup -cw",
-		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
+  "name": "windicss-intellisense",
+  "displayName": "WindiCSS IntelliSense",
+  "description": "Intelligent WindiCSS tooling for VS Code",
+  "publisher": "voorjaar",
+  "version": "0.0.4",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.53.0"
+  },
+  "keywords": [
+    "windi",
+    "windicss",
+    "tailwind",
+    "tailwindcss",
+    "css",
+    "intellisense",
+    "autocomplete",
+    "vscode"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:tailwind.config.js",
+    "workspaceContains:tailwind.config.ts",
+    "workspaceContains:windi.config.js",
+    "workspaceContains:windi.config.ts",
+    "onLanguage:vue",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:svelte",
+    "onLanguage:html"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/windicss/windicss-intellisense"
+  },
+  "homepage": "https://github.com/windicss/windicss-intellisense",
+  "bugs": "https://github.com/windicss/windicss-intellisense/issues",
+  "icon": "res/logo.png",
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "windicss.interpret",
+        "category": "Windi CSS",
+        "title": "Compile CSS [Interpretation Mode]"
+      },
+      {
+        "command": "windicss.compile",
+        "category": "Windi CSS",
+        "title": "Compile CSS [Compilation Mode]"
+      },
+      {
+        "command": "windicss.sort",
+        "category": "Windi CSS",
+        "title": "Sort Utilities"
+      },
+      {
+        "command": "windicss.toggle-folding",
+        "category": "Windi CSS",
+        "title": "Toggle Code Folding"
+      },
+      {
+        "command": "windicss.toggle-decorators",
+        "category": "Windi CSS",
+        "title": "Toggle Color Decorators"
+      },
+      {
+        "command": "windicss.toggle-preview",
+        "category": "Windi CSS",
+        "title": "Toggle Hover Preview"
+      },
+      {
+        "command": "windicss.toggle-completion",
+        "category": "Windi CSS",
+        "title": "Enable/Disable All Code Completion"
+      },
+      {
+        "command": "windicss.toggle-dynamic-completion",
+        "category": "Windi CSS",
+        "title": "Toggle Dynamic Utilities Completion"
+      }
+    ],
+    "grammars": [
+      {
+        "injectTo": [
+          "source.html",
+          "source.js",
+          "source.js.jsx",
+          "source.jsx",
+          "source.ts",
+          "source.tsx",
+          "source.vue",
+          "source.svelte",
+          "text.html"
+        ],
+        "scopeName": "source.windicss",
+        "path": "./syntax/windicss.lang.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "WindiCSS IntelliSense",
+      "properties": {
+        "windicss.enableColorDecorators": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Color Decorators."
+        },
+        "windicss.enableHoverPreview": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover className to show preview of CSS."
+        },
+        "windicss.enableCodeCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/Disable all code completions."
+        },
+        "windicss.enableUtilityCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Utility Completion."
+        },
+        "windicss.enableVariantCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Variant Completion."
+        },
+        "windicss.enableDynamicCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Dynamic Utilities Completion like p-${int}."
+        },
+        "windicss.enableCodeFolding": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable ClassNames Code Folding."
+        },
+        "windicss.foldByLength": {
+          "type": "boolean",
+          "default": false,
+          "description": "Folding code by length. Default option is false, will fold by utility count."
+        },
+        "windicss.foldCount": {
+          "type": "number",
+          "default": 3,
+          "description": "Used by foldByCount."
+        },
+        "windicss.foldLength": {
+          "type": "number",
+          "default": 25,
+          "description": "Used by foldByLength"
+        },
+        "windicss.hiddenText": {
+          "type": "string",
+          "default": " ...",
+          "description": "Placeholder used when folding code."
+        },
+        "windicss.hiddenTextColor": {
+          "type": "string",
+          "default": "#AED0A4",
+          "description": "Placeholder Color"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "cross-env NODE_ENV=production rollup -c",
+    "build": "rollup -c",
+    "watch": "rollup -cw",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
     "lint:fix": "npm run lint -- --fix",
-		"test": "node ./out/test/runTest.js",
-		"release": "bumpp --tag --commit --push"
-	},
-	"devDependencies": {
-		"@rollup/plugin-node-resolve": "^11.1.1",
-		"@rollup/plugin-sucrase": "^3.1.0",
-		"@rollup/plugin-typescript": "^8.1.1",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.53.0",
-		"@typescript-eslint/eslint-plugin": "^4.14.1",
-		"@typescript-eslint/parser": "^4.14.1",
-		"bumpp": "^6.0.6",
-		"cross-env": "^7.0.3",
-		"eslint": "^7.19.0",
-		"glob": "^7.1.6",
-		"mocha": "^8.2.1",
-		"rollup": "^2.39.0",
-		"tslib": "^2.1.0",
-		"typescript": "^4.1.3",
-		"vscode-test": "^1.5.0",
-		"windicss": "^2.2.0"
-	}
+    "test": "node ./out/test/runTest.js",
+    "release": "bumpp --tag --commit --push"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^11.1.1",
+    "@rollup/plugin-sucrase": "^3.1.0",
+    "@rollup/plugin-typescript": "^8.1.1",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.53.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "bumpp": "^6.0.6",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.19.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.2.1",
+    "rollup": "^2.39.0",
+    "tslib": "^2.1.0",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0",
+    "windicss": "^2.2.0"
+  }
 }
