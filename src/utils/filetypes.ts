@@ -25,7 +25,7 @@ const htmlPatterns = [
   },
   {
     regex: applyRegex,
-    splitCharacter: ' '
+    splitCharacter: ' ',
   },
   // {
   //   regex: emmetRegex,

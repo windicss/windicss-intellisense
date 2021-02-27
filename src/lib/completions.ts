@@ -24,7 +24,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             const classesInCurrentLine = textInCurrentLine
               .match(pattern.regex)?.[1]
               .split(pattern.splitCharacter) ?? [];
-            if(matchCursorIsInCorrectPosition === undefined) { return; };
+            if(matchCursorIsInCorrectPosition === undefined) { return; }
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
               item.documentation = highlightCSS(core.processor?.interpret(classItem).styleSheet.build());
@@ -69,7 +69,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
           },
 
         }, ...TRIGGERS));
-        if (getConfig("windicss.enableHoverPreview")) {
+
         if (getConfig('windicss.enableHoverPreview')) {
           disposables = disposables.concat(languages.registerHoverProvider(extension, {
             // hover class show css preview
