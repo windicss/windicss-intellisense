@@ -9,7 +9,7 @@ import { sortClassNames, toggleConfig } from '../utils';
 
 export function registerCommands(ctx: ExtensionContext, core: Core): void {
   ctx.subscriptions.push(
-    commands.registerTextEditorCommand("windicss.interpret", (textEditor, textEdit) => {
+    commands.registerTextEditorCommand('windicss.interpret', (textEditor, textEdit) => {
       if (!core.processor) return;
       const text = textEditor.document.getText();
       const parser = new HTMLParser(text);
@@ -20,7 +20,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
   );
 
   ctx.subscriptions.push(
-    commands.registerTextEditorCommand("windicss.compile", (textEditor, textEdit) => {
+    commands.registerTextEditorCommand('windicss.compile', (textEditor, textEdit) => {
       if (!core.processor) return;
       const text = textEditor.document.getText();
       const parser = new HTMLParser(text);
@@ -46,7 +46,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
   );
 
   ctx.subscriptions.push(
-    commands.registerTextEditorCommand("windicss.sort", (textEditor, textEdit) => {
+    commands.registerTextEditorCommand('windicss.sort', (textEditor, textEdit) => {
       const text = textEditor.document.getText();
       const parser = new HTMLParser(text);
       const outputHTML: string[] = [];
@@ -55,7 +55,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
 
       const classes = parser.parseClasses();
       const variants = Object.keys(core.processor?.resolveVariants() ?? {});
-      const variantsMap = Object.assign({}, ...variants.map((value, index) => ({[value]: index + 1})));
+      const variantsMap = Object.assign({}, ...variants.map((value, index) => ({ [value]: index + 1 })));
 
       for (const p of classes) {
         outputHTML.push(text.substring(indexStart, p.start));
@@ -69,34 +69,34 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
   );
 
   ctx.subscriptions.push(
-    commands.registerCommand("windicss.toggle-folding", () => toggleConfig("windicss.enableCodeFolding"))
+    commands.registerCommand('windicss.toggle-folding', () => toggleConfig('windicss.enableCodeFolding'))
   );
 
   ctx.subscriptions.push(
-    commands.registerCommand("windicss.toggle-decorators", () => {
-      toggleConfig("windicss.enableColorDecorators");
-      commands.executeCommand("workbench.action.reloadWindow");
+    commands.registerCommand('windicss.toggle-decorators', () => {
+      toggleConfig('windicss.enableColorDecorators');
+      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 
   ctx.subscriptions.push(
-    commands.registerCommand("windicss.toggle-preview", () => {
-      toggleConfig("windicss.enableHoverPreview");
-      commands.executeCommand("workbench.action.reloadWindow");
+    commands.registerCommand('windicss.toggle-preview', () => {
+      toggleConfig('windicss.enableHoverPreview');
+      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 
   ctx.subscriptions.push(
-    commands.registerCommand("windicss.toggle-completion", () => {
-      toggleConfig("windicss.enableCodeCompletion");
-      commands.executeCommand("workbench.action.reloadWindow");
+    commands.registerCommand('windicss.toggle-completion', () => {
+      toggleConfig('windicss.enableCodeCompletion');
+      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 
   ctx.subscriptions.push(
-    commands.registerCommand("windicss.toggle-dynamic-completion", () => {
-      toggleConfig("enableDynamicCompletion");
-      commands.executeCommand("workbench.action.reloadWindow");
+    commands.registerCommand('windicss.toggle-dynamic-completion', () => {
+      toggleConfig('enableDynamicCompletion');
+      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 }

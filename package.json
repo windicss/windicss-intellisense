@@ -176,6 +176,7 @@
 		"watch": "rollup -cw",
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
+    "lint:fix": "npm run lint -- --fix",
 		"test": "node ./out/test/runTest.js",
 		"release": "bumpp --tag --commit --push"
 	},

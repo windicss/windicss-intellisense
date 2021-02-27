@@ -24,13 +24,13 @@ export async function init():Promise<Core> {
       style.selector = '&';
       return {
         label: variant + ':',
-        documentation: highlightCSS(style.build().replace(`{\n  & {}\n}`, '{\n  ...\n}').replace('{}', '{\n  ...\n}'))
+        documentation: highlightCSS(style.build().replace('{\n  & {}\n}', '{\n  ...\n}').replace('{}', '{\n  ...\n}')),
       };
     });
 
     let staticCompletions = Object.keys(staticUtilities);
-    let colorCompletions: {label: string, detail: string, documentation: string}[] = [];
-    let dynamicCompletions: {label: string, position: number}[] = [];
+    const colorCompletions: {label: string, detail: string, documentation: string}[] = [];
+    const dynamicCompletions: {label: string, position: number}[] = [];
 
     for (const [config, list] of Object.entries(dynamic)) {
       list.forEach(utility => {
@@ -41,39 +41,39 @@ export async function init():Promise<Core> {
           const prefix = utility.slice(0, mark-1);
           const suffix = utility.slice(mark);
           switch(suffix) {
-            case '${static}':
-              const staticConfig = Object.keys(processor.theme(config, {}) as {});
-              let complections = staticConfig.map(i => i === 'DEFAULT'? prefix : `${prefix}-${i}`);
-              if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
-              staticCompletions = staticCompletions.concat(complections);              
-              break;
-            case '${color}':
-              const colorConfig = flatColors(processor.theme(config, colors) as {});
-              for (const [k, v] of Object.entries(colorConfig)) {
-                const name = `${prefix}-${k}`;
-                colorCompletions.push({
-                  label: name,
-                  detail: processor.interpret(name).styleSheet.build(),
-                  documentation: ['transparent', 'currentColor'].includes(v) ? v: `rgb(${hex2RGB(v)?.join(', ')})`,
-                });
-              }
-              break;
-            default:
-              dynamicCompletions.push({
-                label: utility,
-                position: utility.length - mark,
+          case '${static}':
+            const staticConfig = Object.keys(processor.theme(config, {}) as any);
+            let complections = staticConfig.map(i => i === 'DEFAULT'? prefix : `${prefix}-${i}`);
+            if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
+            staticCompletions = staticCompletions.concat(complections);
+            break;
+          case '${color}':
+            const colorConfig = flatColors(processor.theme(config, colors) as any);
+            for (const [k, v] of Object.entries(colorConfig)) {
+              const name = `${prefix}-${k}`;
+              colorCompletions.push({
+                label: name,
+                detail: processor.interpret(name).styleSheet.build(),
+                documentation: ['transparent', 'currentColor'].includes(v) ? v: `rgb(${hex2RGB(v)?.join(', ')})`,
               });
-              if (config in negative) {
-                dynamicCompletions.push({
-                  label: `-${utility}`,
-                  position: utility.length + 1 - mark,
-                });
-              }
-              break;
+            }
+            break;
+          default:
+            dynamicCompletions.push({
+              label: utility,
+              position: utility.length - mark,
+            });
+            if (config in negative) {
+              dynamicCompletions.push({
+                label: `-${utility}`,
+                position: utility.length + 1 - mark,
+              });
+            }
+            break;
           }
         }
       });
-    };
+    }
 
     return {
       processor,

@@ -1,16 +1,16 @@
-import { ExtensionContext, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from "vscode";
+import { ExtensionContext, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
 import { highlightCSS, isColor, getConfig } from '../utils';
 import { fileTypes } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
-const TRIGGERS = ['"', "'", ' ', ':', ''];
+const TRIGGERS = ['"', '\'', ' ', ':', ''];
 
 export async function registerCompletions(ctx: ExtensionContext, core: Core): Promise<void> {
   function createDisposables() {
     let disposables: Disposable[] = [];
-    if (!getConfig("windicss.enableCodeCompletion")) return;
+    if (!getConfig('windicss.enableCodeCompletion')) return;
     for (const { extension, patterns } of fileTypes) {
       patterns.forEach(pattern => {
         // class completion
@@ -24,41 +24,41 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
               .match(pattern.regex)?.[1]
               .split(pattern.splitCharacter) ?? [];
 
-            const staticCompletion = getConfig("windicss.enableUtilityCompletion") ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
+            const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
               item.documentation = highlightCSS(core.processor?.interpret(classItem).styleSheet.build());
               return item;
             }): [];
 
-            const variantsCompletion = getConfig("windicss.enableVariantCompletion") ? core.variantCompletions.map(({ label, documentation }) => {
+            const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }) => {
               const item = new CompletionItem(label, CompletionItemKind.Module);
               item.documentation = documentation;
               // trigger suggestion after select variant
               item.command = {
                 command: 'editor.action.triggerSuggest',
-                title: label
+                title: label,
               };
               return item;
             }): [];
 
-            const dynamicCompletion = getConfig("windicss.enableDynamicCompletion") ? core.dynamicCompletions.map(({ label, position }) => {
+            const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamicCompletions.map(({ label, position }) => {
               const item = new CompletionItem(label, CompletionItemKind.Variable);
               // item.documentation = highlightCSS(core.processor?.interpret())
               item.command = {
                 command: 'cursorMove',
                 arguments: [{
-                  to: "left",
+                  to: 'left',
                   select: true,
                   value: position,
                 }],
-                title: label
+                title: label,
               };
               return item;
             }): [];
 
-            const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation}, index) => {
+            const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation }, index) => {
               const color = new CompletionItem(label, CompletionItemKind.Color);
-              color.sortText = "-" + index.toString().padStart(8, "0");
+              color.sortText = '-' + index.toString().padStart(8, '0');
               color.detail = detail;
               color.documentation = documentation;
               return color;
@@ -69,18 +69,18 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
 
         }, ...TRIGGERS));
 
-        if (getConfig("windicss.enableHoverPreview")) {
+        if (getConfig('windicss.enableHoverPreview')) {
           disposables = disposables.concat(languages.registerHoverProvider(extension, {
             // hover class show css preview
             provideHover: (document, position, token) => {
               const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
               const style = core.processor?.interpret(word);
               if (style && style.ignored.length === 0) { return new Hover(highlightCSS(style.styleSheet.build()) ?? ''); }
-            }
+            },
           }));
         }
 
-        if (getConfig("windicss.enableColorDecorators")) {
+        if (getConfig('windicss.enableColorDecorators')) {
           disposables = disposables.concat(languages.registerColorProvider(extension, {
             // insert color before class
             provideDocumentColors: (document, token) => {
@@ -102,17 +102,17 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
                       }
                     });
                   }
-                };
+                }
               }
               return colors;
             },
             provideColorPresentations: (color, ctx, token) => {
               return [];
-            }
+            },
           }));
         }
       });
-    };
+    }
     ctx.subscriptions.push(...disposables);
   }
 

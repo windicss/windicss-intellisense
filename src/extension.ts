@@ -35,4 +35,5 @@ export async function activate(ctx: ExtensionContext) {
   console.log('Windi CSS Intellisense is now active!');
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export function deactivate() {}

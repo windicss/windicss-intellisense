@@ -1,16 +1,16 @@
 const classRegex = /class=["|']([.\w-+@!:/ ]*$)/;
 const classNameRegex = /className=["|']([.\w-+@:/ ]*$)/;
-const applyRegex = /@apply ([\.\w-+@:/ ]*$)/;
+const applyRegex = /@apply ([.\w-+@:/ ]*$)/;
 // const emmetRegex = /(?=\.)([\w-\. ]*$)/;
 
 const jsPatterns = [
   {
     regex: classRegex,
-    splitCharacter: ' '
+    splitCharacter: ' ',
   },
   {
     regex: classNameRegex,
-    splitCharacter: ' '
+    splitCharacter: ' ',
   },
   // {
   //   regex: emmetRegex,
@@ -21,7 +21,7 @@ const jsPatterns = [
 const htmlPatterns = [
   {
     regex: classRegex,
-    splitCharacter: ' '
+    splitCharacter: ' ',
   },
   // {
   //   regex: emmetRegex,
@@ -29,12 +29,12 @@ const htmlPatterns = [
   // }
 ];
 
-const stylesPatterns = [
-  {
-    regex: applyRegex,
-    splitCharacter: ' '
-  }
-];
+// const stylesPatterns = [
+//   {
+//     regex: applyRegex,
+//     splitCharacter: ' ',
+//   },
+// ];
 
 export const fileTypes: {
   extension: string;
@@ -45,30 +45,30 @@ export const fileTypes: {
 }[] = [
   {
     extension: 'javascript',
-    patterns: jsPatterns
+    patterns: jsPatterns,
   },
   {
     extension: 'javascriptreact',
-    patterns: jsPatterns
+    patterns: jsPatterns,
   },
   {
     extension: 'typescriptreact',
-    patterns: jsPatterns
+    patterns: jsPatterns,
   },
   {
     extension: 'html',
-    patterns: htmlPatterns
+    patterns: htmlPatterns,
   },
   {
     extension: 'php',
-    patterns: htmlPatterns
+    patterns: htmlPatterns,
   },
   {
     extension: 'vue',
-    patterns: htmlPatterns
+    patterns: htmlPatterns,
   },
   {
     extension: 'svelte',
-    patterns: htmlPatterns
-  }
+    patterns: htmlPatterns,
+  },
 ];
