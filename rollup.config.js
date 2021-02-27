@@ -5,9 +5,9 @@ import typescript from "@rollup/plugin-typescript";
 
 const outputDir = "./out";
 
-const isPublish = !!process.env.PUBLISH;
+const prod = process.env.NODE_ENV === 'production';
 
-const tsPlugin = isPublish
+const tsPlugin = prod
   ? typescript({
       target: "es5",
       include: "src/**",

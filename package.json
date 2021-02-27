@@ -171,7 +171,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "PUBLISH=true rollup -c",
+		"compile": "cross-env NODE_ENV=production rollup -c",
 		"build": "rollup -c",
 		"watch": "rollup -cw",
 		"pretest": "npm run compile && npm run lint",
@@ -188,6 +188,7 @@
 		"@types/vscode": "^1.53.0",
 		"@typescript-eslint/eslint-plugin": "^4.14.1",
 		"@typescript-eslint/parser": "^4.14.1",
+		"cross-env": "^7.0.3",
 		"eslint": "^7.19.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.2.1",
