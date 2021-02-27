@@ -1,5 +1,5 @@
-import type { Processor } from "windicss/lib";
-import type { MarkdownString } from "vscode";
+import type { Processor } from 'windicss/lib';
+import type { MarkdownString } from 'vscode';
 
 export type DictStr = { [key: string]: string };
 

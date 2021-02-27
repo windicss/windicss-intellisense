@@ -1,4 +1,3 @@
-
 import { decorateWithLength, decorateWithCount, connectList, getConfig } from '../utils';
 import { window, workspace } from 'vscode';
 import type { TextEditor, ExtensionContext, DecorationOptions } from 'vscode';
@@ -20,10 +19,10 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     if (!EDITOR) return;
     const document = EDITOR.document;
     for (const index of Array.from(Array(document.lineCount).keys())) {
-      if (getConfig("windicss.foldByLength")) {
-        DECORATIONS[index] = await decorateWithLength(index, document.lineAt(index).text, getConfig("windicss.foldLength"), getConfig("windicss.hiddenTextColor"), getConfig("windicss.hiddenText"));
+      if (getConfig('windicss.foldByLength')) {
+        DECORATIONS[index] = await decorateWithLength(index, document.lineAt(index).text, getConfig('windicss.foldLength'), getConfig('windicss.hiddenTextColor'), getConfig('windicss.hiddenText'));
       } else {
-        DECORATIONS[index] = await decorateWithCount(index, document.lineAt(index).text, getConfig("windicss.foldCount"), getConfig("windicss.hiddenTextColor"), getConfig("windicss.hiddenText"));
+        DECORATIONS[index] = await decorateWithCount(index, document.lineAt(index).text, getConfig('windicss.foldCount'), getConfig('windicss.hiddenTextColor'), getConfig('windicss.hiddenText'));
       }
     }
     EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS)));
@@ -35,7 +34,7 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS).filter((_, id) => id !== index)));
     if (PREVFOCUSLINE) DECORATIONS[PREVFOCUSLINE] = await decorateWithCount(PREVFOCUSLINE, EDITOR.document.lineAt(PREVFOCUSLINE).text); // update prev focus line
     PREVFOCUSLINE = index;
-  };
+  }
 
   async function _removeDecorations() {
     EDITOR = window.activeTextEditor;
@@ -44,13 +43,13 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     EDITOR.setDecorations(HIDETEXT, []);
   }
 
-  if (!getConfig("windicss.enableCodeFolding")) return;
+  if (!getConfig('windicss.enableCodeFolding')) return;
 
   window.visibleTextEditors.forEach(editor => {
     _createDecorations(editor);
   });
-  
-  window.onDidChangeTextEditorSelection(e => {
+
+  window.onDidChangeTextEditorSelection(() => {
     const editor = window.activeTextEditor;
     if (editor) _updateDecorations(editor);
   });
@@ -60,17 +59,17 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
       _updateDecorations(window.activeTextEditor);
   }, null, ctx.subscriptions);
 
-  window.onDidChangeActiveTextEditor(e => {
+  window.onDidChangeActiveTextEditor(() => {
     _createDecorations();
   }, null, ctx.subscriptions);
 
-  window.onDidChangeVisibleTextEditors(e => {
+  window.onDidChangeVisibleTextEditors(() => {
     const editor = window.activeTextEditor;
     if (editor) _updateDecorations(editor);
   });
 
   workspace.onDidChangeConfiguration(() => {
-    if (getConfig("windicss.enableCodeFolding") as boolean) {
+    if (getConfig('windicss.enableCodeFolding') as boolean) {
       _createDecorations();
     } else {
       _removeDecorations();

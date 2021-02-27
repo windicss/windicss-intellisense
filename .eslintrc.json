@@ -1,19 +1,34 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "rules": {
-        "@typescript-eslint/naming-convention": "warn",
-        "@typescript-eslint/semi": "warn",
-        "curly": "off",
-        "eqeqeq": "warn",
-        "no-throw-literal": "warn",
-        "semi": "off"
-    }
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "semi": [2, "always"],
+    "quotes": [2, "single"],
+    "comma-spacing": 2,
+    "indent": [2, 2],
+    "no-console": 1,
+    "no-constant-condition": 2,
+    "no-case-declarations": 1,
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "comma-dangle": [2, "always-multiline"],
+    "no-var": 2,
+    "eqeqeq": [2, "allow-null"],
+    "no-trailing-spaces": 2,
+    "arrow-spacing": 2,
+    "object-curly-spacing": [2, "always"]
+  }
 }

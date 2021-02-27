@@ -56,7 +56,7 @@ export async function decorateWithLength(index: number, line: string, length = 2
         after: {
           color,
           contentText: text,
-        }
+        },
       },
       hoverMessage: result.slice(length,),
     };
@@ -74,7 +74,7 @@ export async function decorateWithCount(index: number, line: string, count = 3, 
           after: {
             color,
             contentText: text,
-          }
+          },
         },
         hoverMessage: result.slice(classes[count].start,),
       });

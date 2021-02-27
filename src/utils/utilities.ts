@@ -1,37 +1,37 @@
 const utilities: { [key:string]: string[]} = {
   // Layout
   container: [
-    'container'
+    'container',
   ],
   objectPosition: [
-    'object-${static}'
+    'object-${static}',
   ],
   inset: [
     'inset-${static}',
     'inset-${float}',
     'inset-${fraction}',
     'inset-${size}',
-    
+
     'inset-y-${static}',
     'inset-y-${float}',
     'inset-y-${fraction}',
     'inset-y-${size}',
-    
+
     'inset-x-${static}',
     'inset-x-${float}',
     'inset-x-${fraction}',
     'inset-x-${size}',
-    
+
     'top-${static}',
     'top-${float}',
     'top-${fraction}',
     'top-${size}',
-  
+
     'right-${static}',
     'right-${float}',
     'right-${fraction}',
     'right-${size}',
-    
+
     'bottom-${static}',
     'bottom-${float}',
     'bottom-${fraction}',
@@ -58,40 +58,40 @@ const utilities: { [key:string]: string[]} = {
   ],
   order: [
     'order-${static}',
-    'order-${int}'
+    'order-${int}',
   ],
   // Grid
   gridTemplateColumns: [
     'grid-cols-${static}',
-    'grid-cols-${int}'
+    'grid-cols-${int}',
   ],
   gridTemplateRows: [
     'grid-rows-${static}',
-    'grid-rows-${int}'
+    'grid-rows-${int}',
   ],
   gridColumn: [
     'col-${static}',
-    'col-span-${int}'
+    'col-span-${int}',
   ],
   gridColumnEnd: [
     'col-end-${static}',
-    'col-end-${int}'
+    'col-end-${int}',
   ],
   gridColumnStart: [
     'col-start-${static}',
-    'col-start-${int}'
+    'col-start-${int}',
   ],
   gridRow: [
     'row-${static}',
-    'row-span-${int}'
+    'row-span-${int}',
   ],
   gridRowEnd: [
     'row-end-${static}',
-    'row-end-${int}'
+    'row-end-${int}',
   ],
   gridRowStart: [
     'row-start-${static}',
-    'row-start-${int}'
+    'row-start-${int}',
   ],
   gap: [
     'gap-${static}',
@@ -101,10 +101,10 @@ const utilities: { [key:string]: string[]} = {
     'gap-${float}',
     'gap-x-${float}',
     'gap-y-${float}',
-    
+
     'gap-${size}',
     'gap-x-${size}',
-    'gap-y-${size}'
+    'gap-y-${size}',
   ],
   // Box Alignment
   // Spacing
@@ -211,33 +211,33 @@ const utilities: { [key:string]: string[]} = {
   // Typography
   fontSize: [
     'text-${static}',
-    'text-${int}xl'
+    'text-${int}xl',
   ],
   textOpacity: [
     'text-opacity-${static}',
-    'text-opacity-${int<=100}'
+    'text-opacity-${int<=100}',
   ],
   textColor: [
-    'text-${color}'
+    'text-${color}',
   ],
   fontFamily: [
-    'font-${static}'
+    'font-${static}',
   ],
   fontWeight: [
     'font-${static}',
-    'font-${int}'
+    'font-${int}',
   ],
   letterSpacing: [
     'tracking-${static}',
-    'tracking-${size}'
+    'tracking-${size}',
   ],
   lineHeight: [
     'leading-${static}',
     'leading-${int}',
-    'leading-${size}'
+    'leading-${size}',
   ],
   listStyleType: [
-    'list-${static}'
+    'list-${static}',
   ],
   placeholderColor: [
     'placeholder-${color}',
@@ -255,18 +255,18 @@ const utilities: { [key:string]: string[]} = {
     'bg-opacity-${int<=100}',
   ],
   backgroundPosition: [
-    'bg-${static}'
+    'bg-${static}',
   ],
   backgroundSize: [
-    'bg-${static}'
+    'bg-${static}',
   ],
   backgroundImage: [
-    'bg-${static}'
+    'bg-${static}',
   ],
   gradientColorStops: [
     'from-${color}',
     'via-${color}',
-    'to-${color}'
+    'to-${color}',
   ],
   // Borders
   borderRadius: [
@@ -352,11 +352,11 @@ const utilities: { [key:string]: string[]} = {
   ],
   // Effects
   boxShadow: [
-    'shadow-${static}'
+    'shadow-${static}',
   ],
   opacity: [
     'opacity-${static}',
-    'opacity-${int<=100}'
+    'opacity-${int<=100}',
   ],
   transition: [
     'transition-${static}',
@@ -406,7 +406,7 @@ const utilities: { [key:string]: string[]} = {
     'skew-x-${static}',
     'skew-x-${float}',
     'skew-y-${static}',
-    'skew-y-${float}'
+    'skew-y-${float}',
   ],
   cursor: [
     'cursor-${static}',
@@ -461,13 +461,13 @@ const utilities: { [key:string]: string[]} = {
     'filter-${static}',
   ],
   backdropFilter: [
-    'backdrop-${static}'
+    'backdrop-${static}',
   ],
   blur: [
     'blur-${static}',
     'blur-${float}',
-    'blur-${size}'
-  ]  
+    'blur-${size}',
+  ],
 };
 
 const negative: { [key:string]: true} = {
@@ -479,7 +479,7 @@ const negative: { [key:string]: true} = {
   letterSpacing: true,
   rotate: true,
   translate: true,
-  skew: true
+  skew: true,
 };
 
 export { utilities, negative };
