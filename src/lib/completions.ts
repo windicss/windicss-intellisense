@@ -58,7 +58,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
 
             const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation}, index) => {
               const color = new CompletionItem(label, CompletionItemKind.Color);
-              color.sortText = "-" + index.toString().replace(/\d+/g, ('00000000' + index).substr(-8));
+              color.sortText = "-" + index.toString().padStart(8, "0");
               color.detail = detail;
               color.documentation = documentation;
               return color;
