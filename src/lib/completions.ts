@@ -20,10 +20,11 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             const range = new Range(new Position(position.line, 0), position);
             // Get text in current line
             const textInCurrentLine = document.getText(range);
+            const matchCursorIsInCorrectPosition = textInCurrentLine.match(pattern.regex)?.[1];
             const classesInCurrentLine = textInCurrentLine
               .match(pattern.regex)?.[1]
               .split(pattern.splitCharacter) ?? [];
-
+            if(matchCursorIsInCorrectPosition === undefined) { return; }
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
               item.documentation = highlightCSS(core.processor?.interpret(classItem).styleSheet.build());

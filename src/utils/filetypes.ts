@@ -23,6 +23,10 @@ const htmlPatterns = [
     regex: classRegex,
     splitCharacter: ' ',
   },
+  {
+    regex: applyRegex,
+    splitCharacter: ' ',
+  },
   // {
   //   regex: emmetRegex,
   //   splitCharacter: '.'
