@@ -56,8 +56,9 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
               return item;
             }): [];
 
-            const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation}) => {
+            const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation}, index) => {
               const color = new CompletionItem(label, CompletionItemKind.Color);
+              color.sortText = "-" + index.toString().padStart(8, "0");
               color.detail = detail;
               color.documentation = documentation;
               return color;
@@ -65,9 +66,9 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
 
             return [...variantsCompletion, ...colorsCompletion, ...staticCompletion, ...dynamicCompletion];
           },
-        
+
         }, ...TRIGGERS));
-        
+
         if (getConfig("windicss.enableHoverPreview")) {
           disposables = disposables.concat(languages.registerHoverProvider(extension, {
             // hover class show css preview
@@ -78,7 +79,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             }
           }));
         }
-        
+
         if (getConfig("windicss.enableColorDecorators")) {
           disposables = disposables.concat(languages.registerColorProvider(extension, {
             // insert color before class
@@ -89,7 +90,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
                 if (text.match(/class=["|']([.\w-+@: ]*)/)) {
                   const matched = text.match(/(?<=class=["|'])[^"']*/);
                   if (matched && matched.index) {
-                    const offset = matched.index; 
+                    const offset = matched.index;
                     const elements = new ClassParser(matched[0]).parse(false);
                     elements.forEach(element => {
                       if (typeof element.content === 'string') {
@@ -111,9 +112,9 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
           }));
         }
       });
-    }; 
+    };
     ctx.subscriptions.push(...disposables);
   }
-  
+
   createDisposables();
 }
