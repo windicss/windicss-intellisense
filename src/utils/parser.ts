@@ -6,7 +6,7 @@ export class HTMLParser {
   parseClasses(): { start: number; end: number; result: string }[] {
     // Match all class properties
     if (!this.html) return [];
-    const classRegex = /class\s*=\s*(["'])(?:(?=(\\?))\2.)*?\1/;
+    const classRegex = /[class|className]\s*=\s*(["'])(?:(?=(\\?))\2.)*?\1/;
     const quoteRegex = /["']/;
     const classNames = [];
     let _indexStart = 0;
