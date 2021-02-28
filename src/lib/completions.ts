@@ -20,11 +20,11 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             const range = new Range(new Position(position.line, 0), position);
             // Get text in current line
             const textInCurrentLine = document.getText(range);
-            const matchCursorIsInCorrectPosition = textInCurrentLine.match(pattern.regex)?.[1];
+            const matchCursorIsInCorrectPosition = textInCurrentLine.match(pattern.regex);
             const classesInCurrentLine = textInCurrentLine
               .match(pattern.regex)?.[1]
               .split(pattern.splitCharacter) ?? [];
-            if(matchCursorIsInCorrectPosition === undefined) { return; }
+            if(matchCursorIsInCorrectPosition === null) { return; }
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
               item.documentation = highlightCSS(core.processor?.interpret(classItem).styleSheet.build());
@@ -92,8 +92,8 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             const colors: ColorInformation[] = [];
             for (const line of Array.from(Array(document.lineCount).keys())) {
               const text = document.lineAt(line).text;
-              if (text.match(/[class|className]=["|']([.\w-+@: ]*)/)) {
-                const matched = text.match(/(?<=[class|className]=["|'])[^"']*/);
+              if (text.match(/[class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw]=["|']([.\w-+@: ]*)/)) {
+                const matched = text.match(/(?<=[class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw]=["|'])[^"']*/);
                 if (matched && matched.index) {
                   const offset = matched.index;
                   const elements = new ClassParser(matched[0]).parse(false);

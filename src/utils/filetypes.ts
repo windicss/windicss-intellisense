@@ -1,6 +1,7 @@
 const classRegex = /class=["|']([.\w-+@!:/ ]*$)/;
 const classNameRegex = /className=["|']([.\w-+@:/ ]*$)/;
 const applyRegex = /@apply ([.\w-+@:/ ]*$)/;
+const variantsRegex = /(dark|light|active|after|before|checked|disabled|focus|hover|tw)=["|']([.\w-+@!:/ ]*$)/;
 // const emmetRegex = /(?=\.)([\w-\. ]*$)/;
 
 const jsPatterns = [
@@ -36,6 +37,13 @@ const stylesPatterns = [
   },
 ];
 
+const attributePatterns = [
+  {
+    regex: variantsRegex,
+    splitCharacter: ' ',
+  },
+];
+
 export const fileTypes: {
   extension: string;
   patterns: {
@@ -57,7 +65,7 @@ export const fileTypes: {
   },
   {
     extension: 'html',
-    patterns: htmlPatterns.concat( stylesPatterns),
+    patterns: htmlPatterns.concat( stylesPatterns, attributePatterns),
   },
   {
     extension: 'php',
@@ -65,10 +73,10 @@ export const fileTypes: {
   },
   {
     extension: 'vue',
-    patterns: htmlPatterns.concat( stylesPatterns),
+    patterns: htmlPatterns.concat( stylesPatterns, attributePatterns),
   },
   {
     extension: 'svelte',
-    patterns: htmlPatterns.concat( stylesPatterns),
+    patterns: htmlPatterns.concat( stylesPatterns, attributePatterns),
   },
 ];
