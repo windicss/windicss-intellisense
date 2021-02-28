@@ -70,49 +70,52 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
 
         }, ...TRIGGERS));
 
-        if (getConfig('windicss.enableHoverPreview')) {
-          disposables = disposables.concat(languages.registerHoverProvider(extension, {
-            // hover class show css preview
-            provideHover: (document, position, token) => {
-              const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
-              const style = core.processor?.interpret(word);
-              if (style && style.ignored.length === 0) { return new Hover(highlightCSS(style.styleSheet.build()) ?? ''); }
-            },
-          }));
-        }
 
-        if (getConfig('windicss.enableColorDecorators')) {
-          disposables = disposables.concat(languages.registerColorProvider(extension, {
-            // insert color before class
-            provideDocumentColors: (document, token) => {
-              const colors: ColorInformation[] = [];
-              for (const line of Array.from(Array(document.lineCount).keys())) {
-                const text = document.lineAt(line).text;
-                if (text.match(/class=["|']([.\w-+@: ]*)/)) {
-                  const matched = text.match(/(?<=class=["|'])[^"']*/);
-                  if (matched && matched.index) {
-                    const offset = matched.index;
-                    const elements = new ClassParser(matched[0]).parse(false);
-                    elements.forEach(element => {
-                      if (typeof element.content === 'string') {
-                        const color = isColor(element.raw, core.colors);
-                        if (color) {
-                          const char = element.start + offset;
-                          colors.push(new ColorInformation(new Range(new Position(line, char), new Position(line, char + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
-                        }
+      });
+
+      // moved hover & color swatches out of patterns loop, to only calculcate them one time per file
+      if (getConfig('windicss.enableHoverPreview')) {
+        disposables = disposables.concat(languages.registerHoverProvider(extension, {
+          // hover class show css preview
+          provideHover: (document, position, token) => {
+            const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
+            const style = core.processor?.interpret(word);
+            if (style && style.ignored.length === 0) { return new Hover(highlightCSS(style.styleSheet.build()) ?? ''); }
+          },
+        }));
+      }
+
+      if (getConfig('windicss.enableColorDecorators')) {
+        disposables = disposables.concat(languages.registerColorProvider(extension, {
+          // insert color before class
+          provideDocumentColors: (document, token) => {
+            const colors: ColorInformation[] = [];
+            for (const line of Array.from(Array(document.lineCount).keys())) {
+              const text = document.lineAt(line).text;
+              if (text.match(/class=["|']([.\w-+@: ]*)/)) {
+                const matched = text.match(/(?<=class=["|'])[^"']*/);
+                if (matched && matched.index) {
+                  const offset = matched.index;
+                  const elements = new ClassParser(matched[0]).parse(false);
+                  elements.forEach(element => {
+                    if (typeof element.content === 'string') {
+                      const color = isColor(element.raw, core.colors);
+                      if (color) {
+                        const char = element.start + offset;
+                        colors.push(new ColorInformation(new Range(new Position(line, char), new Position(line, char + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                       }
-                    });
-                  }
+                    }
+                  });
                 }
               }
-              return colors;
-            },
-            provideColorPresentations: (color, ctx, token) => {
-              return [];
-            },
-          }));
-        }
-      });
+            }
+            return colors;
+          },
+          provideColorPresentations: (color, ctx, token) => {
+            return [];
+          },
+        }));
+      }
     }
     ctx.subscriptions.push(...disposables);
   }

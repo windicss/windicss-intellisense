@@ -23,22 +23,18 @@ const htmlPatterns = [
     regex: classRegex,
     splitCharacter: ' ',
   },
-  {
-    regex: applyRegex,
-    splitCharacter: ' ',
-  },
   // {
   //   regex: emmetRegex,
   //   splitCharacter: '.'
   // }
 ];
 
-// const stylesPatterns = [
-//   {
-//     regex: applyRegex,
-//     splitCharacter: ' ',
-//   },
-// ];
+const stylesPatterns = [
+  {
+    regex: applyRegex,
+    splitCharacter: ' ',
+  },
+];
 
 export const fileTypes: {
   extension: string;
@@ -61,7 +57,7 @@ export const fileTypes: {
   },
   {
     extension: 'html',
-    patterns: htmlPatterns,
+    patterns: htmlPatterns.concat( stylesPatterns),
   },
   {
     extension: 'php',
@@ -69,10 +65,10 @@ export const fileTypes: {
   },
   {
     extension: 'vue',
-    patterns: htmlPatterns,
+    patterns: htmlPatterns.concat( stylesPatterns),
   },
   {
     extension: 'svelte',
-    patterns: htmlPatterns,
+    patterns: htmlPatterns.concat( stylesPatterns),
   },
 ];
