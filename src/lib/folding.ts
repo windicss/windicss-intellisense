@@ -8,6 +8,7 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
   let DECORATIONS: { [key:number]: DecorationOptions[] } = {};
 
   let PREVFOCUSLINE = 0;
+  let PREVCOUNT = 0;
 
   const HIDETEXT = window.createTextEditorDecorationType({
     textDecoration: 'none; display: none;',
@@ -25,14 +26,21 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
         DECORATIONS[index] = await decorateWithCount(index, document.lineAt(index).text, getConfig('windicss.foldCount'), getConfig('windicss.hiddenTextColor'), getConfig('windicss.hiddenText'));
       }
     }
+    PREVCOUNT = EDITOR.document.lineCount;
     EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS)));
   }
 
   async function _updateDecorations(editor: TextEditor) {
     EDITOR = editor;
     const index = EDITOR.document.lineAt(EDITOR.selection.active).lineNumber;
-    EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS).filter((_, id) => id !== index)));
-    if (PREVFOCUSLINE) DECORATIONS[PREVFOCUSLINE] = await decorateWithCount(PREVFOCUSLINE, EDITOR.document.lineAt(PREVFOCUSLINE).text); // update prev focus line
+    const count = EDITOR.document.lineCount;
+    if (count === PREVCOUNT) {
+      EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS).filter((_, id) => id !== index)));
+      if (PREVFOCUSLINE) DECORATIONS[PREVFOCUSLINE] = await decorateWithCount(PREVFOCUSLINE, EDITOR.document.lineAt(PREVFOCUSLINE).text); // update prev focus line
+    } else {
+      _createDecorations(editor);
+    }
+    PREVCOUNT = count;
     PREVFOCUSLINE = index;
   }
 
