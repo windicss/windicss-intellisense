@@ -204,6 +204,6 @@
     "tslib": "^2.1.0",
     "typescript": "^4.1.3",
     "vscode-test": "^1.5.0",
-    "windicss": "^2.2.0"
+    "windicss": "^2.2.2"
   }
 }
