@@ -3,9 +3,10 @@ import { HTMLParser } from '../utils/parser';
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { StyleSheet } from 'windicss/utils/style';
+import { workspace } from 'vscode';
 import type { ExtensionContext } from 'vscode';
 import type { Core } from '../interfaces';
-import { sortClassNames, toggleConfig } from '../utils';
+import { getConfig, sortClassNames, toggleConfig } from '../utils';
 
 export function registerCommands(ctx: ExtensionContext, core: Core): void {
   ctx.subscriptions.push(
@@ -49,24 +50,26 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
     commands.registerTextEditorCommand('windicss.sort', (textEditor, textEdit) => {
       const text = textEditor.document.getText();
       const parser = new HTMLParser(text);
-      const outputHTML: string[] = [];
-
-      let indexStart = 0;
 
       const classes = parser.parseClasses();
       const variants = Object.keys(core.processor?.resolveVariants() ?? {});
       const variantsMap = Object.assign({}, ...variants.map((value, index) => ({ [value]: index + 1 })));
 
       for (const p of classes) {
-        outputHTML.push(text.substring(indexStart, p.start));
-        outputHTML.push(sortClassNames(p.result, variantsMap));
-        indexStart = p.end;
+        const sortedP = sortClassNames(p.result, variantsMap);
+        textEdit.replace(new Range(textEditor.document.positionAt(p.start), textEditor.document.positionAt(p.end)), sortedP);
       }
-      outputHTML.push(text.substring(indexStart));
-
-      textEdit.replace(new Range(new Position(0, 0), textEditor.document.lineAt(textEditor.document.lineCount-1).range.end), outputHTML.join(''));
     })
   );
+
+  // if runOnSave is enabled in settings, trigger command on file save
+  if(getConfig('windicss.runOnSave')) {
+    ctx.subscriptions.push(
+      workspace.onWillSaveTextDocument((_e) => {
+        commands.executeCommand('windicss.sort');
+      })
+    );
+  }
 
   ctx.subscriptions.push(
     commands.registerCommand('windicss.toggle-folding', () => toggleConfig('windicss.enableCodeFolding'))

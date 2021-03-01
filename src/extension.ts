@@ -32,6 +32,7 @@ export async function activate(ctx: ExtensionContext) {
   registerCompletions(ctx, CORE);
   registerCodeFolding(ctx);
   registerCommands(ctx, CORE);
+
   console.log('Windi CSS Intellisense is now active!');
 }
 
