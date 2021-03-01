@@ -92,8 +92,8 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             const colors: ColorInformation[] = [];
             for (const line of Array.from(Array(document.lineCount).keys())) {
               const text = document.lineAt(line).text;
-              if (text.match(/[class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw]=["|']([.\w-+@: ]*)/)) {
-                const matched = text.match(/(?<=[class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw]=["|'])[^"']*/);
+              if (text.match(/(class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw)=["|']([.\w-+@: ]*)/)) {
+                const matched = text.match(/(?<=(class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw)=["|'])[^"']*/);
                 if (matched && matched.index) {
                   const offset = matched.index;
                   const elements = new ClassParser(matched[0]).parse(false);
