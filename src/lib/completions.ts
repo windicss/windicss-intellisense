@@ -1,7 +1,7 @@
 import { ExtensionContext, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
 import { highlightCSS, isColor, getConfig } from '../utils';
 import { fileTypes } from '../utils/filetypes';
-import { ClassParser } from 'windicss/utils/parser';
+import { HTMLParser, ClassParser } from 'windicss/utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
@@ -90,22 +90,18 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
           // insert color before class
           provideDocumentColors: (document, token) => {
             const colors: ColorInformation[] = [];
-            for (const line of Array.from(Array(document.lineCount).keys())) {
-              const text = document.lineAt(line).text;
-              if (text.match(/(class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw)=["|']([.\w-+@: ]*)/)) {
-                const matched = text.match(/(?<=(class|className|dark|light|active|after|before|checked|disabled|focus|hover|tw)=["|'])[^"']*/);
-                if (matched && matched.index) {
-                  const offset = matched.index;
-                  const elements = new ClassParser(matched[0]).parse(false);
-                  elements.forEach(element => {
-                    if (typeof element.content === 'string') {
-                      const color = isColor(element.raw, core.colors);
-                      if (color) {
-                        const char = element.start + offset;
-                        colors.push(new ColorInformation(new Range(new Position(line, char), new Position(line, char + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
-                      }
-                    }
-                  });
+            // try one time update instead of line
+            const documentText = document.getText();
+            const parser = new HTMLParser(documentText);
+            const classes = parser.parseClasses();
+            if (classes) {
+              for (const c of classes) {
+                const elements = new ClassParser(c.result).parse(false);
+                for (const element of elements) {
+                  const color = isColor(element.raw, core.colors);
+                  if(color) {
+                    colors.push(new ColorInformation(new Range(document.positionAt(c.start+element.start), document.positionAt(c.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                  }
                 }
               }
             }
