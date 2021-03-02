@@ -7,13 +7,21 @@ import type { Core } from '../interfaces';
 
 export async function init():Promise<Core> {
   try {
-    const files = await workspace.findFiles('{tailwind,windi}.config.js', '**​/node_modules/**');
+    const files = await workspace.findFiles('{tailwind,windi}.config.{js,ts}', '**​/node_modules/**');
     let configFile;
+    let config;
     if (files[0]) {
-      configFile = resolve(files[0].fsPath);
+      configFile = files[0].fsPath;
+      if (configFile.endsWith('.ts')) {
+        require('esbuild-register');
+        delete require.cache[require.resolve(configFile)];
+        config = require(configFile);
+        if (config.default) config = config.default;
+      } else {
+        config = resolve(configFile);
+      }
       console.log(`Loading Config File: ${configFile}`);
     }
-    const config = configFile? require(configFile) : undefined;
     const processor = new Processor(config);
     const colors = flatColors(processor.theme('colors') as {[key:string]:string|{[key:string]:string}});
     const variants = processor.resolveVariants();

@@ -31,10 +31,10 @@ export default [
         sourcemap: true,
       }
     ],
-    external: ['vscode'],
+    external: ['vscode', 'windicss/lib', 'windicss/utils/style',  'windicss/utils/parser', 'esbuild-register'],
     plugins: [
       tsPlugin,
-      resolve()
+      resolve(),
     ]
   }
 ];
