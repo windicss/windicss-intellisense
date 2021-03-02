@@ -65,6 +65,7 @@ Built-in commands, one-key operation.
 | `windicss.foldLength`              | number  | 25       | Used by foldByLength                                         |
 | `windicss.hiddenText`              | string  | ` ...`   | Placeholder used when folding code.                          |
 | `windicss.hiddenTextColor`         | string  | \#AED0A4 | Placeholder Color.                                           |
+| `windicss.runOnSave`         | boolean  | true | Runs class sorting on file save.                                           |
 
 ## For more information
 
