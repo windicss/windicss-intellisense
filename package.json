@@ -207,7 +207,6 @@
     "eslint": "^7.19.0",
     "glob": "^7.1.6",
     "mocha": "^8.2.1",
-    "require-from-string": "^2.0.2",
     "rollup": "^2.39.0",
     "sucrase": "^3.17.1",
     "tslib": "^2.1.0",
