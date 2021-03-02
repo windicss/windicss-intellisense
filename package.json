@@ -136,6 +136,11 @@
           "default": true,
           "description": "Enable Dynamic Utilities Completion like p-${int}."
         },
+        "windicss.enableRemToPxPreview": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable rem to px preview."
+        },
         "windicss.enableCodeFolding": {
           "type": "boolean",
           "default": true,
