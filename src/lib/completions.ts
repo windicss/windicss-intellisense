@@ -1,5 +1,5 @@
 import { ExtensionContext, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
-import { highlightCSS, isColor, getConfig } from '../utils';
+import { highlightCSS, isColor, getConfig, rem2px } from '../utils';
 import { fileTypes } from '../utils/filetypes';
 import { HTMLParser, ClassParser } from 'windicss/utils/parser';
 import type { Core } from '../interfaces';
@@ -27,7 +27,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             if(matchCursorIsInCorrectPosition === null) { return; }
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
-              item.documentation = highlightCSS(core.processor?.interpret(classItem).styleSheet.build());
+              item.documentation = highlightCSS(rem2px(core.processor?.interpret(classItem).styleSheet.build()));
               return item;
             }): [];
 
@@ -80,7 +80,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
           provideHover: (document, position, token) => {
             const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
             const style = core.processor?.interpret(word);
-            if (style && style.ignored.length === 0) { return new Hover(highlightCSS(style.styleSheet.build()) ?? ''); }
+            if (style && style.ignored.length === 0) { return new Hover(highlightCSS(rem2px(style.styleSheet.build())) ?? ''); }
           },
         }));
       }
