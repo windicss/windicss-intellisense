@@ -6,7 +6,7 @@ import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
-const TRIGGERS = ['"', '\'', ' ', ':', ''];
+const TRIGGERS = ['"', '\'', ' ', ':'];
 
 export async function registerCompletions(ctx: ExtensionContext, core: Core): Promise<void> {
   function createDisposables() {

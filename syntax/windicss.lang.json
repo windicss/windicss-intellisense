@@ -28,7 +28,7 @@
 			"name": "keyword.variant.windicss"
 		},
 		"utility": {
-			"match": "(\\w|-)+?",
+			"match": "(\\w|-|\\.)+?",
 			"name": "constant.numeric.windicss"
 		},
 		"important": {
