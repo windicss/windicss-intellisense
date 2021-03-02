@@ -26,15 +26,17 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
               .match(pattern.regex)?.[1]
               .split(pattern.splitCharacter) ?? [];
             if(matchCursorIsInCorrectPosition === null) { return; }
-            const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
+            const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map((classItem, index) => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
+              item.sortText = '1-' + index.toString().padStart(8, '0');
               item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(classItem).styleSheet.build()) : core.processor?.interpret(classItem).styleSheet.build());
               return item;
             }): [];
 
-            const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }) => {
+            const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
               const item = new CompletionItem(label, CompletionItemKind.Module);
               item.documentation = documentation;
+              item.sortText = '2-' + index.toString().padStart(8, '0');
               // trigger suggestion after select variant
               item.command = {
                 command: 'editor.action.triggerSuggest',
@@ -43,9 +45,10 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
               return item;
             }): [];
 
-            const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamicCompletions.map(({ label, position }) => {
+            const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamicCompletions.map(({ label, position }, index) => {
               const item = new CompletionItem(label, CompletionItemKind.Variable);
               // item.documentation = highlightCSS(core.processor?.interpret())
+              item.sortText = '3-' + index.toString().padStart(8, '0');
               item.command = {
                 command: 'cursorMove',
                 arguments: [{
@@ -60,7 +63,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
 
             const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation }, index) => {
               const color = new CompletionItem(label, CompletionItemKind.Color);
-              color.sortText = '-' + index.toString().padStart(8, '0');
+              color.sortText = '0-' + index.toString().padStart(8, '0');
               color.detail = detail;
               color.documentation = documentation;
               return color;
