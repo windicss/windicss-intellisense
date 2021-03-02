@@ -51,10 +51,10 @@ const utilities: { [key:string]: string[]} = {
     'flex-${static}',
   ],
   flexGrow: [
-    'flex-${static}',
+    'flex-grow-${static}',
   ],
   flexShrink: [
-    'flex-${static}',
+    'flex-shrink-${static}',
   ],
   order: [
     'order-${static}',
