@@ -1,7 +1,8 @@
 import { ExtensionContext, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
 import { highlightCSS, isColor, getConfig } from '../utils';
 import { fileTypes } from '../utils/filetypes';
-import { HTMLParser, ClassParser } from 'windicss/utils/parser';
+import { ClassParser } from 'windicss/utils/parser';
+import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
