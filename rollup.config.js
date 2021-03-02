@@ -31,7 +31,7 @@ export default [
         sourcemap: true,
       }
     ],
-    external: ['vscode', 'windicss/lib', 'windicss/utils/style',  'windicss/utils/parser', 'esbuild-register'],
+    external: ['vscode', 'esbuild-register'],
     plugins: [
       tsPlugin,
       resolve(),
