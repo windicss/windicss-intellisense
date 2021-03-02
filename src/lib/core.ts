@@ -1,8 +1,11 @@
 import { workspace } from 'vscode';
+import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
 import { flatColors, hex2RGB, highlightCSS } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
+import { transform } from 'sucrase';
+import requireFromString from 'require-from-string';
 import type { Core } from '../interfaces';
 
 export async function init():Promise<Core> {
@@ -13,10 +16,8 @@ export async function init():Promise<Core> {
     if (files[0]) {
       configFile = files[0].fsPath;
       if (configFile.endsWith('.ts')) {
-        require('esbuild-register');
-        delete require.cache[require.resolve(configFile)];
-        config = require(configFile);
-        if (config.default) config = config.default;
+        const code = await transform(readFileSync(configFile).toString('utf-8'), { transforms: ['typescript', 'imports'] }).code;
+        config = requireFromString(code).default;
       } else {
         config = require(resolve(configFile));
       }

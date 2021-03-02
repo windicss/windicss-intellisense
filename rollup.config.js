@@ -1,4 +1,5 @@
 import path from "path";
+import commonjs from '@rollup/plugin-commonjs';
 import resolve from "@rollup/plugin-node-resolve";
 import sucrase from "@rollup/plugin-sucrase";
 import typescript from "@rollup/plugin-typescript";
@@ -21,6 +22,11 @@ const tsPlugin = prod
 
 const dump = (file) => path.join(outputDir, file);
 
+const onwarn = warning => {
+  // Silence circular dependency warning for sucrase
+  if (warning.code === 'CIRCULAR_DEPENDENCY' && !warning.importer.indexOf(path.normalize('node_modules/sucrase'))) return;
+}
+
 export default [
   {
     input: 'src/extension.ts',
@@ -31,10 +37,12 @@ export default [
         sourcemap: true,
       }
     ],
-    external: ['vscode', 'esbuild-register'],
+    external: ['vscode'],
     plugins: [
       tsPlugin,
       resolve(),
-    ]
+      commonjs()
+    ],
+    onwarn
   }
-];
+]

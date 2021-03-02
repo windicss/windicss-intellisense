@@ -9,6 +9,7 @@
 		],
 		"sourceMap": true,
 		"rootDir": ".",
+    "allowSyntheticDefaultImports": true,
 		"strict": true
 	},
 	"include": ["./src"],
