@@ -191,6 +191,7 @@
     "release": "bumpp --tag --commit --push"
   },
   "dependencies": {
+    "esbuild": "^0.8.54",
     "esbuild-register": "^2.0.0"
   },
   "devDependencies": {
