@@ -34,7 +34,7 @@ export function registerCodeFolding(ctx: ExtensionContext): void {
     EDITOR = editor;
     const index = EDITOR.document.lineAt(EDITOR.selection.active).lineNumber;
     const count = EDITOR.document.lineCount;
-    if (count === PREVCOUNT) {
+    if (Math.abs(count - PREVCOUNT) <= 1) {
       EDITOR.setDecorations(HIDETEXT, connectList(Object.values(DECORATIONS).filter((_, id) => id !== index)));
       if (PREVFOCUSLINE) DECORATIONS[PREVFOCUSLINE] = await decorateWithCount(PREVFOCUSLINE, EDITOR.document.lineAt(PREVFOCUSLINE).text); // update prev focus line
     } else {

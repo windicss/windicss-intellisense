@@ -43,8 +43,8 @@ export async function init():Promise<Core> {
           switch(suffix) {
           case '${static}':
             const staticConfig = Object.keys(processor.theme(config, {}) as any);
-            let complections = staticConfig.map(i => i === 'DEFAULT'? prefix : `${prefix}-${i}`);
-            if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
+            const complections = staticConfig.map(i => i === 'DEFAULT'? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`);
+            // if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
             staticCompletions = staticCompletions.concat(complections);
             break;
           case '${color}':
