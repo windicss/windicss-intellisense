@@ -28,7 +28,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
             if(matchCursorIsInCorrectPosition === null) { return; }
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map(classItem => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
-              item.documentation = highlightCSS(rem2px(core.processor?.interpret(classItem).styleSheet.build()));
+              item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(classItem).styleSheet.build()) : core.processor?.interpret(classItem).styleSheet.build());
               return item;
             }): [];
 
@@ -81,7 +81,7 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
           provideHover: (document, position, token) => {
             const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
             const style = core.processor?.interpret(word);
-            if (style && style.ignored.length === 0) { return new Hover(highlightCSS(rem2px(style.styleSheet.build())) ?? ''); }
+            if (style && style.ignored.length === 0) { return new Hover(highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(style.styleSheet.build()): style.styleSheet.build()) ?? ''); }
           },
         }));
       }
