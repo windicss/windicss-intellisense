@@ -89,7 +89,8 @@ export function sortClassNames(classNames: string, variantsMap: {[key:string]: n
     const head = variants.join(':') + ':';
     const utility = raw.replace(head, '');
     const key = utility.match(/\w+/);
-    const offset =  variants.map(i => variantsMap[i] * 100).reduce((p, c) => p + c, 0) + (important ? 500: 0);
+    const hasDynamicValue = utility.match(/\d+/);
+    const offset =  variants.map(i => variantsMap[i] * 100).reduce((p, c) => p + c, 0) + (important ? 500: 0) + (hasDynamicValue ? 25 : 0);
     if (key === null) return { raw, weight: offset };
     return { raw, weight: (keyOrder[key[0]] ?? 300 ) + offset };
   }).sort((a, b) => a.weight - b.weight).map(i => i.raw).join(' ');
