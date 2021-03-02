@@ -63,7 +63,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
   );
 
   // if runOnSave is enabled in settings, trigger command on file save
-  if(getConfig('windicss.runOnSave')) {
+  if(getConfig('windicss.sortOnSave')) {
     ctx.subscriptions.push(
       workspace.onWillSaveTextDocument((_e) => {
         commands.executeCommand('windicss.sort');

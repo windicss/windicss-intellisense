@@ -171,9 +171,9 @@
           "default": "#AED0A4",
           "description": "Placeholder Color"
         },
-        "windicss.runOnSave": {
+        "windicss.sortOnSave": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "A flag that controls whether or not Windi CSS classes will be sorted on save on save."
         }
       }

@@ -18,7 +18,7 @@ export async function init():Promise<Core> {
         config = require(configFile);
         if (config.default) config = config.default;
       } else {
-        config = resolve(configFile);
+        config = require(resolve(configFile));
       }
       console.log(`Loading Config File: ${configFile}`);
     }
