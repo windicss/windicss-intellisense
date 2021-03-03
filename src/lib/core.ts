@@ -8,7 +8,7 @@ import type { Core } from '../interfaces';
 
 export async function init():Promise<Core> {
   try {
-    const files = await workspace.findFiles('{tailwind,windi}.config.{js,ts}', '**​/node_modules/**');
+    const files = await workspace.findFiles('{tailwind,windi}.config.{js,cjs,ts}', '**​/node_modules/**');
     let configFile;
     let config;
     if (files[0]) {

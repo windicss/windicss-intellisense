@@ -11,7 +11,7 @@ let CORE: Core = { colors: {}, variantCompletions: [], staticCompletions: [], co
 export async function activate(ctx: ExtensionContext) {
 
   CORE = await init();
-  const fileSystemWatcher = workspace.createFileSystemWatcher('**/{tailwind,windi}.config.{js,ts}');
+  const fileSystemWatcher = workspace.createFileSystemWatcher('**/{tailwind,windi}.config.{js,cjs,ts}');
 
   // Changes configuration should invalidate above cache
   fileSystemWatcher.onDidChange(async () => {
