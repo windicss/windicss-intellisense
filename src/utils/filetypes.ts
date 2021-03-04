@@ -56,6 +56,14 @@ export const fileTypes: {
     patterns: stylesPatterns,
   },
   {
+    extension: 'sass',
+    patterns: stylesPatterns,
+  },
+  {
+    extension: 'less',
+    patterns: stylesPatterns,
+  },
+  {
     extension: 'javascript',
     patterns: jsPatterns,
   },
