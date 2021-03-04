@@ -52,6 +52,10 @@ export const fileTypes: {
   }[];
 }[] = [
   {
+    extension: 'css',
+    patterns: stylesPatterns,
+  },
+  {
     extension: 'javascript',
     patterns: jsPatterns,
   },
