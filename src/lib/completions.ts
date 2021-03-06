@@ -1,4 +1,4 @@
-import { ExtensionContext, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
+import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
 import { highlightCSS, isColor, getConfig, rem2px } from '../utils';
 import { fileTypes } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
@@ -6,6 +6,8 @@ import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
+
+let DISPOSABLES: Disposable[] = [];
 const TRIGGERS = ['"', '\'', ' ', ':'];
 
 export async function registerCompletions(ctx: ExtensionContext, core: Core): Promise<void> {
@@ -118,7 +120,14 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
       }
     }
     ctx.subscriptions.push(...disposables);
+    return disposables;
   }
 
-  createDisposables();
+  DISPOSABLES.forEach(i => i.dispose());
+  DISPOSABLES = createDisposables() ?? [];
+
+  workspace.onDidChangeConfiguration(() => {
+    DISPOSABLES.forEach(i => i.dispose());
+    DISPOSABLES = createDisposables() ?? [];
+  }, null, ctx.subscriptions);
 }

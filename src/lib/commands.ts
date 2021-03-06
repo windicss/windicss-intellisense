@@ -78,28 +78,24 @@ export function registerCommands(ctx: ExtensionContext, core: Core): void {
   ctx.subscriptions.push(
     commands.registerCommand('windicss.toggle-decorators', () => {
       toggleConfig('windicss.enableColorDecorators');
-      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 
   ctx.subscriptions.push(
     commands.registerCommand('windicss.toggle-preview', () => {
       toggleConfig('windicss.enableHoverPreview');
-      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 
   ctx.subscriptions.push(
     commands.registerCommand('windicss.toggle-completion', () => {
       toggleConfig('windicss.enableCodeCompletion');
-      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 
   ctx.subscriptions.push(
     commands.registerCommand('windicss.toggle-dynamic-completion', () => {
       toggleConfig('enableDynamicCompletion');
-      commands.executeCommand('workbench.action.reloadWindow');
     })
   );
 }
