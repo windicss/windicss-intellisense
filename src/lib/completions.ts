@@ -6,11 +6,10 @@ import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
-
 let DISPOSABLES: Disposable[] = [];
 const TRIGGERS = ['"', '\'', ' ', ':'];
 
-export async function registerCompletions(ctx: ExtensionContext, core: Core): Promise<void> {
+export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
   function createDisposables() {
     let disposables: Disposable[] = [];
     if (!getConfig('windicss.enableCodeCompletion')) return;
@@ -123,11 +122,11 @@ export async function registerCompletions(ctx: ExtensionContext, core: Core): Pr
     return disposables;
   }
 
-  DISPOSABLES.forEach(i => i.dispose());
-  DISPOSABLES = createDisposables() ?? [];
-
   workspace.onDidChangeConfiguration(() => {
     DISPOSABLES.forEach(i => i.dispose());
     DISPOSABLES = createDisposables() ?? [];
   }, null, ctx.subscriptions);
+
+  DISPOSABLES = createDisposables() ?? [];
+  return DISPOSABLES;
 }

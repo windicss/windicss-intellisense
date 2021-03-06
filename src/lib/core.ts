@@ -15,9 +15,11 @@ export async function init():Promise<Core> {
       configFile = files[0].fsPath;
       if (configFile.endsWith('.ts')) {
         registerTS();
+        delete require.cache[require.resolve(configFile)];
         const mod = require(configFile);
         if (mod.default) config = mod.default;
       } else {
+        delete require.cache[require.resolve(resolve(configFile))];
         config = require(resolve(configFile));
       }
       console.log(`Loading Config File: ${configFile}`);
