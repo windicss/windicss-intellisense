@@ -70,6 +70,6 @@ Built-in commands, one-key operation.
 ## For more information
 
 * [Windi CSS](https://github.com/windicss/windicss)
-* [Documentation](https://windicss.netlify.app/)
+* [Documentation](https://windicss.org)
 * [Discussions](https://github.com/windicss/windicss/discussions)
 * [Issues](https://github.com/windicss/windicss-intellisense/issues)
