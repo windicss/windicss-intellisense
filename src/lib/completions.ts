@@ -7,9 +7,9 @@ import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
 let DISPOSABLES: Disposable[] = [];
-const TRIGGERS = ['"', '\'', ' ', ':', '('];
 
 export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
+  const TRIGGERS = ['"', '\'', ' ', (core.processor?.config('separator') ?? ':') as string, '('];
   function createDisposables() {
     let disposables: Disposable[] = [];
     if (!getConfig('windicss.enableCodeCompletion')) return;
@@ -83,7 +83,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         disposables = disposables.concat(languages.registerHoverProvider(extension, {
           // hover class show css preview
           provideHover: (document, position, token) => {
-            const word = document.getText(document.getWordRangeAtPosition(position, /[\w-:+.@!/]+/));
+            const word = document.getText(document.getWordRangeAtPosition(position, /[^\s()'"`]+/));
             const style = core.processor?.interpret(word);
             if (style && style.ignored.length === 0) { return new Hover(highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(style.styleSheet.build()): style.styleSheet.build()) ?? ''); }
           },

@@ -26,6 +26,7 @@ export async function init():Promise<Core> {
       Log.info(`Loading Config File: ${configFile}`);
     }
     const processor = new Processor(config);
+    const separator = processor.config('separator', ':') as string;
     const colors = flatColors(processor.theme('colors') as {[key:string]:string|{[key:string]:string}});
     const variants = processor.resolveVariants();
     const staticUtilities = processor.resolveStaticUtilities(true);
@@ -34,7 +35,7 @@ export async function init():Promise<Core> {
       const style = variants[variant]();
       style.selector = '&';
       return {
-        label: variant + ':',
+        label: variant + separator,
         documentation: highlightCSS(style.build().replace('{\n  & {}\n}', '{\n  ...\n}').replace('{}', '{\n  ...\n}')),
       };
     });
