@@ -5,6 +5,7 @@ import { flatColors, hex2RGB, highlightCSS } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
 import { registerTS } from 'sucrase/dist/register';
 import type { Core } from '../interfaces';
+import { Log } from '../utils/Log';
 
 export async function init():Promise<Core> {
   try {
@@ -22,7 +23,7 @@ export async function init():Promise<Core> {
         delete require.cache[require.resolve(resolve(configFile))];
         config = require(resolve(configFile));
       }
-      console.log(`Loading Config File: ${configFile}`);
+      Log.info(`Loading Config File: ${configFile}`);
     }
     const processor = new Processor(config);
     const colors = flatColors(processor.theme('colors') as {[key:string]:string|{[key:string]:string}});
@@ -94,7 +95,7 @@ export async function init():Promise<Core> {
       dynamicCompletions,
     };
   } catch (error) {
-    console.log(error);
+    Log.error(error);
     return { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
   }
 }

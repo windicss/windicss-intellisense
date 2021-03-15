@@ -5,6 +5,7 @@ import { init } from './lib/core';
 import { workspace } from 'vscode';
 import type { Core } from './interfaces';
 import type { Disposable, ExtensionContext } from 'vscode';
+import { Log } from './utils/Log';
 
 let CORE: Core = { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
 let DISPOSABLES: Disposable[] = [];
@@ -23,7 +24,7 @@ export async function activate(ctx: ExtensionContext) {
   registerCodeFolding(ctx);
   DISPOSABLES = [...registerCompletions(ctx, CORE), ...registerCommands(ctx, CORE)];
 
-  console.log('Windi CSS Intellisense is now active!');
+  Log.info('Windi CSS Intellisense is now active!');
 
   // Changes configuration should invalidate above cache
   fileSystemWatcher.onDidChange(onUpdate);
