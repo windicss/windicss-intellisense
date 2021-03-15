@@ -7,7 +7,7 @@ import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
 let DISPOSABLES: Disposable[] = [];
-const TRIGGERS = ['"', '\'', ' ', ':'];
+const TRIGGERS = ['"', '\'', ' ', ':', '('];
 
 export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
   function createDisposables() {

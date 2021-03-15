@@ -1,7 +1,7 @@
-const classRegex = /class=["|']([.\w-+@!:/ (]*$)/;
-const classNameRegex = /className=["|']([.\w-+@:!/ (]*$)/;
-const applyRegex = /@apply ([.\w-+@:/ ]*$)/;
-const variantsRegex = /(dark|light|active|after|before|checked|disabled|focus|hover|tw)=["|']([.\w-+@!:/ (]*$)/;
+const classRegex = /class=["|']([.\w-+@!:/ ()]*$)/;
+const classNameRegex = /className=["|']([.\w-+@:!/ ()]*$)/;
+const applyRegex = /@apply ([.\w-+@:/ ()]*$)/;
+const variantsRegex = /(dark|light|active|after|before|checked|disabled|focus|hover|tw)=["|']([.\w-+@!:/ ()]*$)/;
 // const emmetRegex = /(?=\.)([\w-\. ]*$)/;
 
 const jsPatterns = [

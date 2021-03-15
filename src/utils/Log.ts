@@ -1,5 +1,5 @@
-import { OutputChannel, window } from "vscode";
-import { EXT_NAME } from "../meta";
+import { OutputChannel, window } from 'vscode';
+import { EXT_NAME } from '../meta';
 
 export class Log {
   private static _channel: OutputChannel;
@@ -10,11 +10,11 @@ export class Log {
   }
 
   static raw(...values: any[]) {
-    this.outputChannel.appendLine(values.map((i) => i.toString()).join(" "));
+    this.outputChannel.appendLine(values.map((i) => i.toString()).join(' '));
   }
 
   static info(message: string, intend = 0) {
-    this.outputChannel.appendLine(`${"\t".repeat(intend)}${message}`);
+    this.outputChannel.appendLine(`${'\t'.repeat(intend)}${message}`);
   }
 
   static warning(message: string, prompt = false, intend = 0) {
@@ -27,13 +27,13 @@ export class Log {
     prompt = true,
     intend = 0
   ) {
-    if (typeof err !== "string")
+    if (typeof err !== 'string')
       Log.info(`🐛 ERROR: ${err.name}: ${err.message}\n${err.stack}`, intend);
 
     if (prompt) {
-      const openOutputButton = "Error Log";
+      const openOutputButton = 'Error Log';
       const message =
-        typeof err === "string" ? err : `${EXT_NAME} Error: ${err.toString()}`;
+        typeof err === 'string' ? err : `${EXT_NAME} Error: ${err.toString()}`;
 
       const result = await window.showErrorMessage(message, openOutputButton);
       if (result === openOutputButton) this.show();
@@ -45,6 +45,6 @@ export class Log {
   }
 
   static divider() {
-    this.outputChannel.appendLine("\n――――――\n");
+    this.outputChannel.appendLine('\n――――――\n');
   }
 }
