@@ -23,7 +23,7 @@ export async function init():Promise<Core> {
         delete require.cache[require.resolve(resolve(configFile))];
         config = require(resolve(configFile));
       }
-      Log.info(`Loading Config File: ${configFile}`)
+      Log.info(`Loading Config File: ${configFile}`);
     }
     const processor = new Processor(config);
     const colors = flatColors(processor.theme('colors') as {[key:string]:string|{[key:string]:string}});

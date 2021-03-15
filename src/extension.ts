@@ -24,7 +24,7 @@ export async function activate(ctx: ExtensionContext) {
   registerCodeFolding(ctx);
   DISPOSABLES = [...registerCompletions(ctx, CORE), ...registerCommands(ctx, CORE)];
 
-  Log.info('Windi CSS Intellisense is now active!')
+  Log.info('Windi CSS Intellisense is now active!');
 
   // Changes configuration should invalidate above cache
   fileSystemWatcher.onDidChange(onUpdate);
