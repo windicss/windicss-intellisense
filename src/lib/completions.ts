@@ -103,10 +103,14 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               for (const c of classes) {
                 const elements = new ClassParser(c.result).parse(false);
                 for (const element of elements) {
-                  const color = isColor(element.raw, core.colors);
-                  if(color) {
-                    colors.push(new ColorInformation(new Range(document.positionAt(c.start+element.start), document.positionAt(c.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                  if (element.type === 'group' && Array.isArray(element.content)) {
+                    for (const e of element.content) {
+                      const color = isColor(e.raw, core.colors);
+                      if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+e.start), document.positionAt(c.start+e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                    }
                   }
+                  const color = isColor(element.raw, core.colors);
+                  if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+element.start), document.positionAt(c.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                 }
               }
             }
