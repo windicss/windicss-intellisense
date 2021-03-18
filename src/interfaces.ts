@@ -1,7 +1,7 @@
 import type { Processor } from 'windicss/lib';
 import type { MarkdownString } from 'vscode';
 
-export type DictStr = { [key: string]: string };
+export type DictStr = { [key: string]: string | string[] };
 
 export type DeepNestDictStr = { [key:string]: string | DeepNestDictStr };
 

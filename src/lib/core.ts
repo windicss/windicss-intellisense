@@ -1,7 +1,8 @@
 import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
-import { flatColors, hex2RGB, highlightCSS } from '../utils';
+import { flatColors } from 'windicss/utils';
+import { hex2RGB, highlightCSS } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
 import { registerTS } from 'sucrase/dist/register';
 import type { Core } from '../interfaces';
@@ -63,10 +64,11 @@ export async function init():Promise<Core> {
             const colorConfig = flatColors(processor.theme(config, colors) as any);
             for (const [k, v] of Object.entries(colorConfig)) {
               const name = `${prefix}-${k}`;
+              const color = Array.isArray(v) ? v[0] : v;
               colorCompletions.push({
                 label: name,
                 detail: processor.interpret(name).styleSheet.build(),
-                documentation: ['transparent', 'currentColor'].includes(v) ? v: `rgb(${hex2RGB(v)?.join(', ')})`,
+                documentation: ['transparent', 'currentColor'].includes(color) ? color: `rgb(${hex2RGB(color)?.join(', ')})`,
               });
             }
             break;

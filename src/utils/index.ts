@@ -2,7 +2,6 @@ import { ClassParser } from 'windicss/utils/parser';
 import { workspace, MarkdownString, Range, Position, DecorationOptions } from 'vscode';
 import { HTMLParser } from './parser';
 import { keyOrder } from './order';
-import type { DeepNestDictStr, DictStr } from '../interfaces';
 
 export function highlightCSS(css?:string): MarkdownString | undefined {
   if (css) {
@@ -10,22 +9,10 @@ export function highlightCSS(css?:string): MarkdownString | undefined {
   }
 }
 
-export function flatColors(colors: DeepNestDictStr, head?: string): DictStr {
-  let flatten: { [ key:string ]: string } = {};
-  for (const [key, value] of Object.entries(colors)) {
-    if (typeof value === 'string') {
-      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}`: key] = value;
-    } else {
-      flatten = { ...flatten, ...flatColors(value, head ? `${head}-${key}`: key) };
-    }
-  }
-  return flatten;
-}
-
-export function isColor(className:string, colors: {[key:string]:string}): number[] | undefined {
+export function isColor(className:string, colors: {[key:string]:string | string[]}): number[] | undefined {
   for (const [key, value] of Object.entries(colors)) {
     if (className.endsWith('-' + key)) {
-      return hex2RGB(value);
+      return hex2RGB(Array.isArray(value) ? value[0]: value);
     }
   }
 }
