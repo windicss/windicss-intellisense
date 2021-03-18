@@ -52,44 +52,44 @@ export const fileTypes: {
     splitCharacter: string;
   }[];
 }[] = [
-    {
-      extension: 'css',
-      patterns: stylesPatterns,
-    },
-    {
-      extension: 'sass',
-      patterns: stylesPatterns,
-    },
-    {
-      extension: 'less',
-      patterns: stylesPatterns,
-    },
-    {
-      extension: 'javascript',
-      patterns: jsPatterns,
-    },
-    {
-      extension: 'javascriptreact',
-      patterns: jsPatterns,
-    },
-    {
-      extension: 'typescriptreact',
-      patterns: jsPatterns,
-    },
-    {
-      extension: 'html',
-      patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
-    },
-    {
-      extension: 'php',
-      patterns: htmlPatterns,
-    },
-    {
-      extension: 'vue',
-      patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
-    },
-    {
-      extension: 'svelte',
-      patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
-    },
-  ];
+  {
+    extension: 'css',
+    patterns: stylesPatterns,
+  },
+  {
+    extension: 'sass',
+    patterns: stylesPatterns,
+  },
+  {
+    extension: 'less',
+    patterns: stylesPatterns,
+  },
+  {
+    extension: 'javascript',
+    patterns: jsPatterns,
+  },
+  {
+    extension: 'javascriptreact',
+    patterns: jsPatterns,
+  },
+  {
+    extension: 'typescriptreact',
+    patterns: jsPatterns,
+  },
+  {
+    extension: 'html',
+    patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
+  },
+  {
+    extension: 'php',
+    patterns: htmlPatterns,
+  },
+  {
+    extension: 'vue',
+    patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
+  },
+  {
+    extension: 'svelte',
+    patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
+  },
+];
