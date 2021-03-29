@@ -38,6 +38,8 @@ Preview color and spectrum.
 
 ### Code Folding
 
+> disabled by default, activate with "windicss.enableCodeFolding"
+
 Fold overly long classes to increase readability.
 
 <img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/highlight.png" alt="Code Folding"/>
@@ -59,7 +61,7 @@ Built-in commands, one-key operation.
 | `windicss.enableVariantCompletion` | boolean | true     | Enable Variant Completion.                                   |
 | `windicss.enableDynamicCompletion` | boolean | true     | Enable Dynamic Utilities Completion like p-${int}.           |
 | `windicss.enableRemToPxPreview`    | boolean | true     | Enable Rem to Px Preview.                                    |
-| `windicss.enableCodeFolding`       | boolean | true     | Enable ClassNames Code Folding.                              |
+| `windicss.enableCodeFolding`       | boolean | false     | Enable ClassNames Code Folding.                              |
 | `windicss.foldByLength`            | boolean | false    | Folding code by length. Default option is false, will fold by utility count. |
 | `windicss.foldCount`               | number  | 3        | Used by foldByCount.                                         |
 | `windicss.foldLength`              | number  | 25       | Used by foldByLength                                         |

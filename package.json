@@ -143,18 +143,18 @@
         },
         "windicss.enableCodeFolding": {
           "type": "boolean",
-          "default": true,
-          "description": "Enable ClassNames Code Folding."
-        },
-        "windicss.foldByLength": {
-          "type": "boolean",
           "default": false,
-          "description": "Folding code by length. Default option is false, will fold by utility count."
+          "description": "Enable ClassNames Code Folding."
         },
         "windicss.foldCount": {
           "type": "number",
           "default": 3,
           "description": "Used by foldByCount."
+        },
+        "windicss.foldByLength": {
+          "type": "boolean",
+          "default": false,
+          "description": "Folding code by length. Default option is false, will fold by utility count."
         },
         "windicss.foldLength": {
           "type": "number",
