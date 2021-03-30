@@ -217,6 +217,6 @@
     "typescript": "^4.2.3",
     "vscode-test": "^1.5.2",
     "windicss": "^2.5.8",
-    "windicss-analysis": "^0.0.12"
+    "windicss-analysis": "^0.0.13"
   }
 }
