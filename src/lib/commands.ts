@@ -109,10 +109,9 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           'WindiCSS Analysis', // Title of the panel displayed to the user
           ViewColumn.Two, // Editor column to show the new webview panel in.
           {
-            // Enable scripts in the webview
             enableScripts: true,
             retainContextWhenHidden: true,
-          } // Webview options. More on these later.
+          }
         );
 
         let fileName = 'windicss-analysis-result.json'
