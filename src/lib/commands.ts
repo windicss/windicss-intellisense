@@ -1,13 +1,11 @@
-import { commands, Range, Position } from 'vscode';
+import { commands, Range, Position, workspace, ViewColumn, window, Uri } from 'vscode';
 import { HTMLParser } from '../utils/parser';
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { StyleSheet } from 'windicss/utils/style';
-import { workspace } from 'vscode';
 import { getConfig, sortClassNames, toggleConfig } from '../utils';
-import type { ExtensionContext } from 'vscode';
+import type { ExtensionContext, Disposable } from 'vscode';
 import type { Core } from '../interfaces';
-import type { Disposable } from 'vscode';
 
 let DISPOSABLES: Disposable[] = [];
 
@@ -45,8 +43,8 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
         }
         outputHTML.push(text.substring(indexStart));
 
-        const utilities =  outputCSS.reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet()).combine();
-        textEdit.replace(new Range(new Position(0, 0), textEditor.document.lineAt(textEditor.document.lineCount-1).range.end), outputHTML.join(''));
+        const utilities = outputCSS.reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet()).combine();
+        textEdit.replace(new Range(new Position(0, 0), textEditor.document.lineAt(textEditor.document.lineCount - 1).range.end), outputHTML.join(''));
         writeFileSync(join(dirname(textEditor.document.uri.fsPath), 'windi.css'), [preflights.build(), utilities.build()].join('\n'));
       })
     );
@@ -68,7 +66,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
     );
 
     // if runOnSave is enabled in settings, trigger command on file save
-    if(getConfig('windicss.sortOnSave')) {
+    if (getConfig('windicss.sortOnSave')) {
       disposables.push(
         workspace.onWillSaveTextDocument((_e) => {
           commands.executeCommand('windicss.sort');
@@ -101,6 +99,49 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
     disposables.push(
       commands.registerCommand('windicss.toggle-dynamic-completion', () => {
         toggleConfig('enableDynamicCompletion');
+      })
+    );
+
+    disposables.push(
+      commands.registerCommand('windicss.analysis', async () => {
+        const panel = window.createWebviewPanel(
+          'windicss', // Identifies the type of the webview. Used internally
+          'WindiCSS Analysis', // Title of the panel displayed to the user
+          ViewColumn.Two, // Editor column to show the new webview panel in.
+          {
+            // Enable scripts in the webview
+            enableScripts: true,
+            retainContextWhenHidden: true,
+          } // Webview options. More on these later.
+        );
+
+        let fileName = 'windicss-analysis-result.json'
+        let windicssAnalysisReturn = await require("windicss-analysis").runAnalysis({ root: workspace.workspaceFolders![0].uri.fsPath });
+        writeFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), JSON.stringify(windicssAnalysisReturn, null, 2), "utf-8")
+
+        // ASSESTS of Extension
+        const stylePath = Uri.file(
+          join(ctx.extensionPath, "media/index.css")
+        );
+        let styleSrc = panel.webview.asWebviewUri(stylePath)
+        const scriptPath = Uri.file(
+          join(ctx.extensionPath, "media/index.js")
+        );
+        let scriptSrc = panel.webview.asWebviewUri(scriptPath)
+
+        // REPORT JSON in Workspace
+        let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
+        let reportString = JSON.stringify(report)
+        // HTML INJECTION
+        const htmlPath = join(ctx.extensionPath, "media/index.html")
+        let html = readFileSync(htmlPath, "utf-8").toString()
+        html = html.replace("\"###REPLACEJSON###\"", reportString)
+        html = html.replace("\"###REPLACEJS###\"", styleSrc.toString())
+        html = html.replace("\"###REPLACECSS###\"", scriptSrc.toString())
+        panel.webview.html = html
+        console.log(html)
+        // let reportJSON = JSON.stringify(windicssAnalysisReturn)
+
       })
     );
 

@@ -38,4 +38,4 @@ export async function activate(ctx: ExtensionContext) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export function deactivate() {}
+export function deactivate() { }

@@ -10,15 +10,15 @@ const prod = process.env.NODE_ENV === 'production';
 
 const tsPlugin = prod
   ? typescript({
-      target: "es5",
-      include: "src/**",
-      outDir: outputDir,
-      typescript: require("typescript"),
-    })
+    target: "es5",
+    include: "src/**",
+    outDir: outputDir,
+    typescript: require("typescript"),
+  })
   : sucrase({
-      exclude: ['node_modules/**'],
-      transforms: ["typescript"],
-    });
+    exclude: ['node_modules/**'],
+    transforms: ["typescript"],
+  });
 
 const dump = (file) => path.join(outputDir, file);
 
@@ -37,7 +37,7 @@ export default [
         sourcemap: true,
       }
     ],
-    external: ['vscode'],
+    external: ['vscode', "windicss-analysis"],
     plugins: [
       tsPlugin,
       resolve(),
