@@ -2,6 +2,7 @@ import path from "path";
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from "@rollup/plugin-node-resolve";
 import sucrase from "@rollup/plugin-sucrase";
+import json from "@rollup/plugin-json";
 import typescript from "@rollup/plugin-typescript";
 
 const outputDir = "./out";
@@ -39,6 +40,7 @@ export default [
     ],
     external: ['vscode'],
     plugins: [
+      json(),
       tsPlugin,
       resolve(),
       commonjs()

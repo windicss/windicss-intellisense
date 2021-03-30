@@ -124,6 +124,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           // REPORT JSON in Workspace
           let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
           let reportString = JSON.stringify(report)
+
           // HTML INJECTION
           const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
           let html = readFileSync(htmlPath, "utf-8").toString()
@@ -134,7 +135,6 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           )
           panel.webview.html = html
           // console.log(html)
-          // let reportJSON = JSON.stringify(windicssAnalysisReturn)
         } catch (error) {
           Log.error(error)
         }
