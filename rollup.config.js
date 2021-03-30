@@ -37,7 +37,7 @@ export default [
         sourcemap: true,
       }
     ],
-    external: ['vscode', "windicss-analysis"],
+    external: ['vscode'],
     plugins: [
       tsPlugin,
       resolve(),

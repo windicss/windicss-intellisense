@@ -3,7 +3,9 @@ import { HTMLParser } from '../utils/parser';
 import { writeFileSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { StyleSheet } from 'windicss/utils/style';
+import { Log } from '../utils/Log';
 import { getConfig, sortClassNames, toggleConfig } from '../utils';
+import { runAnalysis } from "windicss-analysis";
 import type { ExtensionContext, Disposable } from 'vscode';
 import type { Core } from '../interfaces';
 
@@ -104,34 +106,39 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
 
     disposables.push(
       commands.registerCommand('windicss.analysis', async () => {
-        const panel = window.createWebviewPanel(
-          'windicss', // Identifies the type of the webview. Used internally
-          'WindiCSS Analysis', // Title of the panel displayed to the user
-          ViewColumn.Two, // Editor column to show the new webview panel in.
-          {
-            enableScripts: true,
-            retainContextWhenHidden: true,
-          }
-        );
+        try {
+          const panel = window.createWebviewPanel(
+            'windicss', // Identifies the type of the webview. Used internally
+            'WindiCSS Analysis', // Title of the panel displayed to the user
+            ViewColumn.Two, // Editor column to show the new webview panel in.
+            {
+              enableScripts: true,
+              retainContextWhenHidden: true,
+            }
+          );
 
-        let fileName = 'windicss-analysis-result.json'
-        let windicssAnalysisReturn = await require("windicss-analysis").runAnalysis({ root: workspace.workspaceFolders![0].uri.fsPath });
-        writeFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), JSON.stringify(windicssAnalysisReturn.result, null, 2), "utf-8")
+          let fileName = 'windicss-analysis-result.json'
+          let windicssAnalysisReturn = await runAnalysis({ root: workspace.workspaceFolders![0].uri.fsPath });
+          writeFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), JSON.stringify(windicssAnalysisReturn.result, null, 2), "utf-8")
 
-        // REPORT JSON in Workspace
-        let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
-        let reportString = JSON.stringify(report)
-        // HTML INJECTION
-        const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
-        let html = readFileSync(htmlPath, "utf-8").toString()
-        html = html.replace("<head>", "<head><script>window.__windicss_analysis_serverless = true;window.__windicss_analysis_report = " + report + ";</script>")
-        html = html.replace(
-          /(src|href)="([^h]*?)"/g,
-          (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
-        )
-        panel.webview.html = html
-        console.log(html)
-        // let reportJSON = JSON.stringify(windicssAnalysisReturn)
+          // REPORT JSON in Workspace
+          let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
+          let reportString = JSON.stringify(report)
+          // HTML INJECTION
+          const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
+          let html = readFileSync(htmlPath, "utf-8").toString()
+          html = html.replace("<head>", "<head><script>window.__windicss_analysis_serverless = true;window.__windicss_analysis_report = " + report + ";</script>")
+          html = html.replace(
+            /(src|href)="([^h]*?)"/g,
+            (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
+          )
+          panel.webview.html = html
+          // console.log(html)
+          // let reportJSON = JSON.stringify(windicssAnalysisReturn)
+        } catch (error) {
+          Log.error(error)
+        }
+
 
       })
     );
