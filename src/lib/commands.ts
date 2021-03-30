@@ -118,7 +118,10 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           );
 
           let fileName = 'windicss-analysis-result.json'
-          let windicssAnalysisReturn = await runAnalysis({ root: workspace.workspaceFolders![0].uri.fsPath });
+          let windicssAnalysisReturn = await runAnalysis(
+            { root: workspace.workspaceFolders![0].uri.fsPath },
+            { interpretUtilities: true }
+          );
           writeFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), JSON.stringify(windicssAnalysisReturn.result, null, 2), "utf-8")
 
           // REPORT JSON in Workspace
