@@ -116,27 +116,19 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
 
         let fileName = 'windicss-analysis-result.json'
         let windicssAnalysisReturn = await require("windicss-analysis").runAnalysis({ root: workspace.workspaceFolders![0].uri.fsPath });
-        writeFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), JSON.stringify(windicssAnalysisReturn, null, 2), "utf-8")
-
-        // ASSESTS of Extension
-        const stylePath = Uri.file(
-          join(ctx.extensionPath, "media/index.css")
-        );
-        let styleSrc = panel.webview.asWebviewUri(stylePath)
-        const scriptPath = Uri.file(
-          join(ctx.extensionPath, "media/index.js")
-        );
-        let scriptSrc = panel.webview.asWebviewUri(scriptPath)
+        writeFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), JSON.stringify(windicssAnalysisReturn.result, null, 2), "utf-8")
 
         // REPORT JSON in Workspace
         let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
         let reportString = JSON.stringify(report)
         // HTML INJECTION
-        const htmlPath = join(ctx.extensionPath, "media/index.html")
+        const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
         let html = readFileSync(htmlPath, "utf-8").toString()
-        html = html.replace("\"###REPLACEJSON###\"", reportString)
-        html = html.replace("\"###REPLACEJS###\"", styleSrc.toString())
-        html = html.replace("\"###REPLACECSS###\"", scriptSrc.toString())
+        html = html.replace("<head>", "<head><script>window.__windicss_analysis_serverless = true;window.__windicss_analysis_report = " + report + ";</script>")
+        html = html.replace(
+          /(src|href)="([^h]*?)"/g,
+          (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
+        )
         panel.webview.html = html
         console.log(html)
         // let reportJSON = JSON.stringify(windicssAnalysisReturn)
