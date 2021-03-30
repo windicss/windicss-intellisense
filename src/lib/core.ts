@@ -28,7 +28,7 @@ export async function init():Promise<Core> {
     }
     const processor = new Processor(config);
     const separator = processor.config('separator', ':') as string;
-    const colors = flatColors(processor.theme('colors') as {[key:string]:string|{[key:string]:string}});
+    const colors = flatColors(processor.theme('colors') as Record<string, any>);
     const variants = processor.resolveVariants();
     const staticUtilities = processor.resolveStaticUtilities(true);
 
