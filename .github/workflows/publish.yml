@@ -18,12 +18,12 @@ jobs:
       - run: npm install -g vsce
       - run: npm ci
       - run: vsce package
+      - run: npx conventional-github-releaser -p angular
+        env:
+          CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - run: vsce publish -p ${{secrets.VSCE_TOKEN}}
         env:
           VSCE_TOKEN: ${{secrets.VSCE_TOKEN}}
       - run: npx ovsx publish -p ${{secrets.OVSX_TOKEN}}
         env:
           OVSX_TOKEN: ${{secrets.OVSX_TOKEN}}
-      - run: npx conventional-github-releaser -p angular
-        env:
-          CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
