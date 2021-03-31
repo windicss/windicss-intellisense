@@ -1,13 +1,13 @@
-import { commands, Range, Position } from 'vscode';
+import { commands, Range, Position, workspace, ViewColumn, window, Uri } from 'vscode';
 import { HTMLParser } from '../utils/parser';
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { StyleSheet } from 'windicss/utils/style';
-import { workspace } from 'vscode';
+import { Log } from '../utils/Log';
 import { getConfig, sortClassNames, toggleConfig } from '../utils';
-import type { ExtensionContext } from 'vscode';
+import { runAnalysis } from "windicss-analysis";
+import type { ExtensionContext, Disposable } from 'vscode';
 import type { Core } from '../interfaces';
-import type { Disposable } from 'vscode';
 
 let DISPOSABLES: Disposable[] = [];
 
@@ -45,8 +45,8 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
         }
         outputHTML.push(text.substring(indexStart));
 
-        const utilities =  outputCSS.reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet()).combine();
-        textEdit.replace(new Range(new Position(0, 0), textEditor.document.lineAt(textEditor.document.lineCount-1).range.end), outputHTML.join(''));
+        const utilities = outputCSS.reduce((previousValue, currentValue) => previousValue.extend(currentValue), new StyleSheet()).combine();
+        textEdit.replace(new Range(new Position(0, 0), textEditor.document.lineAt(textEditor.document.lineCount - 1).range.end), outputHTML.join(''));
         writeFileSync(join(dirname(textEditor.document.uri.fsPath), 'windi.css'), [preflights.build(), utilities.build()].join('\n'));
       })
     );
@@ -68,7 +68,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
     );
 
     // if runOnSave is enabled in settings, trigger command on file save
-    if(getConfig('windicss.sortOnSave')) {
+    if (getConfig('windicss.sortOnSave')) {
       disposables.push(
         workspace.onWillSaveTextDocument((_e) => {
           commands.executeCommand('windicss.sort');
@@ -101,6 +101,61 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
     disposables.push(
       commands.registerCommand('windicss.toggle-dynamic-completion', () => {
         toggleConfig('enableDynamicCompletion');
+      })
+    );
+
+    disposables.push(
+      commands.registerCommand('windicss.run-analysis', async () => {
+        try {
+          const panel = window.createWebviewPanel(
+            'windicss', // Identifies the type of the webview. Used internally
+            'WindiCSS Analysis', // Title of the panel displayed to the user
+            ViewColumn.Two, // Editor column to show the new webview panel in.
+            {
+              enableScripts: true,
+              retainContextWhenHidden: true,
+            }
+          );
+
+          // let fileName = 'windicss-analysis-result.json'
+          const { result } = await runAnalysis(
+            {
+              root: workspace.workspaceFolders![0].uri.fsPath,
+            },
+            { interpretUtilities: true },
+          )
+
+          // CHECK VSCode Theme Color
+          let isDark = true
+          const theme = workspace.getConfiguration()
+            .get('workbench.colorTheme', '')
+
+          // must be dark
+          if (theme.match(/dark|black/i) != null) {
+            isDark = true
+          }
+          // must be light
+          if (theme.match(/light/i) != null) {
+            isDark = false
+          }
+          // HTML INJECTION
+          const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
+          let html = readFileSync(htmlPath, "utf-8").toString()
+          const headScript = `
+          localStorage.setItem('vueuse-color-scheme', ${isDark ? "'dark'" : "'light'"});
+          window.__windicss_analysis_static = true;
+          window.__windicss_analysis_report = ${JSON.stringify(result)}
+          `
+          html = html.replace('<head>', `<head><script>${headScript}</script>`)
+          html = html.replace(
+            /(src|href)="([^h]*?)"/g,
+            (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
+          )
+          panel.webview.html = html
+          // console.log(html)
+        } catch (error) {
+          Log.error(error)
+        }
       })
     );
 
