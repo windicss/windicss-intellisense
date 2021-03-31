@@ -163,7 +163,7 @@
         },
         "windicss.hiddenText": {
           "type": "string",
-          "default": " ...",
+          "default": "...",
           "description": "Placeholder used when folding code."
         },
         "windicss.hiddenTextColor": {
