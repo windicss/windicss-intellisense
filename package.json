@@ -85,9 +85,14 @@
         "title": "Toggle Dynamic Utilities Completion"
       },
       {
-        "command": "windicss.analysis",
+        "command": "windicss.run-analysis",
         "category": "Windi CSS",
-        "title": "Open Analysis"
+        "title": "Run & Open Analysis"
+      },
+      {
+        "command": "windicss.open-analysis",
+        "category": "Windi CSS",
+        "title": "Open & Show existing Analysis"
       }
     ],
     "grammars": [
@@ -220,6 +225,6 @@
     "windicss": "^2.5.8"
   },
   "dependencies": {
-    "windicss-analysis": "^0.0.15"
+    "windicss-analysis": "^0.0.17"
   }
 }
