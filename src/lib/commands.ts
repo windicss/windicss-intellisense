@@ -126,7 +126,6 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
 
           // REPORT JSON in Workspace
           let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
-          let reportString = JSON.stringify(report)
 
           // CHECK VSCode Theme Color
           let isDark = true
@@ -145,18 +144,15 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
           let html = readFileSync(htmlPath, "utf-8").toString()
           const headScript = `
-          window.__windicss_analysis_static = true
-          window.__windicss_analysis_report = ${report}
+          localStorage.setItem('vueuse-color-scheme', ${isDark ? "'dark'" : "'light'"});
+          window.__windicss_analysis_static = true;
+          window.__windicss_analysis_report = ${report};
           `
           html = html.replace('<head>', `<head><script>${headScript}</script>`)
           html = html.replace(
             /(src|href)="([^h]*?)"/g,
             (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
           )
-          if (isDark) {
-            html = html.replace("<html", '<html class="dark"')
-            console.log(html);
-          }
           panel.webview.html = html
           // console.log(html)
         } catch (error) {
@@ -181,7 +177,6 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
 
           // REPORT JSON in Workspace
           let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
-          let reportString = JSON.stringify(report)
 
           // CHECK VSCode Theme Color
           let isDark = true
@@ -201,18 +196,15 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
           let html = readFileSync(htmlPath, "utf-8").toString()
           const headScript = `
-          window.__windicss_analysis_static = true
-          window.__windicss_analysis_report = ${report}
+          localStorage.setItem('vueuse-color-scheme', ${isDark ? "'dark'" : "'light'"});
+          window.__windicss_analysis_static = true;
+          window.__windicss_analysis_report = ${report};
           `
           html = html.replace('<head>', `<head><script>${headScript}</script>`)
           html = html.replace(
             /(src|href)="([^h]*?)"/g,
             (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
           )
-          if (isDark) {
-            html = html.replace("<html", '<html class="dark"')
-            console.log(html);
-          }
           panel.webview.html = html
         } catch (error) {
           Log.error(error)
