@@ -117,15 +117,13 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
             }
           );
 
-          let fileName = 'windicss-analysis-result.json'
-          let windicssAnalysisReturn = await runAnalysis(
-            { root: workspace.workspaceFolders![0].uri.fsPath },
-            { interpretUtilities: true }
-          );
-          writeFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), JSON.stringify(windicssAnalysisReturn.result, null, 2), "utf-8")
-
-          // REPORT JSON in Workspace
-          let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
+          // let fileName = 'windicss-analysis-result.json'
+          const { result } = await runAnalysis(
+            {
+              root: workspace.workspaceFolders![0].uri.fsPath,
+            },
+            { interpretUtilities: true },
+          )
 
           // CHECK VSCode Theme Color
           let isDark = true
@@ -146,7 +144,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           const headScript = `
           localStorage.setItem('vueuse-color-scheme', ${isDark ? "'dark'" : "'light'"});
           window.__windicss_analysis_static = true;
-          window.__windicss_analysis_report = ${report};
+          window.__windicss_analysis_report = ${JSON.stringify(result)}
           `
           html = html.replace('<head>', `<head><script>${headScript}</script>`)
           html = html.replace(
