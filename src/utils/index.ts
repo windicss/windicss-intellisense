@@ -3,16 +3,16 @@ import { workspace, MarkdownString, Range, Position, DecorationOptions } from 'v
 import { HTMLParser } from './parser';
 import { keyOrder } from './order';
 
-export function highlightCSS(css?:string): MarkdownString | undefined {
+export function highlightCSS(css?: string): MarkdownString | undefined {
   if (css) {
     return new MarkdownString(`\`\`\`css\n${css}\n\`\`\``);
   }
 }
 
-export function isColor(className:string, colors: {[key:string]:string | string[]}): number[] | undefined {
+export function isColor(className: string, colors: { [key: string]: string | string[] }): number[] | undefined {
   for (const [key, value] of Object.entries(colors)) {
     if (className.endsWith('-' + key)) {
-      return hex2RGB(Array.isArray(value) ? value[0]: value);
+      return hex2RGB(Array.isArray(value) ? value[0] : value);
     }
   }
 }
@@ -36,7 +36,7 @@ export function connectList<T>(list: T[][]) {
 }
 
 export async function decorateWithLength(index: number, line: string, length = 25, color = '#AED0A4', text = '...') {
-  return await new HTMLParser(line).parseClasses().filter(({ result }) => result.length > length).map(({ start, end, result }) => {
+  return new HTMLParser(line).parseClasses().filter(({ result }) => result.length > length).map(({ start, end, result }) => {
     return {
       range: new Range(new Position(index, start + length), new Position(index, end)),
       renderOptions: {
@@ -52,11 +52,11 @@ export async function decorateWithLength(index: number, line: string, length = 2
 
 export async function decorateWithCount(index: number, line: string, count = 3, color = '#AED0A4', text = ' ...') {
   const decorations: DecorationOptions[] = [];
-  await new HTMLParser(line).parseClasses().forEach(({ start, end, result }) => {
+  new HTMLParser(line).parseClasses().forEach(({ start, end, result }) => {
     const classes = new ClassParser(result).parse();
     if (classes[count]) {
       decorations.push({
-        range: new Range(new Position(index, start + classes[count].start - 1), new Position(index, end)),
+        range: new Range(new Position(index, start + classes[count].start), new Position(index, end)),
         renderOptions: {
           after: {
             color,
@@ -70,16 +70,16 @@ export async function decorateWithCount(index: number, line: string, count = 3, 
   return decorations;
 }
 
-export function sortClassNames(classNames: string, variantsMap: {[key:string]: number}) {
+export function sortClassNames(classNames: string, variantsMap: { [key: string]: number }) {
   const ast = new ClassParser(classNames).parse();
   return ast.map(({ raw, variants, important }) => {
     const head = variants.join(':') + ':';
     const utility = raw.replace(head, '');
     const key = utility.match(/\w+/);
     const hasDynamicValue = utility.match(/\d+/);
-    const offset =  variants.map(i => variantsMap[i] * 100).reduce((p, c) => p + c, 0) + (important ? 500: 0) + (hasDynamicValue ? 25 : 0);
+    const offset = variants.map(i => variantsMap[i] * 100).reduce((p, c) => p + c, 0) + (important ? 500 : 0) + (hasDynamicValue ? 25 : 0);
     if (key === null) return { raw, weight: offset };
-    return { raw, weight: (keyOrder[key[0]] ?? 300 ) + offset };
+    return { raw, weight: (keyOrder[key[0]] ?? 300) + offset };
   }).sort((a, b) => a.weight - b.weight).map(i => i.raw).join(' ');
 }
 
@@ -106,7 +106,7 @@ export function rem2px(str?: string) {
   const output: string[] = [];
 
   while (index < str.length) {
-    const rem = str.slice(index, ).match(/-?[\d.]+rem;/);
+    const rem = str.slice(index,).match(/-?[\d.]+rem;/);
     if (!rem || !rem.index) break;
     const px = ` /* ${parseFloat(rem[0].slice(0, -4)) * 16}px */`;
     const end = index + rem.index + rem[0].length;
