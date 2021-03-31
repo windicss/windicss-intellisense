@@ -88,11 +88,6 @@
         "command": "windicss.run-analysis",
         "category": "Windi CSS",
         "title": "Run & Open Analysis"
-      },
-      {
-        "command": "windicss.open-analysis",
-        "category": "Windi CSS",
-        "title": "Open & Show existing Analysis"
       }
     ],
     "grammars": [

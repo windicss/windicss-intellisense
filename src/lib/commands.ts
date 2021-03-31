@@ -160,57 +160,6 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
         }
       })
     );
-    disposables.push(
-      commands.registerCommand('windicss.open-analysis', async () => {
-        try {
-          const panel = window.createWebviewPanel(
-            'windicss', // Identifies the type of the webview. Used internally
-            'WindiCSS Analysis', // Title of the panel displayed to the user
-            ViewColumn.Two, // Editor column to show the new webview panel in.
-            {
-              enableScripts: true,
-              retainContextWhenHidden: true,
-            }
-          );
-
-          let fileName = 'windicss-analysis-result.json'
-
-          // REPORT JSON in Workspace
-          let report = readFileSync(join(workspace.workspaceFolders![0].uri.fsPath, fileName), "utf-8").toString()
-
-          // CHECK VSCode Theme Color
-          let isDark = true
-          const theme = workspace.getConfiguration()
-            .get('workbench.colorTheme', '')
-
-          // must be dark
-          if (theme.match(/dark|black/i) != null) {
-            isDark = true
-          }
-          // must be light
-          if (theme.match(/light/i) != null) {
-            isDark = false
-          }
-
-          // HTML INJECTION
-          const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
-          let html = readFileSync(htmlPath, "utf-8").toString()
-          const headScript = `
-          localStorage.setItem('vueuse-color-scheme', ${isDark ? "'dark'" : "'light'"});
-          window.__windicss_analysis_static = true;
-          window.__windicss_analysis_report = ${report};
-          `
-          html = html.replace('<head>', `<head><script>${headScript}</script>`)
-          html = html.replace(
-            /(src|href)="([^h]*?)"/g,
-            (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
-          )
-          panel.webview.html = html
-        } catch (error) {
-          Log.error(error)
-        }
-      })
-    );
 
     ctx.subscriptions.push(...DISPOSABLES);
 
