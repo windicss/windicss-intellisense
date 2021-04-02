@@ -23,8 +23,10 @@
   ],
   "activationEvents": [
     "workspaceContains:tailwind.config.js",
+    "workspaceContains:tailwind.config.cjs",
     "workspaceContains:tailwind.config.ts",
     "workspaceContains:windi.config.js",
+    "workspaceContains:windi.config.cjs",
     "workspaceContains:windi.config.ts",
     "onLanguage:vue",
     "onLanguage:javascript",

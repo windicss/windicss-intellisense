@@ -8,7 +8,7 @@ import { registerTS } from 'sucrase/dist/register';
 import type { Core } from '../interfaces';
 import { Log } from '../utils/Log';
 
-export async function init():Promise<Core> {
+export async function init(): Promise<Core> {
   try {
     const files = await workspace.findFiles('{tailwind,windi}.config.{js,cjs,ts}', '**​/node_modules/**');
     let configFile;
@@ -22,7 +22,7 @@ export async function init():Promise<Core> {
         if (mod.default) config = mod.default;
       } else {
         delete require.cache[require.resolve(resolve(configFile))];
-        config = require(resolve(configFile));
+        config = import(resolve(configFile));
       }
       Log.info(`Loading Config File: ${configFile}`);
     }
@@ -42,8 +42,8 @@ export async function init():Promise<Core> {
     });
 
     let staticCompletions = Object.keys(staticUtilities);
-    const colorCompletions: {label: string, detail: string, documentation: string}[] = [];
-    const dynamicCompletions: {label: string, position: number}[] = [];
+    const colorCompletions: { label: string, detail: string, documentation: string }[] = [];
+    const dynamicCompletions: { label: string, position: number }[] = [];
 
     for (const [config, list] of Object.entries(dynamic)) {
       list.forEach(utility => {
@@ -51,44 +51,43 @@ export async function init():Promise<Core> {
         if (mark === -1) {
           staticCompletions.push(utility);
         } else {
-          const prefix = utility.slice(0, mark-1);
+          const prefix = utility.slice(0, mark - 1);
           const suffix = utility.slice(mark);
-          switch(suffix) {
-          case '${static}':
-            const staticConfig = Object.keys(processor.theme(config, {}) as any);
-            const complections = staticConfig.map(i => i === 'DEFAULT'? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`);
-            // if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
-            staticCompletions = staticCompletions.concat(complections);
-            break;
-          case '${color}':
-            const colorConfig = flatColors(processor.theme(config, colors) as any);
-            for (const [k, v] of Object.entries(colorConfig)) {
-              const name = `${prefix}-${k}`;
-              const color = Array.isArray(v) ? v[0] : v;
-              colorCompletions.push({
-                label: name,
-                detail: processor.interpret(name).styleSheet.build(),
-                documentation: ['transparent', 'currentColor'].includes(color) ? color: `rgb(${hex2RGB(color)?.join(', ')})`,
-              });
-            }
-            break;
-          default:
-            dynamicCompletions.push({
-              label: utility,
-              position: utility.length - mark,
-            });
-            if (config in negative) {
+          switch (suffix) {
+            case '${static}':
+              const staticConfig = Object.keys(processor.theme(config, {}) as any);
+              const complections = staticConfig.map(i => i === 'DEFAULT' ? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`);
+              // if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
+              staticCompletions = staticCompletions.concat(complections);
+              break;
+            case '${color}':
+              const colorConfig = flatColors(processor.theme(config, colors) as any);
+              for (const [k, v] of Object.entries(colorConfig)) {
+                const name = `${prefix}-${k}`;
+                const color = Array.isArray(v) ? v[0] : v;
+                colorCompletions.push({
+                  label: name,
+                  detail: processor.interpret(name).styleSheet.build(),
+                  documentation: ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`,
+                });
+              }
+              break;
+            default:
               dynamicCompletions.push({
-                label: `-${utility}`,
-                position: utility.length + 1 - mark,
+                label: utility,
+                position: utility.length - mark,
               });
-            }
-            break;
+              if (config in negative) {
+                dynamicCompletions.push({
+                  label: `-${utility}`,
+                  position: utility.length + 1 - mark,
+                });
+              }
+              break;
           }
         }
       });
     }
-
     return {
       processor,
       colors,
