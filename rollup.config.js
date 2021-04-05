@@ -35,7 +35,7 @@ export default [
       {
         file: dump("extension.js"),
         format: "cjs",
-        sourcemap: true,
+        sourcemap: !prod,
       }
     ],
     external: ['vscode'],
