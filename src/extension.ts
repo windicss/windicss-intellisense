@@ -8,7 +8,7 @@ import type { Disposable, ExtensionContext } from 'vscode';
 import { Log } from './utils/Log';
 
 let CORE: Core = { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
-let DISPOSABLES: Disposable[] = [];
+const DISPOSABLES: Disposable[] = [];
 
 export async function activate(ctx: ExtensionContext) {
 
@@ -17,12 +17,13 @@ export async function activate(ctx: ExtensionContext) {
   const onUpdate = async () => {
     CORE = await init();
     DISPOSABLES.forEach(i => i.dispose());
-    DISPOSABLES = [...registerCompletions(ctx, CORE), ...registerCommands(ctx, CORE)];
+    DISPOSABLES.length = 0;
+    DISPOSABLES.push(...registerCompletions(ctx, CORE), ...registerCommands(ctx, CORE));
   };
 
-  CORE = await init();
+  await onUpdate();
+
   registerCodeFolding(ctx);
-  DISPOSABLES = [...registerCompletions(ctx, CORE), ...registerCommands(ctx, CORE)];
 
   Log.info('Windi CSS Intellisense is now active!');
 

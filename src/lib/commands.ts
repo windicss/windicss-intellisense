@@ -9,7 +9,8 @@ import { runAnalysis } from 'windicss-analysis';
 import type { ExtensionContext, Disposable } from 'vscode';
 import type { Core } from '../interfaces';
 
-let DISPOSABLES: Disposable[] = [];
+const DISPOSABLES: Disposable[] = [];
+let initialized = false;
 
 export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[] {
   function createDisposables() {
@@ -165,11 +166,18 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
     return disposables;
   }
 
-  workspace.onDidChangeConfiguration(() => {
+  function init() {
     DISPOSABLES.forEach(i => i.dispose());
-    DISPOSABLES = createDisposables() ?? [];
-  }, null, ctx.subscriptions);
+    DISPOSABLES.length = 0;
+    DISPOSABLES.push(...(createDisposables() || []));
+  }
 
-  DISPOSABLES = createDisposables() ?? [];
+  if (!initialized) {
+    workspace.onDidChangeConfiguration(init, null, ctx.subscriptions);
+    initialized = true;
+  }
+
+  init();
+
   return DISPOSABLES;
 }
