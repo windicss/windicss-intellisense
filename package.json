@@ -6,7 +6,7 @@
   "version": "0.8.3",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.54.0"
+    "vscode": "^1.55.0"
   },
   "keywords": [
     "windi",
