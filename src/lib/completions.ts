@@ -6,7 +6,8 @@ import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 
-let DISPOSABLES: Disposable[] = [];
+const DISPOSABLES: Disposable[] = [];
+let initialized = false;
 
 export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
   const TRIGGERS = ['"', '\'', ' ', (core.processor?.config('separator') ?? ':') as string, '('];
@@ -126,11 +127,18 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
     return disposables;
   }
 
-  workspace.onDidChangeConfiguration(() => {
+  function init() {
     DISPOSABLES.forEach(i => i.dispose());
-    DISPOSABLES = createDisposables() ?? [];
-  }, null, ctx.subscriptions);
+    DISPOSABLES.length = 0;
+    DISPOSABLES.push(...createDisposables() || []);
+  }
 
-  DISPOSABLES = createDisposables() ?? [];
+  if (!initialized) {
+    workspace.onDidChangeConfiguration(init, null, ctx.subscriptions);
+    initialized = true;
+  }
+
+  init();
+
   return DISPOSABLES;
 }
