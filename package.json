@@ -208,7 +208,7 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.37",
     "@types/require-from-string": "^1.2.0",
-    "@types/vscode": "^1.54.0",
+    "@types/vscode": "^1.55.0",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
     "bumpp": "^6.0.6",
