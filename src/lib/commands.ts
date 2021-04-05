@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 import { StyleSheet } from 'windicss/utils/style';
 import { Log } from '../utils/Log';
 import { getConfig, sortClassNames, toggleConfig } from '../utils';
-import { runAnalysis } from "windicss-analysis";
+import { runAnalysis } from 'windicss-analysis';
 import type { ExtensionContext, Disposable } from 'vscode';
 import type { Core } from '../interfaces';
 
@@ -123,38 +123,38 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
               root: workspace.workspaceFolders![0].uri.fsPath,
             },
             { interpretUtilities: true },
-          )
+          );
 
           // CHECK VSCode Theme Color
-          let isDark = true
+          let isDark = true;
           const theme = workspace.getConfiguration()
-            .get('workbench.colorTheme', '')
+            .get('workbench.colorTheme', '');
 
           // must be dark
           if (theme.match(/dark|black/i) != null) {
-            isDark = true
+            isDark = true;
           }
           // must be light
           if (theme.match(/light/i) != null) {
-            isDark = false
+            isDark = false;
           }
           // HTML INJECTION
-          const htmlPath = join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app/index.html")
-          let html = readFileSync(htmlPath, "utf-8").toString()
+          const htmlPath = join(ctx.extensionPath, 'node_modules/windicss-analysis/dist/app/index.html');
+          let html = readFileSync(htmlPath, 'utf-8').toString();
           const headScript = `
-          localStorage.setItem('vueuse-color-scheme', ${isDark ? "'dark'" : "'light'"});
+          localStorage.setItem('vueuse-color-scheme', ${isDark ? '"dark"' : '"light"'});
           window.__windicss_analysis_static = true;
           window.__windicss_analysis_report = ${JSON.stringify(result)}
-          `
-          html = html.replace('<head>', `<head><script>${headScript}</script>`)
+          `;
+          html = html.replace('<head>', `<head><script>${headScript}</script>`);
           html = html.replace(
             /(src|href)="([^h]*?)"/g,
-            (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, "node_modules/windicss-analysis/dist/app", url.slice(1))))}"`,
-          )
-          panel.webview.html = html
+            (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, 'node_modules/windicss-analysis/dist/app', url.slice(1))))}"`,
+          );
+          panel.webview.html = html;
           // console.log(html)
         } catch (error) {
-          Log.error(error)
+          Log.error(error);
         }
       })
     );
