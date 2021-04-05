@@ -28,4 +28,4 @@ jobs:
     - name: Test
       run: npm test
     - name: Build package
-      run: vsce package
+      run: npm build

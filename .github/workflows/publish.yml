@@ -17,7 +17,7 @@ jobs:
           node-version: 14
       - run: npm install -g vsce
       - run: npm ci
-      - run: vsce package
+      - run: npm build
       - run: npx conventional-github-releaser -p angular
         env:
           CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}

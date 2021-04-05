@@ -187,9 +187,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "cross-env NODE_ENV=production rollup -c",
-    "build": "rollup -c",
+    "build": "cross-env NODE_ENV=production rollup -c",
     "watch": "rollup -cw",
     "test": "jest",
     "test:update": "jest -u",

@@ -5,9 +5,18 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "build",
-			"problemMatcher": "$tsc-watch",
-			"isBackground": false,
+			"script": "watch",
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "base": "$tsc-watch",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "bundles ",
+            "endsPattern": "waiting for changes..."
+          }
+        }
+      ],
 			"presentation": {
 				"reveal": "never"
 			},
