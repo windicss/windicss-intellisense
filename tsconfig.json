@@ -12,7 +12,6 @@
     "allowSyntheticDefaultImports": true,
 		"strict": true
 	},
-	"include": ["./src"],
 	"exclude": [
 		"node_modules",
 		".vscode-test"

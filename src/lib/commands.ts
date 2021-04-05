@@ -143,7 +143,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           const htmlPath = join(ctx.extensionPath, 'node_modules/windicss-analysis/dist/app/index.html');
           let html = readFileSync(htmlPath, 'utf-8').toString();
           const headScript = `
-          localStorage.setItem('vueuse-color-scheme', ${isDark ? '\'dark\'' : '\'light\''});
+          localStorage.setItem('vueuse-color-scheme', ${isDark ? '"dark"' : '"light"'});
           window.__windicss_analysis_static = true;
           window.__windicss_analysis_report = ${JSON.stringify(result)}
           `;
