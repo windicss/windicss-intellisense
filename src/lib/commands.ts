@@ -139,7 +139,8 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
             isDark = false;
           }
           // HTML INJECTION
-          const htmlPath = join(ctx.extensionPath, 'node_modules/windicss-analysis/dist/app/index.html');
+          const analyzerPath = join(ctx.extensionPath, 'out/analyzer');
+          const htmlPath = join(analyzerPath, 'index.html');
           let html = readFileSync(htmlPath, 'utf-8').toString();
           const headScript = `
           localStorage.setItem('vueuse-color-scheme', ${isDark ? '"dark"' : '"light"'});
@@ -149,7 +150,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           html = html.replace('<head>', `<head><script>${headScript}</script>`);
           html = html.replace(
             /(src|href)="([^h]*?)"/g,
-            (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(ctx.extensionPath, 'node_modules/windicss-analysis/dist/app', url.slice(1))))}"`,
+            (_, tag, url) => `${tag}="${panel.webview.asWebviewUri(Uri.file(join(analyzerPath, url.slice(1))))}"`,
           );
           panel.webview.html = html;
           // console.log(html)
