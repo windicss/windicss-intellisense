@@ -12,12 +12,15 @@ let initialized = false;
 export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
   const TRIGGERS = ['"', '\'', ' ', (core.processor?.config('separator') ?? ':') as string, '('];
   function createDisposables() {
-    let disposables: Disposable[] = [];
-    if (!getConfig('windicss.enableCodeCompletion')) return;
+    const disposables: Disposable[] = [];
+
+    if (!getConfig('windicss.enableCodeCompletion'))
+      return;
+
     for (const { extension, patterns } of fileTypes) {
       patterns.forEach(pattern => {
         // class completion
-        disposables = disposables.concat(languages.registerCompletionItemProvider(extension, {
+        disposables.push(languages.registerCompletionItemProvider(extension, {
           provideCompletionItems: (document, position) => {
             // Get range including all characters in the current line till the current position
             const range = new Range(new Position(position.line, 0), position);
@@ -81,7 +84,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
       // moved hover & color swatches out of patterns loop, to only calculcate them one time per file
       if (getConfig('windicss.enableHoverPreview')) {
-        disposables = disposables.concat(languages.registerHoverProvider(extension, {
+        disposables.push(languages.registerHoverProvider(extension, {
           // hover class show css preview
           provideHover: (document, position, token) => {
             const range = document.getWordRangeAtPosition(position, /[^\s();{}'"`]+/);
@@ -98,11 +101,12 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               );
             }
           },
-        }));
+        })
+        );
       }
 
       if (getConfig('windicss.enableColorDecorators')) {
-        disposables = disposables.concat(languages.registerColorProvider(extension, {
+        disposables.push(languages.registerColorProvider(extension, {
           // insert color before class
           provideDocumentColors: (document, token) => {
             const colors: ColorInformation[] = [];
@@ -130,10 +134,13 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           provideColorPresentations: (color, ctx, token) => {
             return [];
           },
-        }));
+        })
+        );
       }
     }
+
     ctx.subscriptions.push(...disposables);
+
     return disposables;
   }
 
