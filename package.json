@@ -223,5 +223,8 @@
     "typescript": "^4.2.3",
     "windicss": "^2.5.11",
     "windicss-analysis": "^0.1.2"
+  },
+  "dependencies": {
+    "@windicss/plugin-utils": "^0.12.5"
   }
 }
