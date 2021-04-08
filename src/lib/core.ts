@@ -54,36 +54,36 @@ export async function init(): Promise<Core> {
           const prefix = utility.slice(0, mark - 1);
           const suffix = utility.slice(mark);
           switch (suffix) {
-          case '${static}':
-            const staticConfig = Object.keys(processor.theme(config, {}) as any);
-            const complections = staticConfig.map(i => i === 'DEFAULT' ? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`);
-            // if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
-            staticCompletions = staticCompletions.concat(complections);
-            break;
-          case '${color}':
-            const colorConfig = flatColors(processor.theme(config, colors) as any);
-            for (const [k, v] of Object.entries(colorConfig)) {
-              const name = `${prefix}-${k}`;
-              const color = Array.isArray(v) ? v[0] : v;
-              colorCompletions.push({
-                label: name,
-                detail: processor.interpret(name).styleSheet.build(),
-                documentation: ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`,
-              });
-            }
-            break;
-          default:
-            dynamicCompletions.push({
-              label: utility,
-              position: utility.length - mark,
-            });
-            if (config in negative) {
+            case '${static}':
+              const staticConfig = Object.keys(processor.theme(config, {}) as any);
+              const complections = staticConfig.map(i => i === 'DEFAULT' ? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`);
+              // if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
+              staticCompletions = staticCompletions.concat(complections);
+              break;
+            case '${color}':
+              const colorConfig = flatColors(processor.theme(config, colors) as any);
+              for (const [k, v] of Object.entries(colorConfig)) {
+                const name = `${prefix}-${k}`;
+                const color = Array.isArray(v) ? v[0] : v;
+                colorCompletions.push({
+                  label: name,
+                  detail: processor.interpret(name).styleSheet.build(),
+                  documentation: ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`,
+                });
+              }
+              break;
+            default:
               dynamicCompletions.push({
-                label: `-${utility}`,
-                position: utility.length + 1 - mark,
+                label: utility,
+                position: utility.length - mark,
               });
-            }
-            break;
+              if (config in negative) {
+                dynamicCompletions.push({
+                  label: `-${utility}`,
+                  position: utility.length + 1 - mark,
+                });
+              }
+              break;
           }
         }
       });
@@ -97,7 +97,7 @@ export async function init(): Promise<Core> {
       dynamicCompletions,
     };
   } catch (error) {
-    Log.error(error);
+    Log.warning(error);
     return { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
   }
 }

@@ -156,7 +156,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           panel.webview.html = html;
           // console.log(html)
         } catch (error) {
-          Log.error(error);
+          Log.warning(error);
         }
       })
     );
