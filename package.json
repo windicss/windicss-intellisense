@@ -221,7 +221,10 @@
     "ts-jest": "^26.5.4",
     "tslib": "^2.1.0",
     "typescript": "^4.2.3",
-    "windicss": "^2.5.11",
-    "windicss-analysis": "^0.1.2"
+    "windicss": "^2.5.14",
+    "windicss-analysis": "^0.1.3"
+  },
+  "dependencies": {
+    "@windicss/plugin-utils": "^0.14.0"
   }
 }
