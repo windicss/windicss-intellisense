@@ -22,19 +22,7 @@
     "Other"
   ],
   "activationEvents": [
-    "workspaceContains:tailwind.config.js",
-    "workspaceContains:tailwind.config.cjs",
-    "workspaceContains:tailwind.config.ts",
-    "workspaceContains:windi.config.js",
-    "workspaceContains:windi.config.cjs",
-    "workspaceContains:windi.config.ts",
-    "onLanguage:vue",
-    "onLanguage:javascript",
-    "onLanguage:javascriptreact",
-    "onLanguage:typescript",
-    "onLanguage:typescriptreact",
-    "onLanguage:svelte",
-    "onLanguage:html"
+    "*"
   ],
   "repository": {
     "type": "git",
@@ -182,6 +170,11 @@
           "type": "boolean",
           "default": false,
           "description": "A flag that controls whether or not Windi CSS classes will be sorted on save on save."
+        },
+        "windicss.includeLanguages": {
+          "type": "object",
+          "default": {},
+          "description": ""
         }
       }
     }
@@ -209,6 +202,7 @@
     "@types/vscode": "^1.55.0",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
+    "@windicss/plugin-utils": "^0.14.0",
     "bumpp": "^6.0.6",
     "cross-env": "^7.0.3",
     "eslint": "^7.23.0",
@@ -223,8 +217,5 @@
     "typescript": "^4.2.3",
     "windicss": "^2.5.14",
     "windicss-analysis": "^0.1.3"
-  },
-  "dependencies": {
-    "@windicss/plugin-utils": "^0.14.0"
   }
 }
