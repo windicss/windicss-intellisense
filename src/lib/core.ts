@@ -1,11 +1,12 @@
 import { workspace } from 'vscode';
+import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
 import { flatColors } from 'windicss/utils';
 import { hex2RGB, highlightCSS } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
+import { registerTS } from 'sucrase/dist/register';
 import type { Core } from '../interfaces';
 import { Log } from '../utils/Log';
-import { loadConfiguration } from "@windicss/plugin-utils";
 
 export async function init(): Promise<Core> {
   try {
@@ -14,11 +15,16 @@ export async function init(): Promise<Core> {
     let config;
     if (files[0]) {
       configFile = files[0].fsPath;
-      const { error, resolved } = await loadConfiguration({ config: configFile })
-      if (error) throw error
-      if (!resolved) throw new Error("undefined error")
+      if (configFile.endsWith('.ts')) {
+        registerTS();
+        delete require.cache[require.resolve(configFile)];
+        const mod = require(configFile);
+        if (mod.default) config = mod.default;
+      } else {
+        delete require.cache[require.resolve(resolve(configFile))];
+        config = import(resolve(configFile));
+      }
       Log.info(`Loading Config File: ${configFile}`);
-      config = resolved
     }
     const processor = new Processor(config);
     const separator = processor.config('separator', ':') as string;
