@@ -14,7 +14,7 @@ export async function init(): Promise<Core> {
     let config;
     if (files[0]) {
       configFile = files[0].fsPath;
-      const { error, resolved } = loadConfiguration({ config: configFile })
+      const { error, resolved } = await loadConfiguration({ config: configFile })
       if (error) throw error
       if (!resolved) throw new Error("undefined error")
       Log.info(`Loading Config File: ${configFile}`);
