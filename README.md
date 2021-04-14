@@ -50,6 +50,12 @@ Built-in commands, one-key operation.
 
 <img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/commands.png" alt="Compile Commands"/>
 
+### Visual Analyzer
+
+Browse your utilities usages, have an overview of your design system, identify "bad practices", and more!
+
+<img src="https://raw.githubusercontent.com/windicss/windicss-intellisense/main/screenshots/analyzer.png" alt="Visual Analyzer"/>
+
 ## Extension Settings
 
 | Settings                           | type    | default  | description                                                  |
