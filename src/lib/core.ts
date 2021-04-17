@@ -16,9 +16,9 @@ export async function init(): Promise<Core> {
     let config;
     if (files[0]) {
       configFile = files[0].fsPath;
-      config = await loadConfiguration({config: configFile, onConfigurationError: (err)=> Log.warning(err.message)})
+      config = await loadConfiguration({ config: configFile, onConfigurationError: (err) => Log.warning(err.message) });
       if (config.resolved) {
-        config = config.resolved
+        config = config.resolved;
       }
       Log.info(`Loading Config File: ${configFile}`);
     }
