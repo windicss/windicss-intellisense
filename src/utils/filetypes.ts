@@ -104,5 +104,5 @@ if (getConfig('windicss.includeLanguages')) {
       patterns: (value === 'html') ? htmlPatterns.concat(stylesPatterns, attributePatterns) : jsPatterns,
     });
   }
-  Log.info('fileMap: ' + JSON.stringify(fileTypes));
+  // Log.info('fileMap: ' + JSON.stringify(fileTypes));
 }
