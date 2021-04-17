@@ -7,6 +7,7 @@ import { utilities as dynamic, negative } from '../utils/utilities';
 import { registerTS } from 'sucrase/dist/register';
 import type { Core } from '../interfaces';
 import { Log } from '../utils/Log';
+import { loadConfiguration } from '@windicss/plugin-utils';
 
 export async function init(): Promise<Core> {
   try {
@@ -15,14 +16,9 @@ export async function init(): Promise<Core> {
     let config;
     if (files[0]) {
       configFile = files[0].fsPath;
-      if (configFile.endsWith('.ts')) {
-        registerTS();
-        delete require.cache[require.resolve(configFile)];
-        const mod = require(configFile);
-        if (mod.default) config = mod.default;
-      } else {
-        delete require.cache[require.resolve(resolve(configFile))];
-        config = import(resolve(configFile));
+      config = await loadConfiguration({config: configFile, onConfigurationError: (err)=> Log.warning(err.message)})
+      if (config.resolved) {
+        config = config.resolved
       }
       Log.info(`Loading Config File: ${configFile}`);
     }
