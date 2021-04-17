@@ -11,12 +11,17 @@ import { loadConfiguration } from '@windicss/plugin-utils';
 
 export async function init(): Promise<Core> {
   try {
-    const files = await workspace.findFiles('{tailwind,windi}.config.{js,cjs,ts}', '**​/node_modules/**');
+    const files = await workspace.findFiles('{tailwind,windi}.config.{js,cjs,mjs,ts}', '**​/node_modules/**');
     let configFile;
     let config;
     if (files[0]) {
       configFile = files[0].fsPath;
-      config = await loadConfiguration({ config: configFile, onConfigurationError: (err) => Log.warning(err.message) });
+      config = await loadConfiguration({ config: configFile});
+      if (config.error){
+        let err = config.error
+        Log.warning(err.message)
+        if(err.stack) Log.warning(err.stack)
+      }
       if (config.resolved) {
         config = config.resolved;
       }
