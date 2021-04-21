@@ -62,13 +62,25 @@ export async function init(): Promise<Core> {
             staticCompletions = staticCompletions.concat(complections);
             break;
           case '${color}':
+            // const colorConfig = flatColors(processor.theme(config, colors) as any);
+            // for (const [k, v] of Object.entries(colorConfig)) {
+            //   const name = `${prefix}-${k}`;
+            //   console.log(name)
+            //   const color = Array.isArray(v) ? v[0] : v;
+            //   colorCompletions.push({
+            //     label: name,
+            //     detail: processor.interpret(name).styleSheet.build(),
+            //     documentation: ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`,
+            //   });
+            // }
             const colorConfig = flatColors(processor.theme(config, colors) as any);
-            for (const [k, v] of Object.entries(colorConfig)) {
+            for (const [k, v] of Object.entries(colors)) {
               const name = `${prefix}-${k}`;
               const color = Array.isArray(v) ? v[0] : v;
               colorCompletions.push({
                 label: name,
-                detail: processor.interpret(name).styleSheet.build(),
+                // detail stylesheet interpret is hidden due to performance issues, TODO: workaround with an cache
+                detail: "",
                 documentation: ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`,
               });
             }
