@@ -74,7 +74,7 @@ export async function init(): Promise<Core> {
             //   });
             // }
             const colorConfig = flatColors(processor.theme(config, colors) as any);
-            for (const [k, v] of Object.entries(colors)) {
+            for (const [k, v] of Object.entries(colorConfig)) {
               const name = `${prefix}-${k}`;
               const color = Array.isArray(v) ? v[0] : v;
               colorCompletions.push({
