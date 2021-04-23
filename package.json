@@ -202,7 +202,7 @@
     "@types/vscode": "^1.55.0",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
-    "@windicss/plugin-utils": "^0.14.6",
+    "@windicss/plugin-utils": "^0.15.7",
     "bumpp": "^6.0.6",
     "cross-env": "^7.0.3",
     "eslint": "^7.24.0",
