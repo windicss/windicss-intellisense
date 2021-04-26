@@ -1,5 +1,4 @@
 import { workspace } from 'vscode';
-import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
 import { flatColors } from 'windicss/utils';
@@ -7,22 +6,18 @@ import { hex2RGB, highlightCSS } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
 import type { Core } from '../interfaces';
 import { Log } from '../utils/Log';
-import requireFromString from 'require-from-string';
-import { registerTS } from 'sucrase/dist/register';
-import { transform } from 'sucrase';
+import jiti from 'jiti';
 
+const j = jiti(__filename);
 
 export async function init(): Promise<Core> {
   try {
     const files = await workspace.findFiles('{tailwind,windi}.config.{js,cjs,mjs,ts}', '**​/node_modules/**');
+    let configFile;
     let config;
     if (files[0]) {
-      registerTS();
-      const configFile = files[0].fsPath;
-      const path = resolve(configFile);
-      const code = readFileSync(path).toString();
-      const compiledCode = transform(code, { transforms: ['typescript', 'imports'] }).code;
-      const result = requireFromString(compiledCode, path);
+      configFile = files[0].fsPath;
+      const result = j(resolve(configFile));
       config = result.__esModule ? result.default : result;
       Log.info(`Loading Config File: ${configFile}`);
     }
