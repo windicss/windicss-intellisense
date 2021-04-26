@@ -4,10 +4,11 @@ import { Processor } from 'windicss/lib';
 import { flatColors } from 'windicss/utils';
 import { hex2RGB, highlightCSS } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
-import { registerTS } from 'sucrase/dist/register';
 import type { Core } from '../interfaces';
 import { Log } from '../utils/Log';
-import { loadConfiguration } from '@windicss/plugin-utils';
+import jiti from 'jiti';
+
+const j = jiti(__filename);
 
 export async function init(): Promise<Core> {
   try {
@@ -16,15 +17,8 @@ export async function init(): Promise<Core> {
     let config;
     if (files[0]) {
       configFile = files[0].fsPath;
-      config = await loadConfiguration({ config: configFile});
-      if (config.error){
-        let err = config.error
-        Log.warning(err.message)
-        if(err.stack) Log.warning(err.stack)
-      }
-      if (config.resolved) {
-        config = config.resolved;
-      }
+      const result = j(resolve(configFile));
+      config = result.__esModule ? result.default : result;
       Log.info(`Loading Config File: ${configFile}`);
     }
     const processor = new Processor(config);
@@ -80,7 +74,7 @@ export async function init(): Promise<Core> {
               colorCompletions.push({
                 label: name,
                 // detail stylesheet interpret is hidden due to performance issues, TODO: workaround with an cache
-                detail: "",
+                detail: '',
                 documentation: ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`,
               });
             }
