@@ -17,7 +17,7 @@ export async function init(): Promise<Core> {
     let config;
     if (files[0]) {
       configFile = files[0].fsPath;
-      const result = j(resolve(configFile));
+      const result = j(configFile);
       config = result.__esModule ? result.default : result;
       Log.info(`Loading Config File: ${configFile}`);
     }
