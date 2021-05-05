@@ -199,7 +199,7 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.0.1",
     "@types/vscode": "^1.55.0",
-    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.0",
     "bumpp": "^6.0.6",
     "cross-env": "^7.0.3",
