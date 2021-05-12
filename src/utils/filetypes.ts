@@ -99,24 +99,24 @@ if (getConfig('windicss.includeLanguages')) {
   const config = getConfig<object>('windicss.includeLanguages')!;
   // console.log(config)
   for (const [key, value] of Object.entries(config)) {
-    let patterns
+    let patterns;
     switch (value) {
-      case "html":
-        patterns = htmlPatterns.concat(stylesPatterns, attributePatterns)
-        break;
+    case 'html':
+      patterns = htmlPatterns.concat(stylesPatterns, attributePatterns);
+      break;
 
-      case "js":
-        patterns = jsPatterns
+    case 'js':
+      patterns = jsPatterns;
 
-      case "css":
-        patterns = stylesPatterns
+    case 'css':
+      patterns = stylesPatterns;
 
-      default:
-        patterns = stylesPatterns
+    default:
+      patterns = stylesPatterns;
     }
     fileTypes.push({
       extension: key,
-      patterns
+      patterns,
     });
   }
 }
