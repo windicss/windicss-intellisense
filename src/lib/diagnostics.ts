@@ -49,9 +49,7 @@ export function registerDiagnostics(ctx: ExtensionContext): void {
           for (let index = 0; index < classes.length; index++) {
             const c = classes[index];
             const check = p.extract(c);
-            if (check !== undefined) {
-
-            } else {
+            if (check === undefined) {
               const diag = _createDiagnostic(
                 doc,
                 lineOfText,
