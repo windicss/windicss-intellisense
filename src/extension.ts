@@ -1,6 +1,7 @@
 import { registerCompletions } from './lib/completions';
 import { registerCommands } from './lib/commands';
 import { registerCodeFolding } from './lib/folding';
+import { registerDiagnostics } from './lib/diagnostics';
 import { init } from './lib/core';
 import { workspace } from 'vscode';
 import type { Core } from './interfaces';
@@ -24,7 +25,7 @@ export async function activate(ctx: ExtensionContext) {
   await onUpdate();
 
   registerCodeFolding(ctx);
-
+  registerDiagnostics(ctx);
   Log.info('Windi CSS Intellisense is now active!');
 
   // Changes configuration should invalidate above cache
