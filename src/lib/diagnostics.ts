@@ -47,7 +47,9 @@ export function registerDiagnostics(ctx: ExtensionContext): void {
           match = match.replace(/ {2,}/gi, ' ');
           const classes = match.split(' ');
           for (let index = 0; index < classes.length; index++) {
-            const c = classes[index];
+            let c = classes[index];
+            c = c.replace('!', '');
+            if (c == 'important') break;
             const check = p.extract(c);
             if (check === undefined) {
               const diag = _createDiagnostic(
