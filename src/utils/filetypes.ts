@@ -96,27 +96,32 @@ export const fileTypes: {
   },
 ];
 if (getConfig('windicss.includeLanguages')) {
-  const config = getConfig<object>('windicss.includeLanguages')!;
+  const config = getConfig<Record<string, unknown>>('windicss.includeLanguages');
   // console.log(config)
-  for (const [key, value] of Object.entries(config)) {
-    let patterns;
-    switch (value) {
-    case 'html':
-      patterns = htmlPatterns.concat(stylesPatterns, attributePatterns);
-      break;
+  if (config) {
+    for (const [key, value] of Object.entries(config)) {
+      let patterns;
+      switch (value) {
+      case 'html':
+        patterns = htmlPatterns.concat(stylesPatterns, attributePatterns);
+        break;
 
-    case 'js':
-      patterns = jsPatterns;
+      case 'js':
+        patterns = jsPatterns;
+        break;
 
-    case 'css':
-      patterns = stylesPatterns;
+      case 'css':
+        patterns = stylesPatterns;
+        break;
 
-    default:
-      patterns = stylesPatterns;
+      default:
+        patterns = stylesPatterns;
+        break;
+      }
+      fileTypes.push({
+        extension: key,
+        patterns,
+      });
     }
-    fileTypes.push({
-      extension: key,
-      patterns,
-    });
   }
 }
