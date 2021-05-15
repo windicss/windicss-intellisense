@@ -84,13 +84,14 @@
       {
         "id": "windi",
         "aliases": [
-          "WINDI",
+          "Windi",
           "windi"
         ],
         "extensions": [
           ".windi"
         ],
         "mimetypes": [
+          "text/x-windi",
           "text/windi"
         ],
         "configuration": "./syntax/lang.config.json"

@@ -1,5 +1,5 @@
 {
-  "comments": { "blockComment": ["/*", "*/"] },
+  "comments": { "blockComment": ["/*", "*/"], "lineComment": "//" },
   "brackets": [
     ["{", "}"],
     ["[", "]"],
@@ -19,6 +19,10 @@
     ["\"", "\""],
     ["'", "'"]
   ],
+  "indentationRules": {
+    "increaseIndentPattern": "(^.*\\{[^}]*$)",
+    "decreaseIndentPattern": "^\\s*\\}"
+  },
   "folding": {
     "markers": {
       "start": "^\\s*\\/\\*\\s*#region\\b\\s*(.*?)\\s*\\*\\/",
