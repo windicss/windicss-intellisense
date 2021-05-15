@@ -1,0 +1,167 @@
+{
+  "Var": {
+    "prefix": ["var", "@var"],
+    "body": ["@var $1 = $2;"],
+    "description": "Define a variable"
+  },
+  "For Loop": {
+    "prefix": ["for", "@for"],
+    "body": ["@for ${1:iterator} in ${2:sequence} {", "\t$0", "}"],
+    "description": "For Loop"
+  },
+  "Function Statement": {
+    "prefix": ["func", "@func"],
+    "body": ["@func ${1:name}(${2:params}) {", "\t@log 'Hello World';$0", "\t@return None;", "}"],
+    "description": "Function Statement"
+  },
+  "If Statement": {
+    "prefix": ["if", "@if"],
+    "body": ["@if ${1:condition} {", "\t$0", "}"],
+    "description": "If Statement"
+  },
+  "If-Elif Statement": {
+    "prefix": ["ifelif", "@ifelif"],
+    "body": ["@if ${1:condition} {", "\t$0", "} @elif {", "\t", "} @else {", "\t", "}"],
+    "description": "If-Else Statement"
+  },
+  "If-Else Statement": {
+    "prefix": ["ifelse", "@ifelse"],
+    "body": ["@if ${1:condition} {", "\t$0", "} @else {", "\t", "}"],
+    "description": "If-Else Statement"
+  },
+  "While Statement": {
+    "prefix": ["while", "@while"],
+    "body": ["@while ${1:condition} {", "\t$0", "}"],
+    "description": "While Statement"
+  },
+  "With Statement": {
+    "prefix": ["with", "@with"],
+    "body": ["@with ${1:operation} as ${2:variable} {", "\t$0", "}"],
+    "description": "With Statement"
+  },
+  "Try-Catch Statement": {
+    "prefix": ["try", "@try"],
+    "body": ["@try {", "\t$0", "} @except ${1:Exception} as ${2:error} {", "\t", "}"],
+    "description": "Try-Except Statement"
+  },
+  "Load external module.": {
+    "prefix": ["load", "@load"],
+    "body": ["@load { $0 } from \"${1:module}\";"],
+    "description": "Load external module."
+  },
+  "Import external module.": {
+    "prefix": ["import", "@import"],
+    "body": ["@import \"${1:module}\";"],
+    "description": "Import external module."
+  },
+  "Region Start": {
+    "prefix": "#region",
+    "body": ["//#region $0"],
+    "description": "Folding Region Start"
+  },
+  "Region End": {
+    "prefix": "#endregion",
+    "body": ["//#endregion"],
+    "description": "Folding Region End"
+  },
+  "Log to the console": {
+    "prefix": ["log", "@log"],
+    "body": ["@log $1;"],
+    "description": "Log to the console"
+  },
+  "Log warning to console": {
+    "prefix": ["warn", "@warn"],
+    "body": ["@warn $1;"],
+    "description": "Log warning to the console"
+  },
+  "Log error to console": {
+    "prefix": ["error", "@error"],
+    "body": ["@error $1;"],
+    "description": "Log error to the console"
+  },
+  "Log assert to console": {
+    "prefix": ["assert", "@assert"],
+    "body": ["@assert $1;"],
+    "description": "Log assert to the console"
+  },
+  "Return": {
+    "prefix": ["return", "@return"],
+    "body": ["@return $1;"],
+    "description": "Return something"
+  },
+  "Yield": {
+    "prefix": ["yield", "@yield"],
+    "body": ["@yield $1;"],
+    "description": "Yield something"
+  },
+  "Delete": {
+    "prefix": ["del", "@del"],
+    "body": ["@del $1;"],
+    "description": "Delete something"
+  },
+  "Raise": {
+    "prefix": ["raise", "@raise"],
+    "body": ["@raise $1;"],
+    "description": "Raise an error"
+  },
+  "Apply utilities": {
+    "prefix": ["apply", "@apply"],
+    "body": ["@apply $1;"],
+    "description": "Apply windi utilities"
+  },
+  "Attr utilities": {
+    "prefix": ["attr", "@attr"],
+    "body": ["@attr[$1] $2;"],
+    "description": "Attributify windi utilities"
+  },
+  "Screen Media": {
+    "prefix": ["media", "@media"],
+    "body": ["@media ($1) {", "\t$0", "}"],
+    "description": "Add screen media"
+  },
+  "Screen Variant": {
+    "prefix": ["screen", "@screen"],
+    "body": ["@screen $1 {", "\t$0", "}"],
+    "description": "Add screen variant"
+  },
+  "State Variant": {
+    "prefix": ["variants", "@variants"],
+    "body": ["@variants $1 {", "\t$0", "}"],
+    "description": "Add state variant"
+  },
+  "Local Config": {
+    "prefix":["confi_local", "@confi_local"],
+    "body": ["@config local {", "\t$0", "}"],
+    "description": "Add local config"
+  },
+  "Global Config": {
+    "prefix": ["config_global", "@config_global"],
+    "body": ["@config global {", "\t$0", "}"],
+    "description": "Add global config"
+  },
+  "Layer Base": {
+    "prefix": ["layer_base", "@layer_base"],
+    "body": ["@layer base {", "\t$0", "}"],
+    "description": "Add base layer"
+  },
+  "Layer Components": {
+    "prefix": ["layer_components", "@layer_components"],
+    "body": ["@layer components {", "\t$0", "}"],
+    "description": "Add components layer"
+  },
+  "Layer Utilities": {
+    "prefix": ["layer_utilities", "@layer_utilities"],
+    "body": ["@layer utilities {", "\t$0", "}"],
+    "description": "Add utilities layer"
+  },
+  "Important Block": {
+    "prefix": ["important", "@important"],
+    "body": ["@important {", "\t$0", "}"],
+    "description": "Add important block"
+  },
+  "Javascript Block": {
+    "prefix": ["js", "@js"],
+    "body": ["@js {", "\t$0", "}"],
+    "description": "Add js block"
+  }
+}

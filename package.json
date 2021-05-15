@@ -202,7 +202,13 @@
           "description": ""
         }
       }
-    }
+    },
+    "snippets": [
+      {
+        "language": "windi",
+        "path": "./snippets/windi.code-snippets"
+      }
+    ]
   },
   "scripts": {
     "build": "rimraf out && cross-env NODE_ENV=production rollup -c && ncp node_modules/windicss-analysis/dist/app out/analyzer",
