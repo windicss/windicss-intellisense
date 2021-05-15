@@ -11,6 +11,7 @@
     { "include": "#strings" },
     { "include": "#boolean-literal" },
     { "include": "#null-literal" },
+    { "include": "#variables" },
     {
       "captures": {
         "1": { "name": "entity.other.attribute-name.class.mixin.css" }
@@ -411,11 +412,6 @@
       ]
     },
     {
-      "match": "(\\s*|\\-\\-)[\\w-]+(?=\\s*=)",
-      "name": "variable.assign.windi",
-      "captures": { "1": { "name": "punctuation.definition.variable.windi" } }
-    },
-    {
       "begin": "{",
       "beginCaptures": {
         "0": {
@@ -453,6 +449,14 @@
       "match": "(?<![\\w-])[a-z][\\w&&[^A-Z]]*+-[\\w-&&[^A-Z]]+",
       "name": "entity.name.tag.custom.css"
     },
+    {
+      "match": "(?<=@apply\\s+[\\s\\S]*?)[<@\\w-]+:",
+      "name": "variable.variant.windi.css"
+    },
+    {
+      "match": "(?<=@apply\\s+[\\s\\S]*)\\*[\\w-]+",
+      "name": "variable.alias.windi.css"
+    },
     { "include": "source.css#pseudo-elements" },
     { "include": "source.css#pseudo-classes" },
     {
@@ -482,7 +486,12 @@
     { "include": "source.css#color-keywords" },
     { "include": "source.css#commas" },
     { "include": "#windi_builtin_functions" },
-    { "include": "source.css#functions" }
+    { "include": "source.css#functions" },
+    { "include": "#operators" },
+    {
+      "name": "variable.expression.windi",
+      "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))\\$\\{[^\\}]+\\}(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
+    }
   ],
   "repository": {
     "strings": {
@@ -526,18 +535,83 @@
     "boolean-literal": {
       "patterns": [
         {
-          "name": "constant.language.boolean.true.js",
+          "name": "constant.language.boolean.true.windi",
           "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))True(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
         },
         {
-          "name": "constant.language.boolean.false.js",
+          "name": "constant.language.boolean.false.windi",
           "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))False(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
         }
       ]
     },
     "null-literal": {
-      "name": "constant.language.null.js",
+      "name": "constant.language.null.windi",
       "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))None(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+    },
+    "variables": {
+      "patterns": [
+        {
+          "match": "(\\s*|\\-\\-)[\\w-]+(?=\\s*=)",
+          "name": "variable.assign.windi",
+          "captures": { "1": { "name": "punctuation.definition.variable.windi" } }
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.expression.in.windi",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))in(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
+        },
+        {
+          "name": "keyword.operator.expression.not_in.windi",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))not\\s*in(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
+        },
+        {
+          "name": "keyword.operator.expression.as.windi",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))as(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
+        },
+        {
+          "name": "keyword.operator.expression.from.windi",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))from(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))(?!\\()"
+        },
+        {
+          "name": "keyword.operator.new.windi",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))new(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        },
+        {
+          "name": "keyword.operator.not.windi",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))not(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        },
+        { "name": "keyword.operator.spread.windi", "match": "\\.\\.\\." },
+        {
+          "name": "keyword.operator.assignment.compound.windi",
+          "match": "\\*=|(?<!\\()/=|%=|\\+=|\\-="
+        },
+        {
+          "name": "keyword.operator.assignment.compound.bitwise.windi",
+          "match": "\\&=|\\^=|<<=|>>=|>>>=|\\|="
+        },
+        { "name": "keyword.operator.bitwise.shift.windi", "match": "<<|>>>|>>" },
+        { "name": "keyword.operator.comparison.windi", "match": "===|!==|==|!=" },
+        { "name": "keyword.operator.relational.windi", "match": "<=|>=|<>|<|>" },
+        {
+          "match": "(?<=[_$[:alnum:]])(\\!)\\s*(/)(?![/*])",
+          "captures": {
+            "1": { "name": "keyword.operator.logical.windi" },
+            "2": { "name": "keyword.operator.arithmetic.windi" }
+          }
+        },
+        {
+          "name": "keyword.operator.logical.windi",
+          "match": "\\!|&&|\\|\\||\\?\\?"
+        },
+        { "name": "keyword.operator.bitwise.windi", "match": "\\&|~|\\^|\\|" },
+        { "name": "keyword.operator.assignment.windi", "match": "\\=" },
+        { "name": "keyword.operator.decrement.windi", "match": "--" },
+        { "name": "keyword.operator.increment.windi", "match": "\\+\\+" },
+        { "name": "keyword.operator.arithmetic.windi", "match": "%|\\*|/|-|\\+" }
+      ]
     },
     "brace_round": { "match": "\\(|\\)", "name": "meta.brace.round.css" },
     "property_values": {
