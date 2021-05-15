@@ -388,8 +388,8 @@
           "name": "variable.alias.windi"
         },
         {
-          "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "punctuation.definition.template-expression.begin"
+          "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[<@\\w-]+(?=:)",
+          "name": "entity.name.tag.windi"
         },
         {
           "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[*][\\w-]+",
@@ -417,8 +417,8 @@
           "name": "variable.shortcut.windi"
         },
         {
-          "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "punctuation.definition.template-expression.begin"
+          "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[<@\\w-]+(?=:)",
+          "name": "entity.name.tag.windi"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[*][\\w-]+",
@@ -441,8 +441,8 @@
           "name": "variable.apply.windi"
         },
         {
-          "match": "(?<=@apply\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "punctuation.definition.template-expression.begin"
+          "match": "(?<=@apply\\s+[\\s\\S]*?)[<@\\w-]+(?=:)",
+          "name": "entity.name.tag.windi"
         },
         {
           "match": "(?<=@apply\\s+[\\s\\S]*?)[*][\\w-]+",
@@ -465,8 +465,8 @@
           "name": "variable.apply.windi"
         },
         {
-          "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "punctuation.definition.template-expression.begin"
+          "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[<@\\w-]+(?=:)",
+          "name": "entity.name.tag.windi"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[*][\\w-]+",
@@ -489,8 +489,8 @@
           "name": "variable.attr.windi"
         },
         {
-          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "punctuation.definition.template-expression.begin"
+          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[<@\\w-]+(?=:)",
+          "name": "entity.name.tag.windi"
         },
         {
           "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[*][\\w-]+",
