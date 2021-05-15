@@ -3,6 +3,7 @@
   "scopeName": "source.windi",
   "patterns": [
     { "include": "#strings" },
+    { "include": "#template" },
     { "include": "#windi_constants" },
     { "include": "#class_selector" },
     { "include": "#hex" },
@@ -22,7 +23,6 @@
     { "include": "#shortcut" },
     { "include": "#apply_short" },
     { "include": "#operators" },
-    { "include": "source.css#tag-names" },
     { "include": "source.css#pseudo-elements" },
     { "include": "source.css#pseudo-classes" },
     { "include": "#brace_curly" },
@@ -31,11 +31,10 @@
     { "include": "#semi" },
     { "include": "#colon" },
     { "include": "#booleans" },
-    { "include": "source.css#property-keywords" },
     { "include": "source.css#color-keywords" },
-    { "include": "source.css#commas" },
-    { "include": "source.css#functions" },
-    { "include": "source.js#statements" }
+    { "include": "source.js#statements" },
+    { "include": "source.css#property-keywords" },
+    { "include": "source.css#commas" }
   ],
   "repository": {
     "atrules": {
@@ -121,6 +120,14 @@
     "class_selector": {
       "patterns": [
         {
+          "name": "entity.other.attribute-name.class.css",
+          "match": "(?<=\\${[^}]+})[\\w-]+"
+        },
+        {
+          "name": "entity.other.attribute-name.class.css",
+          "match": "((\\.)([_a-zA-Z]|(@{[a-zA-Z0-9_-]+}))([\\w-]|\\\\\\W)*)"
+        },
+        {
           "captures": {
             "1": { "name": "entity.other.attribute-name.class.mixin.css" }
           },
@@ -144,7 +151,6 @@
       ]
     },
     "colon": { "match": ":", "name": "punctuation.separator.key-value.css" },
-
     "hex": {
       "match": "(#)([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b(?!.*?(?<!@){)",
       "name": "constant.other.rgb-value.css"
@@ -277,7 +283,6 @@
       "patterns": [
         { "include": "source.css#pseudo-elements" },
         { "include": "source.css#pseudo-classes" },
-        { "include": "source.css#tag-names" },
         { "include": "source.css#commas" },
         { "include": "source.css#property-names" },
         { "include": "#property_values" },
@@ -301,10 +306,31 @@
         }
       ]
     },
+    "template": {
+      "name": "meta.template.expression.js",
+      "begin": "\\$\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin.js" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end.js" }
+      },
+      "patterns": [{ "include": "#expression" }],
+      "contentName": "meta.embedded.line.js"
+    },
     "variables": {
       "match": "((?<=@var\\s+)|\\-\\-)[\\w-]+(?=\\s*)",
       "name": "variable.assign.windi",
       "captures": { "1": { "name": "punctuation.definition.variable.windi" } }
+    },
+    "expression": {
+      "patterns": [
+        { "include": "source.css#color-keywords" },
+        { "include": "source.css#numeric-values" },
+        { "include": "#booleans" },
+        { "include": "source.js#expression" }
+      ]
     },
     "windi_constants": {
       "patterns": [
