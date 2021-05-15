@@ -4,6 +4,11 @@
   "patterns": [
     { "include": "#strings" },
     { "include": "#template" },
+    { "include": "#alias" },
+    { "include": "#shortcut" },
+    { "include": "#apply" },
+    { "include": "#attr" },
+    { "include": "#apply_short" },
     { "include": "#windi_constants" },
     { "include": "#class_selector" },
     { "include": "#hex" },
@@ -17,11 +22,6 @@
     { "include": "#singleline_comments" },
     { "include": "#variables" },
     { "include": "#style_block" },
-    { "include": "#apply" },
-    { "include": "#attr" },
-    { "include": "#alias" },
-    { "include": "#shortcut" },
-    { "include": "#apply_short" },
     { "include": "#operators" },
     { "include": "source.css#pseudo-elements" },
     { "include": "source.css#pseudo-classes" },
@@ -376,24 +376,24 @@
       "patterns": [
         {
           "match": "^\\s*\\*[\\w-]+(?=\\s*:)",
-          "name": "variable.alias.windi",
+          "name": "support.class.windicss",
           "captures": { "1": { "name": "punctuation.definition.variable.windi" } }
         },
         {
           "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?[<@\\w-]+:)[\\w-]+",
-          "name": "keyword.other.windi.css"
+          "name": "variable.alias.windi"
         },
         {
           "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;)])",
-          "name": "keyword.other.windi.css"
+          "name": "variable.alias.windi"
         },
         {
           "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "variable.variant.windi.css"
+          "name": "punctuation.definition.template-expression.begin"
         },
         {
           "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[*][\\w-]+",
-          "name": "variable.variant.windi.css"
+          "name": "support.class.windicss"
         },
         {
           "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
@@ -404,25 +404,25 @@
     "shortcut": {
       "patterns": [
         {
-          "match": "^\\s*\\.[\\w-]+(?=\\s*:)",
-          "name": "variable.alias.windi",
+          "match": "^\\s*\\.[\\w-]+(?=\\s*:[^{]*;)",
+          "name": "support.class.windicss",
           "captures": { "1": { "name": "punctuation.definition.variable.windi" } }
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?[<@\\w-]+:)[\\w-]+",
-          "name": "keyword.other.windi.css"
+          "name": "variable.shortcut.windi"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;)])",
-          "name": "keyword.other.windi.css"
+          "name": "variable.shortcut.windi"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "variable.variant.windi.css"
+          "name": "punctuation.definition.template-expression.begin"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[*][\\w-]+",
-          "name": "variable.variant.windi.css"
+          "name": "support.class.windicss"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
@@ -434,19 +434,19 @@
       "patterns": [
         {
           "match": "(?<=@apply\\s+[\\s\\S]*?[<@\\w-]+:)[\\w-]+",
-          "name": "keyword.other.windi.css"
+          "name": "variable.apply.windi"
         },
         {
           "match": "(?<=@apply\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;)])",
-          "name": "keyword.other.windi.css"
+          "name": "variable.apply.windi"
         },
         {
           "match": "(?<=@apply\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "variable.variant.windi.css"
+          "name": "punctuation.definition.template-expression.begin"
         },
         {
           "match": "(?<=@apply\\s+[\\s\\S]*?)[*][\\w-]+",
-          "name": "variable.variant.windi.css"
+          "name": "support.class.windicss"
         },
         {
           "match": "(?<=@apply\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
@@ -458,19 +458,19 @@
       "patterns": [
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?[<@\\w-]+:\\(?)[\\w-]+",
-          "name": "keyword.other.windi.css"
+          "name": "variable.apply.windi"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;}\\)])",
-          "name": "keyword.other.windi.css"
+          "name": "variable.apply.windi"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "variable.variant.windi.css"
+          "name": "punctuation.definition.template-expression.begin"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[*][\\w-]+",
-          "name": "variable.variant.windi.css"
+          "name": "support.class.windicss"
         },
         {
           "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
@@ -482,19 +482,19 @@
       "patterns": [
         {
           "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?[<@\\w-]+:)[\\w-]+",
-          "name": "keyword.other.windi.css"
+          "name": "variable.attr.windi"
         },
         {
           "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;)])",
-          "name": "keyword.other.windi.css"
+          "name": "variable.attr.windi"
         },
         {
           "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[<@\\w-]+:",
-          "name": "variable.variant.windi.css"
+          "name": "punctuation.definition.template-expression.begin"
         },
         {
           "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[*][\\w-]+",
-          "name": "variable.variant.windi.css"
+          "name": "support.class.windicss"
         },
         {
           "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[!][<@:*\\w-]+",

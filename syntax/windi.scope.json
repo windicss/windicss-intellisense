@@ -2,38 +2,28 @@
   "scopeName": "source.windi.scope",
   "injectionSelector": "L:meta.attribute.class, L:meta.property-list.css",
   "patterns": [
-    {
-      "include": "#variant"
-    },
-		{
-			"include": "#separator"
-		},
-		{
-			"include": "#utility"
-		},
-		{
-			"include": "#important"
-		},
-		{
-			"include": "#bracket"
-		}
+    { "include": "#variant" },
+		{ "include": "#utility" },
+    { "include": "#alias" },
+		{ "include": "#important" },
+		{ "include": "#bracket" }
   ],
   "repository": {
     "variant": {
-      "match": "(\\w|-|\\+)+?(?=:)",
-      "name": "support.class.windicss"
+      "match": "(\\w|-|\\+)+?:",
+      "name": "punctuation.definition.template-expression.begin"
     },
-		"separator": {
-			"match": "(?<=\\w+?):",
-			"name": "keyword.variant.windicss"
-		},
 		"utility": {
 			"match": "(\\w|-|\\.)+?",
-			"name": "constant.numeric.windicss"
+			"name": "variable.utility.windicss"
 		},
 		"important": {
-			"match": "(?<=\\s|\"|'|`)!(\\w|-|:)+",
+			"match": "(?<=\\s|\"|'|`)!(\\w|-|:|\\*)+",
 			"name": "string.regexp.windicss"
+		},
+    "alias": {
+			"match": "(?<=\\s|\"|'|`)\\*(\\w|-)+",
+			"name": "support.class.windicss"
 		},
 		"bracket": {
 			"match": "\\(|\\)",
