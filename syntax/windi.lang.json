@@ -9,6 +9,8 @@
   "scopeName": "source.windi",
   "patterns": [
     { "include": "#strings" },
+    { "include": "#boolean-literal" },
+    { "include": "#null-literal" },
     {
       "captures": {
         "1": { "name": "entity.other.attribute-name.class.mixin.css" }
@@ -155,6 +157,229 @@
       "match": "^\\s*((@)var\\b)",
       "name": "meta.at-rule.var.css"
     },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.layer.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)layer\\b)",
+      "name": "meta.at-rule.layer.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.config.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)config\\b)",
+      "name": "meta.at-rule.config.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.important.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)important\\b)",
+      "name": "meta.at-rule.important.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.screen.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)screen\\b)",
+      "name": "meta.at-rule.screen.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.apply.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)apply\\b)",
+      "name": "meta.at-rule.apply.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.attr.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)attr\\b)",
+      "name": "meta.at-rule.attr.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.func.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)func\\b)",
+      "name": "meta.at-rule.func.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.load.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)load\\b)",
+      "name": "meta.at-rule.load.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.return.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)return\\b)",
+      "name": "meta.at-rule.return.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.yield.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)yield\\b)",
+      "name": "meta.at-rule.yield.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.log.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)log\\b)",
+      "name": "meta.at-rule.log.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.warn.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)warn\\b)",
+      "name": "meta.at-rule.warn.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.error.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)error\\b)",
+      "name": "meta.at-rule.error.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.assert.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)assert\\b)",
+      "name": "meta.at-rule.assert.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.if.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)if\\b)",
+      "name": "meta.at-rule.if.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.elif.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "((@)elif\\b)",
+      "name": "meta.at-rule.elif.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.else.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "((@)else\\b)",
+      "name": "meta.at-rule.else.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.for.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)for\\b)",
+      "name": "meta.at-rule.for.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.while.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)while\\b)",
+      "name": "meta.at-rule.while.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.with.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)with\\b)",
+      "name": "meta.at-rule.with.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.try.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)try\\b)",
+      "name": "meta.at-rule.try.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.except.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "((@)except\\b)",
+      "name": "meta.at-rule.except.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.js.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)js\\b)",
+      "name": "meta.at-rule.js.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.break.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)break\\b)",
+      "name": "meta.at-rule.break.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.continue.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)continue\\b)",
+      "name": "meta.at-rule.continue.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.raise.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)raise\\b)",
+      "name": "meta.at-rule.raise.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "keyword.control.at-rule.del.css" },
+        "2": { "name": "punctuation.definition.keyword.css" }
+      },
+      "match": "^\\s*((@)del\\b)",
+      "name": "meta.at-rule.del.css"
+    },
+    {
+      "captures": {
+        "1": { "name": "variable.alias.windi" }
+      },
+      "match": "^\\s*((\\*)[\\w-]+(?=\\s*:))",
+      "name": "meta.lang.alias.css"
+    },
     { "include": "source.css#media-features" },
     {
       "match": "\\b(tv|tty|screen|projection|print|handheld|embossed|braille|aural|all)\\b",
@@ -186,11 +411,10 @@
       ]
     },
     {
-      "match": "(@|\\-\\-)[\\w-]+(?=\\s*)",
-      "name": "variable.other.windi",
+      "match": "(\\s*|\\-\\-)[\\w-]+(?=\\s*=)",
+      "name": "variable.assign.windi",
       "captures": { "1": { "name": "punctuation.definition.variable.windi" } }
     },
-    { "include": "#variable_interpolation" },
     {
       "begin": "{",
       "beginCaptures": {
@@ -210,7 +434,6 @@
         { "include": "source.css#pseudo-classes" },
         { "include": "source.css#tag-names" },
         { "include": "source.css#commas" },
-        { "include": "#variable_interpolation" },
         { "include": "source.css#property-names" },
         { "include": "#property_values" },
         { "include": "$self" }
@@ -262,10 +485,6 @@
     { "include": "source.css#functions" }
   ],
   "repository": {
-    "variable_interpolation": {
-      "match": "@{[a-zA-Z0-9_-]+}",
-      "name": "variable.other.interpolation.windi"
-    },
     "strings": {
       "patterns": [
         {
@@ -282,8 +501,7 @@
             {
               "match": "\\\\([0-9A-Fa-f]{1,6}|.)",
               "name": "constant.character.escape.css"
-            },
-            { "include": "#variable_interpolation" }
+            }
           ]
         },
         {
@@ -300,11 +518,26 @@
             {
               "match": "\\\\([0-9A-Fa-f]{1,6}|.)",
               "name": "constant.character.escape.css"
-            },
-            { "include": "#variable_interpolation" }
+            }
           ]
         }
       ]
+    },
+    "boolean-literal": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.true.js",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))True(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        },
+        {
+          "name": "constant.language.boolean.false.js",
+          "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))False(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+        }
+      ]
+    },
+    "null-literal": {
+      "name": "constant.language.null.js",
+      "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))None(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
     },
     "brace_round": { "match": "\\(|\\)", "name": "meta.brace.round.css" },
     "property_values": {
