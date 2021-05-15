@@ -1,9 +1,10 @@
-import { window, workspace, Range, Diagnostic, DiagnosticSeverity, languages } from 'vscode';
-import type { ExtensionContext, TextEditor, TextDocument, TextLine } from 'vscode';
-import { Processor } from 'windicss/lib';
-export function registerDiagnostics(ctx: ExtensionContext): void {
+import type { ExtensionContext, TextDocument, TextLine } from 'vscode';
+import { Diagnostic, DiagnosticSeverity, languages, Range, window, workspace } from 'vscode';
+import type { Core } from '../interfaces';
+export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
   const diagCollection = languages.createDiagnosticCollection('windi');
 
+  if (core.processor !== undefined) {
   if (window.activeTextEditor) {
     _update(window.activeTextEditor.document);
   }
@@ -20,6 +21,9 @@ export function registerDiagnostics(ctx: ExtensionContext): void {
   ctx.subscriptions.push(
     workspace.onDidCloseTextDocument(doc => diagCollection.delete(doc.uri))
   );
+  } else {
+
+  }
 
 
   function _update(doc: TextDocument) {
@@ -43,7 +47,7 @@ export function registerDiagnostics(ctx: ExtensionContext): void {
       } else if (lineOfText.text.match(/(?<=@apply )(.*)(?=;)/)){
         let match = lineOfText.text.match(/(?<=@apply )(.*)(?=;)/)?.[0];
         if (match) {
-          const p = new Processor();
+          const p = core.processor;
           match = match.replace(/ {2,}/gi, ' ');
           const classes = match.split(' ');
           for (let index = 0; index < classes.length; index++) {

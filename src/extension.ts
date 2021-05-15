@@ -25,7 +25,7 @@ export async function activate(ctx: ExtensionContext) {
   await onUpdate();
 
   registerCodeFolding(ctx);
-  registerDiagnostics(ctx);
+  registerDiagnostics(ctx, CORE);
   Log.info('Windi CSS Intellisense is now active!');
 
   // Changes configuration should invalidate above cache
