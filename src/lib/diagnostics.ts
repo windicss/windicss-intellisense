@@ -5,22 +5,22 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
   const diagCollection = languages.createDiagnosticCollection('windi');
 
   if (core.processor !== undefined) {
-  if (window.activeTextEditor) {
-    _update(window.activeTextEditor.document);
-  }
-  ctx.subscriptions.push(diagCollection);
-  ctx.subscriptions.push(window.onDidChangeActiveTextEditor(
-    (editor) => {
-      if (editor) {
-        _update(editor.document);
-      }
-    }));
-  ctx.subscriptions.push(
-    workspace.onDidChangeTextDocument(editor => _update(editor.document))
-  );
-  ctx.subscriptions.push(
-    workspace.onDidCloseTextDocument(doc => diagCollection.delete(doc.uri))
-  );
+    if (window.activeTextEditor) {
+      _update(window.activeTextEditor.document);
+    }
+    ctx.subscriptions.push(diagCollection);
+    ctx.subscriptions.push(window.onDidChangeActiveTextEditor(
+      (editor) => {
+        if (editor) {
+          _update(editor.document);
+        }
+      }));
+    ctx.subscriptions.push(
+      workspace.onDidChangeTextDocument(editor => _update(editor.document))
+    );
+    ctx.subscriptions.push(
+      workspace.onDidCloseTextDocument(doc => diagCollection.delete(doc.uri))
+    );
   } else {
 
   }
@@ -53,7 +53,7 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
           for (let index = 0; index < classes.length; index++) {
             let c = classes[index];
             c = c.replace('!', '');
-            if (c == 'important') break;
+            if (c === 'important') break;
             const check = p.extract(c);
             if (check === undefined) {
               const diag = _createDiagnostic(

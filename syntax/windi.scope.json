@@ -1,5 +1,5 @@
 {
-  "scopeName": "source.windicss",
+  "scopeName": "source.windi.scope",
   "injectionSelector": "L:meta.attribute.class, L:meta.property-list.css",
   "patterns": [
     {

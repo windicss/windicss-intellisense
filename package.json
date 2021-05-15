@@ -80,6 +80,22 @@
         "title": "Run & Open Analysis"
       }
     ],
+    "languages": [
+      {
+        "id": "windi",
+        "aliases": [
+          "WINDI",
+          "windi"
+        ],
+        "extensions": [
+          ".windi"
+        ],
+        "mimetypes": [
+          "text/windi"
+        ],
+        "configuration": "./syntax/lang.config.json"
+      }
+    ],
     "grammars": [
       {
         "injectTo": [
@@ -93,8 +109,16 @@
           "source.svelte",
           "text.html"
         ],
-        "scopeName": "source.windicss",
-        "path": "./syntax/windicss.lang.json"
+        "scopeName": "source.windi.scope",
+        "path": "./syntax/windi.scope.json"
+      },
+      {
+        "language": "windi",
+        "scopeName": "source.windi",
+        "path": "./syntax/windi.lang.json",
+        "tokenTypes": {
+          "meta.function.url string.quoted": "other"
+        }
       }
     ],
     "configuration": {
