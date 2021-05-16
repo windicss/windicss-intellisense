@@ -1,8 +1,7 @@
 import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
-import { flatColors } from 'windicss/utils';
-import { hex2RGB, highlightCSS } from '../utils';
+import { hex2RGB, highlightCSS, flatColors } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
 import type { Core } from '../interfaces';
 import { Log } from '../utils/Log';

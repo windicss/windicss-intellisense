@@ -2,6 +2,18 @@ import { ClassParser } from 'windicss/utils/parser';
 import { workspace, MarkdownString, Range, Position, DecorationOptions } from 'vscode';
 import { HTMLParser } from './parser';
 import { keyOrder } from './order';
+import { flatColors as _flatColors } from 'windicss/utils';
+import type { colorObject, DictStr } from 'windicss/types/interfaces';
+
+export function flatColors(colors: colorObject) {
+  colors = _flatColors(colors);
+  for (const [key, value] of Object.entries(colors)) {
+    if (typeof value === 'function') {
+      colors[key] = 'currentColor';
+    }
+  }
+  return colors as DictStr;
+}
 
 export function highlightCSS(css?: string): MarkdownString | undefined {
   if (css) {

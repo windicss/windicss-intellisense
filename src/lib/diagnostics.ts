@@ -1,6 +1,7 @@
 import type { ExtensionContext, TextDocument, TextLine } from 'vscode';
 import { Diagnostic, DiagnosticSeverity, languages, Range, window, workspace } from 'vscode';
 import type { Core } from '../interfaces';
+import { ClassParser } from 'windicss/utils/parser';
 export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
   const diagCollection = languages.createDiagnosticCollection('windi');
 
@@ -22,7 +23,7 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
       workspace.onDidCloseTextDocument(doc => diagCollection.delete(doc.uri))
     );
   } else {
-
+    console.log('todo');
   }
 
 
@@ -44,34 +45,58 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
         if (diag !== undefined) {
           diagnostics.push(diag);
         }
-      } else if (lineOfText.text.match(/(?<=@apply )(.*)(?=;)/)){
-        let match = lineOfText.text.match(/(?<=@apply )(.*)(?=;)/)?.[0];
-        if (match) {
-          const p = core.processor;
-          match = match.replace(/ {2,}/gi, ' ');
-          const classes = match.split(' ');
-          for (let index = 0; index < classes.length; index++) {
-            let c = classes[index];
-            c = c.replace('!', '');
-            if (c === 'important') break;
-            const check = p.extract(c);
-            if (check === undefined) {
-              const diag = _createDiagnostic(
-                doc,
-                lineOfText,
-                lineIndex,
-                c,
-                DiagnosticSeverity.Error,
-                `${c} is not valid windi css class`,
-                'windi_invalid-class'
-              );
-              if (diag !== undefined) {
-                diagnostics.push(diag);
-              }
+      } else {
+        const p = core.processor;
+        const match = lineOfText.text.match(/(?<=@apply\s*)\S(.*)(?=\s*;)/);
+        if (match && p) {
+          const utilities = match[0].replace(/!important$/, '');
+          for (const utility of p.interpret(utilities).ignored) {
+            console.log(utility);
+            const diag = _createDiagnostic(
+              doc,
+              lineOfText,
+              lineIndex,
+              utility,
+              DiagnosticSeverity.Error,
+              `${utility} is not valid windi css class`,
+              'windi_invalid-class'
+            );
+            if (diag !== undefined) {
+              diagnostics.push(diag);
             }
           }
+          // console.log(utilities);
         }
       }
+
+      // if ()){
+      //   let match = lineOfText.text.match(/(?<=@apply\s*)\S(.*)(?=\s*;)/)?.[0];
+      //   const p = core.processor;
+      //   if (match && p) {
+      //     match = match.replace(/ {2,}/gi, ' ').replace;
+      // console.log(match);
+      // const classes = match.split(' ');
+      // for (let index = 0; index < classes.length; index++) {
+      //   let c = classes[index];
+      //   c = c.replace('!', '');
+      //   if (c === 'important') break;
+      //   const check = p.extract(c);
+      //   if (check === undefined) {
+      //     const diag = _createDiagnostic(
+      //       doc,
+      //       lineOfText,
+      //       lineIndex,
+      //       c,
+      //       DiagnosticSeverity.Error,
+      //       `${c} is not valid windi css class`,
+      //       'windi_invalid-class'
+      //     );
+      //     if (diag !== undefined) {
+      //       diagnostics.push(diag);
+      //     }
+      //   }
+      // }
+      // }
     }
     diagCollection.set(doc.uri, diagnostics);
   }
