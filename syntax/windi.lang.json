@@ -4,6 +4,7 @@
   "patterns": [
     { "include": "#strings" },
     { "include": "#template" },
+    { "include": "#important" },
     { "include": "#alias" },
     { "include": "#shortcut" },
     { "include": "#apply" },
@@ -143,10 +144,17 @@
         },
         {
           "captures": {
+            "0": { "name": "entity.name.tag.parent-selector.windi" },
+            "1": { "name": "punctuation.definition.entity.css" }
+          },
+          "match": "(&)(?=[a-zA-Z0-9_-]*)"
+        },
+        {
+          "captures": {
             "0": { "name": "entity.other.attribute-name.parent-selector.css" },
             "1": { "name": "punctuation.definition.entity.css" }
           },
-          "match": "(&)[a-zA-Z0-9_-]*"
+          "match": "(?<=&)[a-zA-Z0-9_-]*"
         }
       ]
     },
@@ -164,6 +172,7 @@
       "match": "((#)([_a-zA-Z]|(@{[a-zA-Z0-9_-]+}))[a-zA-Z0-9_-]*)",
       "name": "meta.selector.css"
     },
+    "important": { "match": "\\!\\s*important", "name": "entity.name.tag.windi" },
     "multiline_comments": {
       "begin": "/\\*",
       "beginCaptures": {
@@ -177,7 +186,6 @@
     },
     "operators": {
       "patterns": [
-        { "match": "\\!\\s*important", "name": "string.regexp.windicss" },
         {
           "match": "\\*|\\/|\\-|\\+|~|=|<=|>=|<|>",
           "name": "keyword.operator.windi"
@@ -396,8 +404,8 @@
           "name": "support.class.windicss"
         },
         {
-          "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
-          "name": "string.regexp.windicss"
+          "match": "(?<=^\\s*\\*[\\w-]+\\s*:\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "name": "entity.name.tag.windi"
         }
       ]
     },
@@ -425,8 +433,8 @@
           "name": "support.class.windicss"
         },
         {
-          "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
-          "name": "string.regexp.windicss"
+          "match": "(?<=^\\s*\\.[\\w-]+\\s*:\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "name": "entity.name.tag.windi"
         }
       ]
     },
@@ -449,8 +457,8 @@
           "name": "support.class.windicss"
         },
         {
-          "match": "(?<=@apply\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
-          "name": "string.regexp.windicss"
+          "match": "(?<=@apply\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "name": "entity.name.tag.windi"
         }
       ]
     },
@@ -473,8 +481,8 @@
           "name": "support.class.windicss"
         },
         {
-          "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
-          "name": "string.regexp.windicss"
+          "match": "(?<=^\\s*\\.[\\w-]+\\s*{\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "name": "entity.name.tag.windi"
         }
       ]
     },
@@ -497,8 +505,8 @@
           "name": "support.class.windicss"
         },
         {
-          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[!][<@:*\\w-]+",
-          "name": "string.regexp.windicss"
+          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "name": "entity.name.tag.windi"
         }
       ]
     }

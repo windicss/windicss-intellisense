@@ -18,8 +18,8 @@
 			"name": "variable.utility.windicss"
 		},
 		"important": {
-			"match": "(?<=\\s|\"|'|`)!(\\w|-|:|\\*)+",
-			"name": "string.regexp.windicss"
+			"match": "(?<=\\s|\"|'|`)!(?=(\\w|-|:|\\*)+)",
+			"name": "entity.name.tag.windi"
 		},
     "alias": {
 			"match": "(?<=\\s|\"|'|`)\\*(\\w|-)+",
