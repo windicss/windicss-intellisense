@@ -489,23 +489,31 @@
     "attr": {
       "patterns": [
         {
-          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?[<@\\w-]+:)[\\w-]+",
+          "match": "(?<=@attr\\[[!<@:\\w-]+\\]\\s+[\\s\\S]*?[<@\\w-]+:)[\\w-]+",
           "name": "variable.attr.windi"
         },
         {
-          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;)])",
+          "match": "(?<=@attr\\[[!<@:\\w-]+\\]\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;)])",
           "name": "variable.attr.windi"
         },
         {
-          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[<@\\w-]+(?=:)",
+          "match": "(?<=@attr\\[[!<@:\\w-]+\\]\\s+[\\s\\S]*?)[<@\\w-]+(?=:)",
           "name": "entity.name.tag.windi"
         },
         {
-          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[*][\\w-]+",
+          "match": "(?<=@attr\\[[!<@:\\w-]+\\]\\s+[\\s\\S]*?)[*][\\w-]+",
           "name": "support.class.windicss"
         },
         {
-          "match": "(?<=@attr\\[[\\w-]+\\]\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "match": "(?<=@attr\\[[!<@:\\w-]+\\]\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "name": "entity.name.tag.windi"
+        },
+        {
+          "match": "(?<=@attr\\[[!<@:\\w-]*[!<@\\w-]+):",
+          "name": "punctuation.separator.key-value.css"
+        },
+        {
+          "match": "(?<=@attr\\[[!<@:\\w-]*)[!<@\\w-]+(?=:)",
           "name": "entity.name.tag.windi"
         }
       ]
