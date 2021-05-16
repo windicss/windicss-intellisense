@@ -2,6 +2,7 @@
   "scopeName": "source.windi.scope",
   "injectionSelector": "L:meta.attribute.class, L:meta.property-list.css",
   "patterns": [
+    { "include": "#separator" },
     { "include": "#variant" },
 		{ "include": "#utility" },
     { "include": "#alias" },
@@ -9,8 +10,12 @@
 		{ "include": "#bracket" }
   ],
   "repository": {
+    "separator":         {
+      "match": "(?<=(\\w|-|\\+)+?):",
+      "name": "punctuation.separator.key-value.css"
+    },
     "variant": {
-      "match": "(\\w|-|\\+)+?:",
+      "match": "[^:\\s]+(?=:)",
       "name": "entity.name.tag.windi"
     },
 		"utility": {
