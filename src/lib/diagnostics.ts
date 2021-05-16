@@ -1,30 +1,24 @@
-import type { ExtensionContext, TextDocument, TextLine } from 'vscode';
+import type { Disposable, ExtensionContext, TextDocument, TextLine } from 'vscode';
 import { Diagnostic, DiagnosticSeverity, languages, Range, window, workspace } from 'vscode';
 import type { Core } from '../interfaces';
-export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
+export function registerDiagnostics(ctx: ExtensionContext,  core: Core): Disposable[] | [] {
   const diagCollection = languages.createDiagnosticCollection('windi');
 
   if (core.processor !== undefined) {
-    if (window.activeTextEditor) {
-      _update(window.activeTextEditor.document);
-    }
-    ctx.subscriptions.push(diagCollection);
-    ctx.subscriptions.push(window.onDidChangeActiveTextEditor(
-      (editor) => {
-        if (editor) {
-          _update(editor.document);
-        }
-      }));
-    ctx.subscriptions.push(
-      workspace.onDidChangeTextDocument(editor => _update(editor.document))
-    );
-    ctx.subscriptions.push(
-      workspace.onDidCloseTextDocument(doc => diagCollection.delete(doc.uri))
-    );
+    if (window.activeTextEditor) _update(window.activeTextEditor.document);
+    return [
+      diagCollection,
+      window.onDidChangeActiveTextEditor(
+        editor => {
+          if (editor) _update(editor.document);
+        }),
+      workspace.onDidChangeTextDocument(editor => _update(editor.document)),
+      workspace.onDidCloseTextDocument(doc => diagCollection.delete(doc.uri)),
+    ];
   } else {
     console.log('todo');
+    return [];
   }
-
 
   function _update(doc: TextDocument) {
     const diagnostics: Diagnostic[] = [];
