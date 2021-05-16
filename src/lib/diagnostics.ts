@@ -1,7 +1,6 @@
 import type { ExtensionContext, TextDocument, TextLine } from 'vscode';
 import { Diagnostic, DiagnosticSeverity, languages, Range, window, workspace } from 'vscode';
 import type { Core } from '../interfaces';
-import { ClassParser } from 'windicss/utils/parser';
 export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
   const diagCollection = languages.createDiagnosticCollection('windi');
 
@@ -48,55 +47,16 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): void {
       } else {
         const p = core.processor;
         const match = lineOfText.text.match(/(?<=@apply\s*)\S(.*)(?=\s*;)/);
-        if (match && p) {
+        if (match && match.index && p) {
           const utilities = match[0].replace(/!important$/, '');
-          for (const utility of p.interpret(utilities).ignored) {
-            console.log(utility);
-            const diag = _createDiagnostic(
-              doc,
-              lineOfText,
-              lineIndex,
-              utility,
-              DiagnosticSeverity.Error,
-              `${utility} is not valid windi css class`,
-              'windi_invalid-class'
-            );
-            if (diag !== undefined) {
-              diagnostics.push(diag);
-            }
+          for (const utility of p.validate(utilities).ignored) {
+            const range = new Range(lineIndex, match.index + utility.start, lineIndex, match.index + utility.end);
+            const diagnostic = new Diagnostic(range, `${utility.className} is not valid windi css class`, DiagnosticSeverity.Error);
+            diagnostic.code = 'windi_invalid-class';
+            diagnostics.push(diagnostic);
           }
-          // console.log(utilities);
         }
       }
-
-      // if ()){
-      //   let match = lineOfText.text.match(/(?<=@apply\s*)\S(.*)(?=\s*;)/)?.[0];
-      //   const p = core.processor;
-      //   if (match && p) {
-      //     match = match.replace(/ {2,}/gi, ' ').replace;
-      // console.log(match);
-      // const classes = match.split(' ');
-      // for (let index = 0; index < classes.length; index++) {
-      //   let c = classes[index];
-      //   c = c.replace('!', '');
-      //   if (c === 'important') break;
-      //   const check = p.extract(c);
-      //   if (check === undefined) {
-      //     const diag = _createDiagnostic(
-      //       doc,
-      //       lineOfText,
-      //       lineIndex,
-      //       c,
-      //       DiagnosticSeverity.Error,
-      //       `${c} is not valid windi css class`,
-      //       'windi_invalid-class'
-      //     );
-      //     if (diag !== undefined) {
-      //       diagnostics.push(diag);
-      //     }
-      //   }
-      // }
-      // }
     }
     diagCollection.set(doc.uri, diagnostics);
   }
