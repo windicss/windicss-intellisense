@@ -184,7 +184,7 @@
         },
         {
           "match": "\\b(not|and|or)\\b",
-          "name": "keyword.control.logical.operator.windi"
+          "name": "keyword.operator.expression.logic.windi"
         }
       ]
     },
