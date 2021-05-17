@@ -1,5 +1,5 @@
 import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString } from 'vscode';
-import { highlightCSS, isColor, getConfig, rem2px } from '../utils';
+import { highlightCSS, isColor, getConfig, rem2px, hex2RGB } from '../utils';
 import { fileTypes } from '../utils/filetypes';
 import { ClassParser, HTMLParser as AttrParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
@@ -230,36 +230,30 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             // try one time update instead of line
             const documentText = document.getText();
             const parser = new HTMLParser(documentText);
-            const classes = parser.parseClasses();
-            for (const c of classes) {
-              const elements = new ClassParser(c.result).parse(false);
-              const isValidateColor = (utility: string) => core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
-              for (const element of elements) {
-                if (element.type === 'group' && Array.isArray(element.content)) {
-                  for (const e of element.content) {
-                    const color = isValidateColor(e.raw);
-                    if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+e.start), document.positionAt(c.start+e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+
+            for (const attr of parser.parseAttrs()) {
+              if (attr.key in attrs) {
+                const regex = /\S+/igm;
+                const data = attr.value.raw;
+                let match;
+                while ((match = regex.exec(data as string))) {
+                  if (match && match[0] in core.colors) {
+                    const color = hex2RGB(core.colors[match[0]] as string);
+                    if (color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + match.index), document.positionAt(attr.value.start + match.index + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                   }
                 }
-                const color = element.type === 'utility' && isValidateColor(element.raw);
-                if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+element.start), document.positionAt(c.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
-              }
-            }
-
-            const attrParser = new AttrParser(documentText);
-            const attrs = attrParser.parseAttrs();
-            for (const attr of attrs) {
-              if (attr.key !== 'class' && attr.key !== 'className') {
-                if (Array.isArray(attr.value)) {
-                  for (const value of attr.value) {
-                    if (value in core.colors) {
-                      console.log(value);
+              } else if (['class', 'className'].includes(attr.key) || core.variants.includes(attr.key)) {
+                const elements = new ClassParser(attr.value.raw, core.processor?.config('separator', ':') as string, core.variants).parse(false);
+                const isValidateColor = (utility: string) => core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
+                for (const element of elements) {
+                  if (element.type === 'group' && Array.isArray(element.content)) {
+                    for (const e of element.content) {
+                      const color = isValidateColor(e.raw);
+                      if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start+e.start), document.positionAt(attr.value.start+e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                     }
                   }
-                } else {
-                  if (attr.value in core.colors) {
-                    console.log(attr.value);
-                  }
+                  const color = element.type === 'utility' && isValidateColor(element.raw);
+                  if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start+element.start), document.positionAt(attr.value.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                 }
               }
             }

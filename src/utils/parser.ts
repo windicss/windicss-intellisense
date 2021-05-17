@@ -1,8 +1,44 @@
+export type Attr = { raw: string, key: string, value: { raw: string, start: number }, start: number, end: number };
+
 export class HTMLParser {
   html?: string;
+
   constructor(html?: string) {
     this.html = html;
   }
+
+  parseAttrs(): Attr[] {
+    if (!this.html) return [];
+    const output: Attr[] = [];
+    const regex = /\S+\s*=\s*"[^"]+"|\S+\s*=\s*'[^']+'|\S+\s*=\s*[^>\s]+/igm;
+    let match;
+    while ((match = regex.exec(this.html as string))) {
+      if (match) {
+        const raw = match[0];
+        const sep = raw.indexOf('=');
+        const key = raw.slice(0, sep).trim();
+        let value: string| string[] = raw.slice(sep + 1).trim();
+        let vstart = match.index + (sep + 1 + (raw.slice(sep + 1).match(/\S/)?.index || 0));
+        if (['"', '\''].includes(value.charAt(0))) {
+          vstart ++;
+          value = value.slice(1, -1);
+        }
+
+        output.push({
+          raw,
+          key,
+          value: {
+            raw: value,
+            start: vstart,
+          },
+          start: match.index,
+          end: regex.lastIndex,
+        });
+      }
+    }
+    return output;
+  }
+
   parseClasses(): { start: number; end: number; result: string }[] {
     // Match all class properties
     if (!this.html) return [];
