@@ -1,7 +1,7 @@
 import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString } from 'vscode';
 import { highlightCSS, isColor, getConfig, rem2px, hex2RGB } from '../utils';
-import { fileTypes } from '../utils/filetypes';
-import { ClassParser, HTMLParser as AttrParser } from 'windicss/utils/parser';
+import { fileTypes, patterns } from '../utils/filetypes';
+import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
@@ -44,14 +44,17 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       }
     }
 
-    for (const { extension, pattern } of fileTypes) {
+    for (const { extension, type } of fileTypes) {
       disposables.push(languages.registerCompletionItemProvider(
         extension,
         {
           provideCompletionItems(document, position) {
 
             const text = document.getText(new Range(new Position(0, 0), position));
-            if (text.match(pattern) === null) return [];
+            if (text.match(patterns[type]) === null) {
+              const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
+              if ((!key) || !(['js', 'html'].includes(type) && core.variants.includes(key))) return [];
+            }
 
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.map((classItem, index) => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);

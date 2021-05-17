@@ -1,68 +1,68 @@
 import { getConfig } from '../utils';
 
-function connect(strings: string|string[]) {
+export function connect(strings: string|string[]) {
   return Array.isArray(strings)? new RegExp(strings.map(i => `(${i})`).join('|')) : new RegExp(strings);
 }
 
 const classRegex = String.raw`(class\s*=\s*["'])[^"']*$`;
 const classNameRegex = String.raw`(className\s*=\s*["'])[^"']*$`;
-const variantsRegex = String.raw`((dark|light|active|after|before|checked|disabled|focus|hover|tw)\s*=\s*["'])[^"']*$`;
+// const variantsRegex = String.raw`((dark|light|active|after|before|checked|disabled|focus|hover|tw)\s*=\s*["'])[^"']*$`;
 const emmetRegex = String.raw`\.\S*$`;
 const applyRegex = String.raw`@apply\s+[^;]*$`;
 
-const map = {
-  'html': connect([ classRegex, variantsRegex, applyRegex, emmetRegex ]),
-  'js': connect([ classRegex, classNameRegex, variantsRegex, applyRegex, emmetRegex ]),
+export const patterns: {[key:string]: RegExp} = {
+  'html': connect([ classRegex, applyRegex, emmetRegex ]),
+  'js': connect([ classRegex, classNameRegex, applyRegex, emmetRegex ]),
   'css': connect(applyRegex),
 };
 
 export const fileTypes: {
+  type: string;
   extension: string;
-  pattern: RegExp;
 }[] = [
   {
+    type: 'css',
     extension: 'css',
-    pattern: map.css,
   },
   {
+    type: 'css',
     extension: 'sass',
-    pattern: map.css,
   },
   {
+    type: 'css',
     extension: 'less',
-    pattern: map.css,
   },
   {
+    type: 'js',
     extension: 'javascript',
-    pattern: map.js,
   },
   {
+    type: 'js',
     extension: 'javascriptreact',
-    pattern: map.js,
   },
   {
+    type: 'js',
     extension: 'typescriptreact',
-    pattern: map.js,
   },
   {
+    type: 'html',
     extension: 'html',
-    pattern: map.html,
   },
   {
+    type: 'html',
     extension: 'php',
-    pattern: map.html,
   },
   {
+    type: 'html',
     extension: 'vue',
-    pattern: map.html,
   },
   {
+    type: 'html',
     extension: 'svelte',
-    pattern: map.html,
   },
 ];
 
 if (getConfig('windicss.includeLanguages')) {
   const config = getConfig<Record<string, string>>('windicss.includeLanguages');
-  if (config) Object.entries(config).map(([key, value]) => (fileTypes.push({ extension: key, pattern: value in map ? map[value as keyof typeof map] : map.css })));
+  if (config) Object.entries(config).map(([key, value]) => (fileTypes.push({ extension: key, type: value in patterns ? value : 'css' })));
 }
