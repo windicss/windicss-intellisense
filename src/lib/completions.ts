@@ -1,86 +1,94 @@
+import * as vscode from 'vscode';
 import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
 import { highlightCSS, isColor, getConfig, rem2px } from '../utils';
 import { fileTypes } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
-import type { Disposable } from 'vscode';
 
-const DISPOSABLES: Disposable[] = [];
+const DISPOSABLES: vscode.Disposable[] = [];
 let initialized = false;
 
-export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
-  const TRIGGERS = ['"', '\'', ' ', (core.processor?.config('separator') ?? ':') as string, '('];
+export function registerCompletions(ctx: ExtensionContext, core: Core): vscode.Disposable[] {
+  function createCompletions(document: vscode.TextDocument, position: vscode.Position, matchText = true) {
+    // Get range including all characters in the current line till the current position
+    // const range = new Range(new Position(position.line, 0), position);
+    // Get text in current line
+    // const textInCurrentLine = document.getText(range);
+    if (matchText && document.getText(new Range(new Position(0, 0), position)).match(/(?<=\w=["'])([^'"]*$)|(?<=<style)(.*$)/gmi) === null) return [];
+    // const matchCursorIsInCorrectPosition = textInCurrentLine.match(pattern.regex);
+    // const classesInCurrentLine = textInCurrentLine
+    // .match(pattern.regex)?.[1]
+    // .split(pattern.splitCharacter) ?? [];
+    const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.map((classItem, index) => {
+      const item = new CompletionItem(classItem, CompletionItemKind.Constant);
+      item.sortText = '1-' + index.toString().padStart(8, '0');
+      item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(classItem).styleSheet.build()) : core.processor?.interpret(classItem).styleSheet.build());
+      return item;
+    }): [];
+
+    const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
+      const item = new CompletionItem(label, CompletionItemKind.Module);
+      item.documentation = documentation;
+      item.sortText = '2-' + index.toString().padStart(8, '0');
+      // trigger suggestion after select variant
+      item.command = {
+        command: 'editor.action.triggerSuggest',
+        title: label,
+      };
+      return item;
+    }): [];
+
+    const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamicCompletions.map(({ label, position }, index) => {
+      const item = new CompletionItem(label, CompletionItemKind.Variable);
+      // item.documentation = highlightCSS(core.processor?.interpret())
+      item.sortText = '3-' + index.toString().padStart(8, '0');
+      item.command = {
+        command: 'cursorMove',
+        arguments: [{
+          to: 'left',
+          select: true,
+          value: position,
+        }],
+        title: label,
+      };
+      return item;
+    }): [];
+
+    const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation }, index) => {
+      const color = new CompletionItem(label, CompletionItemKind.Color);
+      color.sortText = '0-' + index.toString().padStart(8, '0');
+      color.detail = detail;
+      color.documentation = documentation;
+      return color;
+    });
+
+    return [...variantsCompletion, ...colorsCompletion, ...staticCompletion, ...dynamicCompletion];
+  }
+
   function createDisposables() {
-    const disposables: Disposable[] = [];
+    const disposables: vscode.Disposable[] = [];
 
     if (!getConfig('windicss.enableCodeCompletion'))
       return;
 
     for (const { extension, patterns } of fileTypes) {
-      patterns.forEach(pattern => {
-        // class completion
-        disposables.push(languages.registerCompletionItemProvider(extension, {
-          provideCompletionItems: (document, position) => {
-            // Get range including all characters in the current line till the current position
-            const range = new Range(new Position(position.line, 0), position);
-            // Get text in current line
-            const textInCurrentLine = document.getText(range);
-            const matchCursorIsInCorrectPosition = textInCurrentLine.match(pattern.regex);
-            const classesInCurrentLine = textInCurrentLine
-              .match(pattern.regex)?.[1]
-              .split(pattern.splitCharacter) ?? [];
-            if(matchCursorIsInCorrectPosition === null) { return; }
-            const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.filter(i => !classesInCurrentLine.includes(i)).map((classItem, index) => {
-              const item = new CompletionItem(classItem, CompletionItemKind.Constant);
-              item.sortText = '1-' + index.toString().padStart(8, '0');
-              item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(classItem).styleSheet.build()) : core.processor?.interpret(classItem).styleSheet.build());
-              return item;
-            }): [];
+      // patterns.forEach(pattern => {
+      // class completion
+      disposables.push(languages.registerCompletionItemProvider(
+        extension,
+        {
+          provideCompletionItems: (document, position) => createCompletions(document, position, true),
+        }
+      ));
 
-            const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
-              const item = new CompletionItem(label, CompletionItemKind.Module);
-              item.documentation = documentation;
-              item.sortText = '2-' + index.toString().padStart(8, '0');
-              // trigger suggestion after select variant
-              item.command = {
-                command: 'editor.action.triggerSuggest',
-                title: label,
-              };
-              return item;
-            }): [];
-
-            const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamicCompletions.map(({ label, position }, index) => {
-              const item = new CompletionItem(label, CompletionItemKind.Variable);
-              // item.documentation = highlightCSS(core.processor?.interpret())
-              item.sortText = '3-' + index.toString().padStart(8, '0');
-              item.command = {
-                command: 'cursorMove',
-                arguments: [{
-                  to: 'left',
-                  select: true,
-                  value: position,
-                }],
-                title: label,
-              };
-              return item;
-            }): [];
-
-            const colorsCompletion = core.colorCompletions.map(({ label, detail, documentation }, index) => {
-              const color = new CompletionItem(label, CompletionItemKind.Color);
-              color.sortText = '0-' + index.toString().padStart(8, '0');
-              color.detail = detail;
-              color.documentation = documentation;
-              return color;
-            });
-
-            return [...variantsCompletion, ...colorsCompletion, ...staticCompletion, ...dynamicCompletion];
-          },
-
-        }, ...TRIGGERS));
-
-
-      });
+      disposables.push(languages.registerCompletionItemProvider(
+        extension,
+        {
+          provideCompletionItems: (document, position) => createCompletions(document, position, false),
+        },
+        '.'
+      ));
 
       // moved hover & color swatches out of patterns loop, to only calculcate them one time per file
       if (getConfig('windicss.enableHoverPreview')) {
