@@ -1,7 +1,7 @@
 import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString } from 'vscode';
 import { highlightCSS, isColor, getConfig, rem2px } from '../utils';
 import { fileTypes } from '../utils/filetypes';
-import { ClassParser } from 'windicss/utils/parser';
+import { ClassParser, HTMLParser as AttrParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
@@ -25,14 +25,14 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
     }
 
     const colors: {[key:string]: {value: string, doc: string}[]} = {};
-    const colorsCompletion = core.colorCompletions.map(({ label, documentation }) => {
+    for (const { label, documentation } of core.colorCompletions) {
       const key = label.match(/[^-]+/)?.[0];
       const body = label.match(/-.+/)?.[0].slice(1) || '~';
       if (key) {
         const item = { value: body, doc: documentation };
         colors[key] = key in colors ? [...colors[key], item] : [ item ];
       }
-    });
+    }
 
     for (const { extension, pattern } of fileTypes) {
       disposables.push(languages.registerCompletionItemProvider(
@@ -231,21 +231,38 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             const documentText = document.getText();
             const parser = new HTMLParser(documentText);
             const classes = parser.parseClasses();
-            if (classes) {
-              for (const c of classes) {
-                const elements = new ClassParser(c.result).parse(false);
-                for (const element of elements) {
-                  if (element.type === 'group' && Array.isArray(element.content)) {
-                    for (const e of element.content) {
-                      const color = isColor(e.raw, core.colors);
-                      if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+e.start), document.positionAt(c.start+e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+            for (const c of classes) {
+              const elements = new ClassParser(c.result).parse(false);
+              for (const element of elements) {
+                if (element.type === 'group' && Array.isArray(element.content)) {
+                  for (const e of element.content) {
+                    const color = isColor(e.raw, core.colors);
+                    if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+e.start), document.positionAt(c.start+e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                  }
+                }
+                const color = isColor(element.raw, core.colors);
+                if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+element.start), document.positionAt(c.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+              }
+            }
+
+            const attrParser = new AttrParser(documentText);
+            const attrs = attrParser.parseAttrs();
+            for (const attr of attrs) {
+              if (attr.key !== 'class' && attr.key !== 'className') {
+                if (Array.isArray(attr.value)) {
+                  for (const value of attr.value) {
+                    if (value in core.colors) {
+                      console.log(value);
                     }
                   }
-                  const color = isColor(element.raw, core.colors);
-                  if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+element.start), document.positionAt(c.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                } else {
+                  if (attr.value in core.colors) {
+                    console.log(attr.value);
+                  }
                 }
               }
             }
+
             return colors;
           },
           provideColorPresentations: (color, ctx, token) => {
