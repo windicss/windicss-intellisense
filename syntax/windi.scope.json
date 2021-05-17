@@ -1,10 +1,9 @@
 {
   "scopeName": "source.windi.scope",
-  "injectionSelector": "L:meta.attribute.class, L:meta.property-list.css",
+  "injectionSelector": "L:meta.attribute, L:meta.property-list.css",
   "patterns": [
     { "include": "#separator" },
     { "include": "#variant" },
-		{ "include": "#utility" },
     { "include": "#alias" },
 		{ "include": "#important" },
 		{ "include": "#bracket" }
@@ -18,10 +17,6 @@
       "match": "[^:\\s]+(?=:)",
       "name": "entity.name.tag.windi"
     },
-		"utility": {
-			"match": "(\\w|-|\\.)+?",
-			"name": "variable.utility.windicss"
-		},
 		"important": {
 			"match": "(?<=\\s|\"|'|`)!(?=(\\w|-|:|\\*)+)",
 			"name": "entity.name.tag.windi"
