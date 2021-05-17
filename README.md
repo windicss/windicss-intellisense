@@ -20,6 +20,12 @@ This plugin packs a windicss compiler, so you can use it without installing wind
 }
 ```
 
+> Vscode css validation may display errors when using windi syntax, such as @apply. You can disable this with the `css.validate setting:
+
+```json
+"css.validate": false
+```
+
 ## Features
 
 ### Autocomplete
