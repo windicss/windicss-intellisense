@@ -188,7 +188,9 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             const word = document.getText(range);
             if (!range || !word)
               return;
-            const style = core.processor?.interpret(word);
+            const text = document.getText(new Range(new Position(0, 0), position));
+            const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
+            const style = key in attrs ? core.processor?.attributify({ [key]: [ word ] }) : core.processor?.interpret(word);
             if (style && style.ignored.length === 0) {
               return new Hover(
                 highlightCSS(getConfig('windicss.enableRemToPxPreview')
