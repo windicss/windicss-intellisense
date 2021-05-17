@@ -24,6 +24,16 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       }
     }
 
+    const colors: {[key:string]: {value: string, doc: string}[]} = {};
+    const colorsCompletion = core.colorCompletions.map(({ label, documentation }) => {
+      const key = label.match(/[^-]+/)?.[0];
+      const body = label.match(/-.+/)?.[0].slice(1) || '~';
+      if (key) {
+        const item = { value: body, doc: documentation };
+        colors[key] = key in colors ? [...colors[key], item] : [ item ];
+      }
+    });
+
     for (const { extension, pattern } of fileTypes) {
       disposables.push(languages.registerCompletionItemProvider(
         extension,
@@ -149,7 +159,15 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   return item;
                 });
 
-                return [ ...valuesCompletion, ...variantsCompletion];
+                const colorsCompletion = key in colors ? colors[key].map(({ value, doc }, index) => {
+                  const color = new CompletionItem(value, CompletionItemKind.Color);
+                  color.sortText = '0-' + index.toString().padStart(8, '0');
+                  color.detail = key;
+                  color.documentation = doc;
+                  return color;
+                }) : [];
+
+                return [ ...colorsCompletion, ...valuesCompletion, ...variantsCompletion];
               }
             }
             return [];
@@ -166,7 +184,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               // TODO
               break;
             case CompletionItemKind.Color:
-              item.detail = core.processor?.interpret(item.label).styleSheet.build();
+              item.detail = core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
               break;
             }
             return item;
