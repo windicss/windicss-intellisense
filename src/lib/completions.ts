@@ -34,6 +34,16 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       }
     }
 
+    const dynamics: {[key:string]: {value: string, position: number}[]} = {};
+    for (const { label, position } of core.dynamicCompletions) {
+      const key = label.match(/[^-]+/)?.[0];
+      const body = label.match(/-.+/)?.[0].slice(1) || '~';
+      if (key) {
+        const item = { value: body, position };
+        dynamics[key] = key in dynamics ? [...dynamics[key], item] : [ item ];
+      }
+    }
+
     for (const { extension, pattern } of fileTypes) {
       disposables.push(languages.registerCompletionItemProvider(
         extension,
@@ -159,6 +169,21 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   return item;
                 });
 
+                const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') && key in dynamics? dynamics[key].map(({ value, position }, index) => {
+                  const item = new CompletionItem(value, CompletionItemKind.Variable);
+                  item.sortText = '3-' + index.toString().padStart(8, '0');
+                  item.command = {
+                    command: 'cursorMove',
+                    arguments: [{
+                      to: 'left',
+                      select: true,
+                      value: position,
+                    }],
+                    title: value,
+                  };
+                  return item;
+                }): [];
+
                 const colorsCompletion = key in colors ? colors[key].map(({ value, doc }, index) => {
                   const color = new CompletionItem(value, CompletionItemKind.Color);
                   color.sortText = '0-' + index.toString().padStart(8, '0');
@@ -167,7 +192,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   return color;
                 }) : [];
 
-                return [ ...colorsCompletion, ...valuesCompletion, ...variantsCompletion];
+                return [ ...colorsCompletion, ...valuesCompletion, ...dynamicCompletion, ...variantsCompletion];
               }
             }
             return [];
@@ -249,11 +274,11 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   if (element.type === 'group' && Array.isArray(element.content)) {
                     for (const e of element.content) {
                       const color = isValidateColor(e.raw);
-                      if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start+e.start), document.positionAt(attr.value.start+e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                      if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + e.start), document.positionAt(attr.value.start + e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                     }
                   }
                   const color = element.type === 'utility' && isValidateColor(element.raw);
-                  if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start+element.start), document.positionAt(attr.value.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                  if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + element.start), document.positionAt(attr.value.start + element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                 }
               }
             }
