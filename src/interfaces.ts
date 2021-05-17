@@ -8,6 +8,8 @@ export type DeepNestDictStr = { [key:string]: string | DeepNestDictStr };
 export interface Core {
   processor?: Processor,
   colors: DictStr,
+  utilities: string[],
+  variants: string[],
   variantCompletions: {
     label: string;
     documentation: MarkdownString | undefined;

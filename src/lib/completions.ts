@@ -1,4 +1,4 @@
-import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover } from 'vscode';
+import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString } from 'vscode';
 import { highlightCSS, isColor, getConfig, rem2px } from '../utils';
 import { fileTypes } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
@@ -13,8 +13,16 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
   function createDisposables() {
     const disposables: Disposable[] = [];
 
-    if (!getConfig('windicss.enableCodeCompletion'))
-      return;
+    if (!getConfig('windicss.enableCodeCompletion')) return;
+
+    const attrs: {[key:string]: string[]} = {};
+    for (const utility of core.utilities) {
+      const key = utility.match(/[^-]+/)?.[0];
+      const body = utility.match(/-.+/)?.[0].slice(1) || '~';
+      if (key) {
+        attrs[key] = key in attrs ? [...attrs[key], body] : [ body ];
+      }
+    }
 
     for (const { extension, pattern } of fileTypes) {
       disposables.push(languages.registerCompletionItemProvider(
@@ -84,6 +92,60 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           },
         },
         '.',
+      ));
+
+      disposables.push(languages.registerCompletionItemProvider(
+        extension,
+        {
+          provideCompletionItems(document, position) {
+            const text = document.getText(new Range(new Position(0, 0), position));
+            if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
+              const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
+              if (key && key in attrs) {
+                return attrs[key].map((value, index) => {
+                  const item = new CompletionItem(value, CompletionItemKind.Constant);
+                  item.detail = key;
+                  item.sortText = '1-' + index.toString().padStart(8, '0');
+                  return item;
+                });
+              }
+              if (!key) {
+                return Object.keys(attrs).map((name, index) => {
+                  const item = new CompletionItem(name, CompletionItemKind.Value);
+                  item.sortText = '0-' + index.toString().padStart(8, '0');
+                  item.insertText = new SnippetString(`${name}="$1"`);
+                  item.command = {
+                    command: 'editor.action.triggerSuggest',
+                    title: name,
+                  };
+                  return item;
+                });
+              }
+            }
+            return [];
+          },
+
+          resolveCompletionItem(item) {
+            switch (item.kind) {
+            case CompletionItemKind.Constant:
+              const css = core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
+              item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(css) : css);
+              item.detail = undefined;
+              break;
+            case CompletionItemKind.Variable:
+              // TODO
+              break;
+            case CompletionItemKind.Color:
+              item.detail = core.processor?.interpret(item.label).styleSheet.build();
+              break;
+            }
+            return item;
+          },
+        },
+        '"',
+        '=',
+        ' ',
+        '\'',
       ));
 
       // moved hover & color swatches out of patterns loop, to only calculcate them one time per file

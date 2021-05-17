@@ -28,7 +28,8 @@ export async function init(): Promise<Core> {
     const variants = processor.resolveVariants();
     const staticUtilities = processor.resolveStaticUtilities(true);
 
-    const variantCompletions = Object.keys(variants).map(variant => {
+    const variantsKeys = Object.keys(variants);
+    const variantCompletions = variantsKeys.map(variant => {
       const style = variants[variant]();
       style.selector = '&';
       return {
@@ -86,6 +87,8 @@ export async function init(): Promise<Core> {
     return {
       processor,
       colors,
+      utilities: staticCompletions,
+      variants: variantsKeys,
       variantCompletions,
       colorCompletions,
       staticCompletions,
@@ -93,6 +96,6 @@ export async function init(): Promise<Core> {
     };
   } catch (error) {
     Log.warning(error);
-    return { colors: {}, variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
+    return { colors: {}, variants: [], utilities: [], variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
   }
 }
