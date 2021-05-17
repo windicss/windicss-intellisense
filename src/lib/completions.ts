@@ -26,7 +26,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             const range = new Range(new Position(position.line, 0), position);
             // Get text in current line
             const textInCurrentLine = document.getText(range);
-            const matchCursorIsInCorrectPosition = textInCurrentLine.match(pattern.regex);
+            const matchCursorIsInCorrectPosition = document.getText(new Range(new Position(0, 0), position)).match(/(?<=\w=["'])([^'"]*$)|(?<=<style)(.*$)/gmi);
             const classesInCurrentLine = textInCurrentLine
               .match(pattern.regex)?.[1]
               .split(pattern.splitCharacter) ?? [];
