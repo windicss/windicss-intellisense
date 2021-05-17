@@ -10,6 +10,16 @@ Windi CSS IntelliSense enhances the Windi development experience by providing Vi
 
 This plugin packs a windicss compiler, so you can use it without installing windicss, and it also supports the configuration file `(tailwind|windi).config.(js|cjs|ts)`.
 
+## Configuration
+
+> By default VS Code will not trigger completions when editing "string" content. Updating the `editor.quickSuggestions` setting may improve your experience:
+
+```json
+"editor.quickSuggestions": {
+  "strings": true
+}
+```
+
 ## Features
 
 ### Autocomplete
