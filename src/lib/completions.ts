@@ -104,6 +104,32 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             const text = document.getText(new Range(new Position(0, 0), position));
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
+              if (!key) {
+                return Object.keys(attrs).map((name, index) => {
+                  const item = new CompletionItem(name, CompletionItemKind.Value);
+                  item.sortText = '0-' + index.toString().padStart(8, '0');
+                  item.insertText = new SnippetString(`${name}="$1"`);
+                  item.command = {
+                    command: 'editor.action.triggerSuggest',
+                    title: name,
+                  };
+                  return item;
+                });
+              }
+            }
+            return [];
+          },
+        },
+        ' '
+      ));
+
+      disposables.push(languages.registerCompletionItemProvider(
+        extension,
+        {
+          provideCompletionItems(document, position) {
+            const text = document.getText(new Range(new Position(0, 0), position));
+            if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
+              const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
               if (key && key in attrs) {
                 const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
                   const item = new CompletionItem(label, CompletionItemKind.Module);
@@ -123,19 +149,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   return item;
                 });
 
-                return [...variantsCompletion, ...valuesCompletion];
-              }
-              if (!key) {
-                return Object.keys(attrs).map((name, index) => {
-                  const item = new CompletionItem(name, CompletionItemKind.Value);
-                  item.sortText = '0-' + index.toString().padStart(8, '0');
-                  item.insertText = new SnippetString(`${name}="$1"`);
-                  item.command = {
-                    command: 'editor.action.triggerSuggest',
-                    title: name,
-                  };
-                  return item;
-                });
+                return [ ...valuesCompletion, ...variantsCompletion];
               }
             }
             return [];
@@ -160,9 +174,9 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         },
         '"',
         '=',
+        '\'',
         ':',
         ' ',
-        '\'',
       ));
 
       // moved hover & color swatches out of patterns loop, to only calculcate them one time per file
