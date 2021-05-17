@@ -92,6 +92,9 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           },
         },
         '.',
+        ':',
+        '(',
+        ' ',
       ));
 
       disposables.push(languages.registerCompletionItemProvider(
