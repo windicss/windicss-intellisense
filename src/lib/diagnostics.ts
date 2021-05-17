@@ -40,7 +40,7 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): Disposa
         }
       } else {
         const p = core.processor;
-        const match = lineOfText.text.match(/(?<=\s@apply\s*)\S(.*)(?=\s*;)/);
+        const match = lineOfText.text.match(/(?<=[^/*]\s@apply\s*)\S(.*)(?=\s*;)/);
         if (match && match.index && p) {
           const utilities = match[0].replace(/!important$/, '');
           for (const utility of p.validate(utilities).ignored) {
