@@ -16,16 +16,14 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
     if (!getConfig('windicss.enableCodeCompletion'))
       return;
 
-    for (const { extension } of fileTypes) {
-      console.log(extension);
+    for (const { extension, pattern } of fileTypes) {
       disposables.push(languages.registerCompletionItemProvider(
         extension,
         {
           provideCompletionItems(document, position) {
 
             const text = document.getText(new Range(new Position(0, 0), position));
-            console.log(text);
-            if (text.match(/(class\s*=\s*["'])[^"']*$|(\.\S*$)/) === null) return [];
+            if (text.match(pattern) === null) return [];
 
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.map((classItem, index) => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
@@ -85,7 +83,6 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             return item;
           },
         },
-
         '.',
       ));
 
@@ -147,7 +144,6 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
     }
 
     ctx.subscriptions.push(...disposables);
-
     return disposables;
   }
 

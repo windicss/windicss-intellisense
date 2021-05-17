@@ -1,126 +1,59 @@
-import { getConfig } from '../utils';
-// classes must match in first capture group, since it is hardcoded in completion
-const classRegex = /class=["|']([^'"]*$)/;
-const classNameRegex = /className=["|']([^'"]*$)/;
-const applyRegex = /@apply ([^;\n]*$)/;
-const variantsRegex = /dark|light|active|after|before|checked|disabled|focus|hover|tw=["|']([^'"]*$)/;
-// const emmetRegex = /(?=\.)([\w-\. ]*$)/;
+function connect(strings: string|string[]) {
+  return Array.isArray(strings)? new RegExp(strings.map(i => `(${i})`).join('|')) : new RegExp(strings);
+}
 
-const jsPatterns = [
-  {
-    regex: classRegex,
-    splitCharacter: ' ',
-  },
-  {
-    regex: classNameRegex,
-    splitCharacter: ' ',
-  },
-  // {
-  //   regex: emmetRegex,
-  //   splitCharacter: '.'
-  // }
-];
+const classRegex = String.raw`(class\s*=\s*["'])[^"']*$`;
+const classNameRegex = String.raw`(className\s*=\s*["'])[^"']*$`;
+const variantsRegex = String.raw`((dark|light|active|after|before|checked|disabled|focus|hover|tw)\s*=\s*["'])[^"']*$`;
+const emmetRegex = String.raw`\.\S*$`;
+const applyRegex = String.raw`@apply\s+[^;]*$`;
 
-const htmlPatterns = [
-  {
-    regex: classRegex,
-    splitCharacter: ' ',
-  },
-  // {
-  //   regex: emmetRegex,
-  //   splitCharacter: '.'
-  // }
-];
-
-const stylesPatterns = [
-  {
-    regex: applyRegex,
-    splitCharacter: ' ',
-  },
-];
-
-const attributePatterns = [
-  {
-    regex: variantsRegex,
-    splitCharacter: ' ',
-  },
-];
+const jsPattern = connect([ classRegex, classNameRegex, variantsRegex, applyRegex, emmetRegex ]);
+const htmlPattern = connect([ classRegex, variantsRegex, applyRegex, emmetRegex ]);
+const stylesPattern = connect(applyRegex);
 
 export const fileTypes: {
   extension: string;
-  patterns: {
-    regex: RegExp;
-    splitCharacter: string;
-  }[];
+  pattern: RegExp;
 }[] = [
   {
     extension: 'css',
-    patterns: stylesPatterns,
+    pattern: stylesPattern,
   },
   {
     extension: 'sass',
-    patterns: stylesPatterns,
+    pattern: stylesPattern,
   },
   {
     extension: 'less',
-    patterns: stylesPatterns,
+    pattern: stylesPattern,
   },
   {
     extension: 'javascript',
-    patterns: jsPatterns,
+    pattern: jsPattern,
   },
   {
     extension: 'javascriptreact',
-    patterns: jsPatterns,
+    pattern: jsPattern,
   },
   {
     extension: 'typescriptreact',
-    patterns: jsPatterns,
+    pattern: jsPattern,
   },
   {
     extension: 'html',
-    patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
+    pattern: htmlPattern,
   },
   {
     extension: 'php',
-    patterns: htmlPatterns,
+    pattern: htmlPattern,
   },
   {
     extension: 'vue',
-    patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
+    pattern: htmlPattern,
   },
   {
     extension: 'svelte',
-    patterns: htmlPatterns.concat(stylesPatterns, attributePatterns),
+    pattern: htmlPattern,
   },
 ];
-if (getConfig('windicss.includeLanguages')) {
-  const config = getConfig<Record<string, unknown>>('windicss.includeLanguages');
-  // console.log(config)
-  if (config) {
-    for (const [key, value] of Object.entries(config)) {
-      let patterns;
-      switch (value) {
-      case 'html':
-        patterns = htmlPatterns.concat(stylesPatterns, attributePatterns);
-        break;
-
-      case 'js':
-        patterns = jsPatterns;
-        break;
-
-      case 'css':
-        patterns = stylesPatterns;
-        break;
-
-      default:
-        patterns = stylesPatterns;
-        break;
-      }
-      fileTypes.push({
-        extension: key,
-        patterns,
-      });
-    }
-  }
-}
