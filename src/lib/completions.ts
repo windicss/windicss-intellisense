@@ -128,7 +128,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
               if (!key) {
-                return Object.keys(attrs).map((name, index) => {
+                return [...Object.keys(attrs), ...core.variants].map((name, index) => {
                   const item = new CompletionItem(name, CompletionItemKind.Value);
                   item.sortText = '0-' + index.toString().padStart(8, '0');
                   item.insertText = new SnippetString(`${name}="$1"`);
