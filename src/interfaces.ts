@@ -15,7 +15,6 @@ export interface Core {
   staticCompletions: string[],
   colorCompletions: {
     label: string;
-    detail: string;
     documentation: string;
   }[],
   dynamicCompletions: {

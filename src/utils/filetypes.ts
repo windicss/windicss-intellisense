@@ -1,5 +1,4 @@
 import { getConfig } from '../utils';
-import { Log } from './Log';
 // classes must match in first capture group, since it is hardcoded in completion
 const classRegex = /class=["|']([^'"]*$)/;
 const classNameRegex = /className=["|']([^'"]*$)/;
