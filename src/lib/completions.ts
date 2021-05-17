@@ -105,12 +105,25 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
               if (key && key in attrs) {
-                return attrs[key].map((value, index) => {
+                const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
+                  const item = new CompletionItem(label, CompletionItemKind.Module);
+                  item.documentation = documentation;
+                  item.sortText = '2-' + index.toString().padStart(8, '0');
+                  item.command = {
+                    command: 'editor.action.triggerSuggest',
+                    title: label,
+                  };
+                  return item;
+                }): [];
+
+                const valuesCompletion = attrs[key].map((value, index) => {
                   const item = new CompletionItem(value, CompletionItemKind.Constant);
                   item.detail = key;
                   item.sortText = '1-' + index.toString().padStart(8, '0');
                   return item;
                 });
+
+                return [...variantsCompletion, ...valuesCompletion];
               }
               if (!key) {
                 return Object.keys(attrs).map((name, index) => {
@@ -147,6 +160,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         },
         '"',
         '=',
+        ':',
         ' ',
         '\'',
       ));
