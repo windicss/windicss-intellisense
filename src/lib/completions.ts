@@ -233,14 +233,15 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             const classes = parser.parseClasses();
             for (const c of classes) {
               const elements = new ClassParser(c.result).parse(false);
+              const isValidateColor = (utility: string) => core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
               for (const element of elements) {
                 if (element.type === 'group' && Array.isArray(element.content)) {
                   for (const e of element.content) {
-                    const color = isColor(e.raw, core.colors);
+                    const color = isValidateColor(e.raw);
                     if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+e.start), document.positionAt(c.start+e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                   }
                 }
-                const color = isColor(element.raw, core.colors);
+                const color = element.type === 'utility' && isValidateColor(element.raw);
                 if(color) colors.push(new ColorInformation(new Range(document.positionAt(c.start+element.start), document.positionAt(c.start+element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
               }
             }
