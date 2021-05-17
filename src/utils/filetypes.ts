@@ -1,3 +1,5 @@
+import { getConfig } from '../utils';
+
 function connect(strings: string|string[]) {
   return Array.isArray(strings)? new RegExp(strings.map(i => `(${i})`).join('|')) : new RegExp(strings);
 }
@@ -8,9 +10,11 @@ const variantsRegex = String.raw`((dark|light|active|after|before|checked|disabl
 const emmetRegex = String.raw`\.\S*$`;
 const applyRegex = String.raw`@apply\s+[^;]*$`;
 
-const jsPattern = connect([ classRegex, classNameRegex, variantsRegex, applyRegex, emmetRegex ]);
-const htmlPattern = connect([ classRegex, variantsRegex, applyRegex, emmetRegex ]);
-const stylesPattern = connect(applyRegex);
+const map = {
+  'html': connect([ classRegex, variantsRegex, applyRegex, emmetRegex ]),
+  'js': connect([ classRegex, classNameRegex, variantsRegex, applyRegex, emmetRegex ]),
+  'css': connect(applyRegex),
+};
 
 export const fileTypes: {
   extension: string;
@@ -18,42 +22,47 @@ export const fileTypes: {
 }[] = [
   {
     extension: 'css',
-    pattern: stylesPattern,
+    pattern: map.css,
   },
   {
     extension: 'sass',
-    pattern: stylesPattern,
+    pattern: map.css,
   },
   {
     extension: 'less',
-    pattern: stylesPattern,
+    pattern: map.css,
   },
   {
     extension: 'javascript',
-    pattern: jsPattern,
+    pattern: map.js,
   },
   {
     extension: 'javascriptreact',
-    pattern: jsPattern,
+    pattern: map.js,
   },
   {
     extension: 'typescriptreact',
-    pattern: jsPattern,
+    pattern: map.js,
   },
   {
     extension: 'html',
-    pattern: htmlPattern,
+    pattern: map.html,
   },
   {
     extension: 'php',
-    pattern: htmlPattern,
+    pattern: map.html,
   },
   {
     extension: 'vue',
-    pattern: htmlPattern,
+    pattern: map.html,
   },
   {
     extension: 'svelte',
-    pattern: htmlPattern,
+    pattern: map.html,
   },
 ];
+
+if (getConfig('windicss.includeLanguages')) {
+  const config = getConfig<Record<string, string>>('windicss.includeLanguages');
+  if (config) Object.entries(config).map(([key, value]) => (fileTypes.push({ extension: key, pattern: value in map ? map[value as keyof typeof map] : map.css })));
+}
