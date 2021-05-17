@@ -23,7 +23,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): vscode.D
     const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.map((classItem, index) => {
       const item = new CompletionItem(classItem, CompletionItemKind.Constant);
       item.sortText = '1-' + index.toString().padStart(8, '0');
-      item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(classItem).styleSheet.build()) : core.processor?.interpret(classItem).styleSheet.build());
+      // item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(classItem).styleSheet.build()) : core.processor?.interpret(classItem).styleSheet.build());
       return item;
     }): [];
 
