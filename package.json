@@ -166,6 +166,11 @@
           "default": true,
           "description": "Enable Dynamic Utilities Completion like p-${int}."
         },
+        "windicss.enableEmmetCompletion": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable . trigger for emmet."
+        },
         "windicss.enableRemToPxPreview": {
           "type": "boolean",
           "default": true,

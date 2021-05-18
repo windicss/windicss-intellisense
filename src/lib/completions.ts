@@ -155,10 +155,10 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             return item;
           },
         },
-        '.',
         ':',
         '(',
         ' ',
+        ...(getConfig('windicss.enableEmmetCompletion') ? [ '.' ] : []),
       ));
 
       // trigger suggestion for bg = | text = | sm = | hover = | ...

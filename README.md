@@ -85,6 +85,7 @@ Browse your utilities usages, have an overview of your design system, identify "
 | `windicss.enableAttrUtilityCompletion` | boolean | true | Enable Utility Completion For Attributify Mode.              |
 | `windicss.enableAttrVariantCompletion` | boolean | true | Enable Variant Completion For Attributify Mode.              |
 | `windicss.enableRemToPxPreview`    | boolean | true     | Enable Rem to Px Preview.                                    |
+| `windicss.enableEmmetCompletion`   | boolean | false    | Enable . trigger for emmet.                                  |
 | `windicss.enableCodeFolding`       | boolean | false    | Enable ClassNames Code Folding.                              |
 | `windicss.foldByLength`            | boolean | false    | Folding code by length. Default option is false, will fold by utility count. |
 | `windicss.foldCount`               | number  | 3        | Used by foldByCount.                                         |
