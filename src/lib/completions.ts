@@ -3,6 +3,7 @@ import { highlightCSS, isColor, getConfig, rem2px, hex2RGB } from '../utils';
 import { fileTypes, patterns } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
+import { generateAttrUtilities } from './core/attributify';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
 import { Style } from 'windicss/utils/style';
@@ -17,51 +18,24 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
     if (!getConfig('windicss.enableCodeCompletion')) return;
 
-    const attrs: {[key:string]: string[]} = {};
-    for (const utility of core.utilities) {
-      const key = utility.match(/[^-]+/)?.[0];
-      const body = utility.match(/-.+/)?.[0].slice(1) || '~';
-      if (key) {
-        attrs[key] = key in attrs ? [...attrs[key], body] : [ body ];
-      }
-    }
-
-    const colors: {[key:string]: {value: string, doc: string}[]} = {};
-    for (const { label, documentation } of core.colorCompletions) {
-      const key = label.match(/[^-]+/)?.[0];
-      const body = label.match(/-.+/)?.[0].slice(1) || '~';
-      if (key) {
-        const item = { value: body, doc: documentation };
-        colors[key] = key in colors ? [...colors[key], item] : [ item ];
-      }
-    }
-
-    const dynamics: {[key:string]: {value: string, position: number}[]} = {};
-    for (const { label, position } of core.dynamicCompletions) {
-      const key = label.match(/[^-]+/)?.[0];
-      const body = label.match(/-.+/)?.[0].slice(1) || '~';
-      if (key) {
-        const item = { value: body, position };
-        dynamics[key] = key in dynamics ? [...dynamics[key], item] : [ item ];
-      }
-    }
+    const { attrs, colors, dynamics } = generateAttrUtilities(core);
 
     const separator = core.processor?.config('separator', ':') as string;
 
-    function isAttr(word: string) {
+    function isAttrVariant(word: string): boolean {
       const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return lastKey in attrs || lastKey in core.variants;
+      return getConfig('windicss.enableAttrVariantCompletion') && lastKey in core.variants;
     }
 
-    function isAttrVariant(word: string) {
-      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return lastKey in core.variants;
-    }
-
-    function isAttrUtility(word?: string) {
+    function isAttrUtility(word?: string): string | undefined {
       if (!word) return;
       const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return lastKey in attrs ? lastKey : undefined;
+      return getConfig('windicss.enableAttrUtilityCompletion') && lastKey in attrs ? lastKey : undefined;
+    }
+
+    function isAttr(word: string): boolean {
+      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
+      return (getConfig('windicss.enableAttrVariantCompletion') && lastKey in core.variants) || (getConfig('windicss.enableAttrUtilityCompletion') && lastKey in attrs);
     }
 
     function buildEmptyStyle(style: Style) {
@@ -179,7 +153,8 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
               if (!key) {
-                return Object.keys(attrs).map((name, index) => {
+                let completions: CompletionItem[] = [];
+                if (getConfig('windicss.enableAttrUtilityCompletion')) completions = completions.concat(Object.keys(attrs).map((name) => {
                   const item = new CompletionItem(name, CompletionItemKind.Field);
                   item.sortText = '0-' + name;
                   item.insertText = new SnippetString(`${name}="$1"`);
@@ -188,7 +163,8 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                     title: name,
                   };
                   return item;
-                }).concat(Object.keys(core.variants).map((name, index) => {
+                }));
+                if (getConfig('windicss.enableAttrVariantCompletion')) completions = completions.concat(Object.keys(core.variants).map((name) => {
                   const item = new CompletionItem(name, CompletionItemKind.Value);
                   item.sortText = '1-' + name;
                   item.insertText = new SnippetString(`${name}="$1"`);
@@ -198,6 +174,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   };
                   return item;
                 }));
+                return completions;
               }
             }
             return [];
@@ -218,7 +195,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         ' '
       ));
 
-      disposables.push(languages.registerCompletionItemProvider(
+      getConfig('windicss.enableAttrUtilityCompletion') && disposables.push(languages.registerCompletionItemProvider(
         extension,
         {
           provideCompletionItems(document, position) {
@@ -344,7 +321,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             }
             const text = document.getText(new Range(new Position(0, 0), position));
             const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
-            const style = isAttr(key)? core.processor?.attributify({ [key]: [ word ] }) :  core.processor?.interpret(word);
+            const style = isAttr(key) ? core.processor?.attributify({ [key]: [ word ] }) : ['className', 'class'].includes(key) ? core.processor?.interpret(word) : undefined;
             if (style && style.ignored.length === 0) {
               return new Hover(
                 highlightCSS(getConfig('windicss.enableRemToPxPreview')
