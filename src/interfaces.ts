@@ -1,5 +1,5 @@
 import type { Processor } from 'windicss/lib';
-import type { MarkdownString } from 'vscode';
+import type { ResolvedVariants } from 'windicss/types/interfaces';
 
 export type DictStr = { [key: string]: string | string[] };
 
@@ -9,11 +9,7 @@ export interface Core {
   processor?: Processor,
   colors: DictStr,
   utilities: string[],
-  variants: string[],
-  variantCompletions: {
-    label: string;
-    documentation: MarkdownString | undefined;
-  }[],
+  variants: ResolvedVariants,
   staticCompletions: string[],
   colorCompletions: {
     label: string;

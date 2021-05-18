@@ -5,6 +5,7 @@ import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
 import type { Core } from '../interfaces';
 import type { Disposable } from 'vscode';
+import { Style } from 'windicss/utils/style';
 
 const DISPOSABLES: Disposable[] = [];
 let initialized = false;
@@ -45,20 +46,49 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       }
     }
 
+    const separator = core.processor?.config('separator', ':') as string;
+
     function isAttr(word: string) {
       const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return lastKey in attrs || core.variants.includes(lastKey);
+      return lastKey in attrs || lastKey in core.variants;
     }
 
     function isAttrVariant(word: string) {
       const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return core.variants.includes(lastKey);
+      return lastKey in core.variants;
     }
 
     function isAttrUtility(word?: string) {
       if (!word) return;
       const lastKey = word.match(/[^:-]+$/)?.[0] || word;
       return lastKey in attrs ? lastKey : undefined;
+    }
+
+    function buildEmptyStyle(style: Style) {
+      return highlightCSS(style.build().replace('{\n  & {}\n}', '{\n  ...\n}').replace('{}', '{\n  ...\n}').replace('...\n}\n}', '  ...\n  }\n}'));
+    }
+
+    function buildAttrDoc(attr: string, variant?: string, separator?: string) {
+      let style;
+      if (variant) {
+        style = core.variants[variant]();
+        style.selector = `[${core.processor?.e(attr)}~="${variant}${separator}&"]`;
+      } else {
+        style = new Style(`[${core.processor?.e(attr)}~="&"]`);
+      }
+      return buildEmptyStyle(style);
+    }
+
+    function buildVariantDoc(variant?: string, attributify = false) {
+      if (!variant) return '';
+      const style = core.variants[variant]();
+      if (attributify) {
+        style.selector = `[${core.processor?.e(variant)}~="&"]`;
+      } else {
+        style.selector = '&';
+      }
+
+      return buildEmptyStyle(style);
     }
 
     for (const { extension, type } of fileTypes) {
@@ -79,14 +109,14 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               return item;
             }): [];
 
-            const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
-              const item = new CompletionItem(label, CompletionItemKind.Module);
-              item.documentation = documentation;
+            const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? Object.keys(core.variants).map((variant, index) => {
+              const item = new CompletionItem(variant + separator, CompletionItemKind.Module);
+              item.detail = variant;
               item.sortText = '2-' + index.toString().padStart(8, '0');
               // trigger suggestion after select variant
               item.command = {
                 command: 'editor.action.triggerSuggest',
-                title: label,
+                title: variant,
               };
               return item;
             }): [];
@@ -121,6 +151,10 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             case CompletionItemKind.Constant:
               item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(item.label).styleSheet.build()) : core.processor?.interpret(item.label).styleSheet.build());
               break;
+            case CompletionItemKind.Module:
+              item.documentation = buildVariantDoc(item.detail);
+              item.detail = undefined;
+              break;
             case CompletionItemKind.Variable:
               // TODO
               break;
@@ -145,19 +179,39 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
               if (!key) {
-                return [...Object.keys(attrs), ...core.variants].map((name, index) => {
-                  const item = new CompletionItem(name, CompletionItemKind.Value);
-                  item.sortText = '0-' + index.toString().padStart(8, '0');
+                return Object.keys(attrs).map((name, index) => {
+                  const item = new CompletionItem(name, CompletionItemKind.Field);
+                  item.sortText = '0-' + name;
                   item.insertText = new SnippetString(`${name}="$1"`);
                   item.command = {
                     command: 'editor.action.triggerSuggest',
                     title: name,
                   };
                   return item;
-                });
+                }).concat(Object.keys(core.variants).map((name, index) => {
+                  const item = new CompletionItem(name, CompletionItemKind.Value);
+                  item.sortText = '1-' + name;
+                  item.insertText = new SnippetString(`${name}="$1"`);
+                  item.command = {
+                    command: 'editor.action.triggerSuggest',
+                    title: name,
+                  };
+                  return item;
+                }));
               }
             }
             return [];
+          },
+          resolveCompletionItem(item) {
+            switch (item.kind) {
+            case CompletionItemKind.Field:
+              item.documentation = buildAttrDoc(item.label);
+              break;
+            case CompletionItemKind.Value:
+              item.documentation = buildVariantDoc(item.label, true);
+              break;
+            }
+            return item;
           },
         },
         ':',
@@ -172,13 +226,13 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
               const key = isAttrUtility(text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0]);
               if (key) {
-                const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
-                  const item = new CompletionItem(label, CompletionItemKind.Module);
-                  item.documentation = documentation;
+                const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? Object.keys(core.variants).map((variant, index) => {
+                  const item = new CompletionItem(variant + separator, CompletionItemKind.Module);
+                  item.detail = key + ',' + variant;
                   item.sortText = '2-' + index.toString().padStart(8, '0');
                   item.command = {
                     command: 'editor.action.triggerSuggest',
-                    title: label,
+                    title: variant,
                   };
                   return item;
                 }): [];
@@ -224,6 +278,11 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             case CompletionItemKind.Constant:
               const css = core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
               item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(css) : css);
+              item.detail = undefined;
+              break;
+            case CompletionItemKind.Module:
+              const [attr, variant] = item.detail?.split(',') || [];
+              item.documentation = buildAttrDoc(attr, variant, separator);
               item.detail = undefined;
               break;
             case CompletionItemKind.Variable:
@@ -319,8 +378,8 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                     if (color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + match.index), document.positionAt(attr.value.start + match.index + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                   }
                 }
-              } else if (['class', 'className'].includes(attr.key) || core.variants.includes(attr.key)) {
-                const elements = new ClassParser(attr.value.raw, core.processor?.config('separator', ':') as string, core.variants).parse(false);
+              } else if (['class', 'className'].includes(attr.key) || attr.key in core.variants) {
+                const elements = new ClassParser(attr.value.raw, core.processor?.config('separator', ':') as string, Object.keys(core.variants)).parse(false);
                 const isValidateColor = (utility: string) => core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
                 for (const element of elements) {
                   if (element.type === 'group' && Array.isArray(element.content)) {

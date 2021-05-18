@@ -1,7 +1,7 @@
 import { workspace } from 'vscode';
 import { resolve } from 'path';
 import { Processor } from 'windicss/lib';
-import { hex2RGB, highlightCSS, flatColors } from '../utils';
+import { hex2RGB, flatColors } from '../utils';
 import { utilities as dynamic, negative } from '../utils/utilities';
 import type { Core } from '../interfaces';
 import { Log } from '../utils/Log';
@@ -23,20 +23,9 @@ export async function init(): Promise<Core> {
       Log.info(`Loading Config File: ${configFile}`);
     }
     const processor = new Processor(config);
-    const separator = processor.config('separator', ':') as string;
     const colors = flatColors(processor.theme('colors') as Record<string, any>);
     const variants = processor.resolveVariants();
     const staticUtilities = processor.resolveStaticUtilities(true);
-
-    const variantsKeys = Object.keys(variants);
-    const variantCompletions = variantsKeys.map(variant => {
-      const style = variants[variant]();
-      style.selector = '&';
-      return {
-        label: variant + separator,
-        documentation: highlightCSS(style.build().replace('{\n  & {}\n}', '{\n  ...\n}').replace('{}', '{\n  ...\n}')),
-      };
-    });
 
     let staticCompletions = Object.keys(staticUtilities);
     const colorCompletions: { label: string, documentation: string }[] = [];
@@ -88,14 +77,13 @@ export async function init(): Promise<Core> {
       processor,
       colors,
       utilities: staticCompletions,
-      variants: variantsKeys,
-      variantCompletions,
+      variants,
       colorCompletions,
       staticCompletions,
       dynamicCompletions,
     };
   } catch (error) {
     Log.warning(error);
-    return { colors: {}, variants: [], utilities: [], variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
+    return { colors: {}, variants: {}, utilities: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
   }
 }
