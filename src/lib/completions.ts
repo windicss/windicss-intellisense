@@ -10,6 +10,7 @@ const DISPOSABLES: Disposable[] = [];
 let initialized = false;
 
 export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
+
   function createDisposables() {
     const disposables: Disposable[] = [];
 
@@ -42,6 +43,11 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         const item = { value: body, position };
         dynamics[key] = key in dynamics ? [...dynamics[key], item] : [ item ];
       }
+    }
+
+    function isAttr(word: string) {
+      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
+      return lastKey in attrs || core.variants.includes(lastKey);
     }
 
     for (const { extension, type } of fileTypes) {
@@ -250,7 +256,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               }
             }
 
-            if (word in attrs || core.variants.includes(word)) {
+            if (isAttr(word)) {
               // hover attr
               const text = document.getText(new Range(range.end, document.lineAt(document.lineCount-1).range.end));
               const match = text.match(/((?<=^=\s*["'])[^"']*(?=["']))|((?<=^=\s*)[^"'>\s]+)/);
@@ -267,7 +273,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             }
             const text = document.getText(new Range(new Position(0, 0), position));
             const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
-            const style = key in attrs || core.variants.includes(key)? core.processor?.attributify({ [key]: [ word ] }) :  core.processor?.interpret(word);
+            const style = isAttr(key)? core.processor?.attributify({ [key]: [ word ] }) :  core.processor?.interpret(word);
             if (style && style.ignored.length === 0) {
               return new Hover(
                 highlightCSS(getConfig('windicss.enableRemToPxPreview')
