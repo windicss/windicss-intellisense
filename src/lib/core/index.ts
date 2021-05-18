@@ -13,15 +13,15 @@ const j = jiti(__filename);
 export async function init(): Promise<Core> {
   try {
     const files = await workspace.findFiles('{tailwind,windi}.config.{js,cjs,mjs,ts}', '**​/node_modules/**');
-    let configFile;
+    let file;
     let config;
     if (files[0]) {
-      configFile = files[0].fsPath;
-      const path = resolve(configFile);
+      file = files[0].fsPath;
+      const path = resolve(file);
       if (path in j.cache) delete j.cache[path];
       const result = j(path);
       config = result.__esModule ? result.default : result;
-      Log.info(`Loading Config File: ${configFile}`);
+      Log.info(`Loading Config File: ${file}`);
     }
     const processor = new Processor(config);
     const variants = processor.resolveVariants();

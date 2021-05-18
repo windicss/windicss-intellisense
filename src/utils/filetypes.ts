@@ -9,16 +9,18 @@ export function allowAttr(type: string): boolean {
   return ['html', 'js'].includes(type);
 }
 
-const classRegex = String.raw`(class\s*=\s*["'])[^"']*$`;
-const classNameRegex = String.raw`(className\s*=\s*["'])[^"']*$`;
+const classPattern = String.raw`(class\s*=\s*["'])[^"']*$`;
+const classNamePttern = String.raw`(className\s*=\s*["'])[^"']*$`;
 // const variantsRegex = String.raw`((dark|light|active|after|before|checked|disabled|focus|hover|tw)\s*=\s*["'])[^"']*$`;
-const emmetRegex = String.raw`\.\S*$`;
-const applyRegex = String.raw`@apply\s+[^;]*$`;
+const emmetPattern = String.raw`\.\S*$`;
+const applyPattern = String.raw`@apply\s+[^;]*$`;
+
+export const applyRegex = new RegExp(applyPattern);
 
 export const patterns: {[key:string]: RegExp} = {
-  'html': connect([ classRegex, applyRegex, emmetRegex ]),
-  'js': connect([ classRegex, classNameRegex, applyRegex, emmetRegex ]),
-  'css': connect(applyRegex),
+  'html': connect([ classPattern, applyPattern, emmetPattern ]),
+  'js': connect([ classPattern, classNamePttern, applyPattern, emmetPattern ]),
+  'css': connect(applyPattern),
 };
 
 export const fileTypes: {

@@ -1,6 +1,6 @@
 import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString, TextDocument } from 'vscode';
 import { highlightCSS, isColor, getConfig, rem2px, hex2RGB, flatColors } from '../utils';
-import { fileTypes, patterns, allowAttr } from '../utils/filetypes';
+import { fileTypes, patterns, allowAttr, applyRegex } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
 import { generateAttrUtilities } from './core/attributify';
@@ -325,7 +325,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             // hover attr value or class value, e.g. class="bg-red-500 ..."  bg="red-500 ..."
             const text = document.getText(new Range(new Position(0, 0), position));
             const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
-            const style = isAttr(key) ? core.processor?.attributify({ [key]: [ word ] }) : ['className', 'class'].includes(key) ? core.processor?.interpret(word) : undefined;
+            const style = isAttr(key) ? core.processor?.attributify({ [key]: [ word ] }) : ['className', 'class'].includes(key) || text.match(applyRegex) ? core.processor?.interpret(word) : undefined;
             if (style && style.ignored.length === 0) {
               const css = buildStyle(style.styleSheet);
               if (css) return new Hover(css, range);

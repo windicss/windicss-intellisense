@@ -8,7 +8,7 @@ function split(utility: string) {
 }
 
 export function generateAttrUtilities(core: Core) {
-  if (!getConfig('windicss.enableAttrUtilityCompletion')) return { attrs: {}, dynamics: {}, colors: {} };
+  if (!getConfig('windicss.enableAttrUtilityCompletion')) return { attrs: {}, colors: {}, dynamics: {} };
   const attrs: {[key:string]: string[]} = {};
   for (const utility of core.utilities) {
     const { key, body } = split(utility);
