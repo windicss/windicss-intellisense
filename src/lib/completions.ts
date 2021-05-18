@@ -50,6 +50,17 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       return lastKey in attrs || core.variants.includes(lastKey);
     }
 
+    function isAttrVariant(word: string) {
+      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
+      return core.variants.includes(lastKey);
+    }
+
+    function isAttrUtility(word?: string) {
+      if (!word) return;
+      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
+      return lastKey in attrs ? lastKey : undefined;
+    }
+
     for (const { extension, type } of fileTypes) {
       disposables.push(languages.registerCompletionItemProvider(
         extension,
@@ -59,7 +70,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             const text = document.getText(new Range(new Position(0, 0), position));
             if (text.match(patterns[type]) === null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
-              if ((!key) || !(['js', 'html'].includes(type) && core.variants.includes(key))) return [];
+              if ((!key) || !(['js', 'html'].includes(type) && isAttrVariant(key))) return [];
             }
 
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.map((classItem, index) => {
@@ -149,6 +160,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             return [];
           },
         },
+        ':',
         ' '
       ));
 
@@ -158,8 +170,8 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           provideCompletionItems(document, position) {
             const text = document.getText(new Range(new Position(0, 0), position));
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
-              const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
-              if (key && key in attrs) {
+              const key = isAttrUtility(text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0]);
+              if (key) {
                 const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? core.variantCompletions.map(({ label, documentation }, index) => {
                   const item = new CompletionItem(label, CompletionItemKind.Module);
                   item.documentation = documentation;
