@@ -24,19 +24,18 @@ export async function init(): Promise<Core> {
       Log.info(`Loading Config File: ${configFile}`);
     }
     const processor = new Processor(config);
-    const colors = flatColors(processor.theme('colors') as Record<string, any>);
     const variants = processor.resolveVariants();
     const staticUtilities = processor.resolveStaticUtilities(true);
 
-    let staticCompletions = Object.keys(staticUtilities);
-    const colorCompletions: { label: string, documentation: string }[] = [];
-    const dynamicCompletions: { label: string, position: number }[] = [];
+    let utilities = Object.keys(staticUtilities);
+    const colors: { label: string, documentation: string }[] = [];
+    const dynamics: { label: string, position: number }[] = [];
 
     for (const [config, list] of Object.entries(dynamic)) {
       list.forEach(utility => {
         const mark = utility.search(/\$/);
         if (mark === -1) {
-          staticCompletions.push(utility);
+          utilities.push(utility);
         } else {
           const prefix = utility.slice(0, mark - 1);
           const suffix = utility.slice(mark);
@@ -45,26 +44,26 @@ export async function init(): Promise<Core> {
             const staticConfig = Object.keys(processor.theme(config, {}) as any);
             const complections = staticConfig.map(i => i === 'DEFAULT' ? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`);
             // if (config in negative) complections = complections.concat(complections.map(i => `-${i}`));
-            staticCompletions = staticCompletions.concat(complections);
+            utilities = utilities.concat(complections);
             break;
           case '${color}':
-            const colorConfig = flatColors(processor.theme(config, colors) as any);
+            const colorConfig = flatColors(processor.theme(config) || processor.theme('colors') as any);
             for (const [k, v] of Object.entries(colorConfig)) {
               const name = `${prefix}-${k}`;
               const color = Array.isArray(v) ? v[0] : v;
-              colorCompletions.push({
+              colors.push({
                 label: name,
                 documentation: ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`,
               });
             }
             break;
           default:
-            dynamicCompletions.push({
+            dynamics.push({
               label: utility,
               position: utility.length - mark,
             });
             if (config in negative) {
-              dynamicCompletions.push({
+              dynamics.push({
                 label: `-${utility}`,
                 position: utility.length + 1 - mark,
               });
@@ -77,14 +76,12 @@ export async function init(): Promise<Core> {
     return {
       processor,
       colors,
-      utilities: staticCompletions,
+      utilities,
       variants,
-      colorCompletions,
-      staticCompletions,
-      dynamicCompletions,
+      dynamics,
     };
   } catch (error) {
     Log.warning(error);
-    return { colors: {}, variants: {}, utilities: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
+    return { variants: {}, utilities: [], colors: [], dynamics: [] };
   }
 }

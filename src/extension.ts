@@ -8,7 +8,7 @@ import type { Core } from './interfaces';
 import type { Disposable, ExtensionContext } from 'vscode';
 import { Log } from './utils/Log';
 
-let CORE: Core = { colors: {}, variants: [], utilities: [], variantCompletions: [], staticCompletions: [], colorCompletions: [], dynamicCompletions: [] };
+let CORE: Core = { variants: {}, utilities: [], colors: [], dynamics: [] };
 const DISPOSABLES: Disposable[] = [];
 
 export async function activate(ctx: ExtensionContext) {

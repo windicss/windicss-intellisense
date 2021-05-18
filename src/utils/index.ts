@@ -1,5 +1,5 @@
-import { ClassParser } from 'windicss/utils/parser';
 import { workspace, MarkdownString, Range, Position, DecorationOptions } from 'vscode';
+import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from './parser';
 import { keyOrder } from './order';
 import { flatColors as _flatColors } from 'windicss/utils';

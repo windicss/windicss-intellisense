@@ -7,15 +7,13 @@ export type DeepNestDictStr = { [key:string]: string | DeepNestDictStr };
 
 export interface Core {
   processor?: Processor,
-  colors: DictStr,
   utilities: string[],
   variants: ResolvedVariants,
-  staticCompletions: string[],
-  colorCompletions: {
+  colors: {
     label: string;
     documentation: string;
   }[],
-  dynamicCompletions: {
+  dynamics: {
     label: string;
     position: number;
   }[];

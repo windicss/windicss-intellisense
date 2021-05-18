@@ -17,7 +17,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
   function createDisposables() {
     const disposables: Disposable[] = [];
     disposables.push(
-      commands.registerTextEditorCommand('windicss.interpret', (textEditor, textEdit) => {
+      commands.registerTextEditorCommand('windicss.interpret', (textEditor) => {
         if (!core.processor) return;
         const text = textEditor.document.getText();
         const parser = new HTMLParser(text);

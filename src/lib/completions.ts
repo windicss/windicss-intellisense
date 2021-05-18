@@ -1,5 +1,5 @@
 import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString, TextDocument } from 'vscode';
-import { highlightCSS, isColor, getConfig, rem2px, hex2RGB } from '../utils';
+import { highlightCSS, isColor, getConfig, rem2px, hex2RGB, flatColors } from '../utils';
 import { fileTypes, patterns, allowAttr } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
@@ -20,6 +20,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
     if (!getConfig('windicss.enableCodeCompletion')) return;
 
+    const coreColors = flatColors((core?.processor?.theme('colors') || {}) as Record<string, any>);
     const { attrs, colors, dynamics } = generateAttrUtilities(core);
 
     const separator = core.processor?.config('separator', ':') as string;
@@ -41,7 +42,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
     }
 
     function isValidColor(utility: string) {
-      return core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
+      return core.processor?.validate(utility).ignored.length === 0 && isColor(utility, coreColors);
     }
 
     function createColor(document: TextDocument, start: number, offset: number, color: number[]) {
@@ -92,7 +93,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               if ((!key) || !(allowAttr(type) && isAttrVariant(key))) return [];
             }
 
-            const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.map((classItem, index) => {
+            const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.utilities.map((classItem, index) => {
               const item = new CompletionItem(classItem, CompletionItemKind.Constant);
               item.sortText = '1-' + index.toString().padStart(8, '0');
               return item;
@@ -110,7 +111,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               return item;
             }): [];
 
-            const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamicCompletions.map(({ label, position }, index) => {
+            const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamics.map(({ label, position }, index) => {
               const item = new CompletionItem(label, CompletionItemKind.Variable);
               item.sortText = '3-' + index.toString().padStart(8, '0');
               item.command = {
@@ -125,7 +126,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               return item;
             }): [];
 
-            const colorsCompletion = getConfig('windicss.enableUtilityCompletion') ? core.colorCompletions.map(({ label, documentation }, index) => {
+            const colorsCompletion = getConfig('windicss.enableUtilityCompletion') ? core.colors.map(({ label, documentation }, index) => {
               const color = new CompletionItem(label, CompletionItemKind.Color);
               color.sortText = '0-' + index.toString().padStart(8, '0');
               color.documentation = documentation;
@@ -350,8 +351,8 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                 const data = attr.value.raw;
                 let match;
                 while ((match = regex.exec(data as string))) {
-                  if (match && match[0] in core.colors) {
-                    const color = hex2RGB(core.colors[match[0]] as string);
+                  if (match && match[0] in coreColors) {
+                    const color = hex2RGB(coreColors[match[0]] as string);
                     if (color) colors.push(createColor(document, attr.value.start, match.index, color));
                   }
                 }
