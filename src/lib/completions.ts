@@ -368,7 +368,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             const parser = new HTMLParser(documentText);
 
             for (const attr of parser.parseAttrs()) {
-              if (attr.key in attrs) {
+              if (isAttrUtility(attr.key)) {
                 const regex = /\S+/igm;
                 const data = attr.value.raw;
                 let match;
@@ -378,7 +378,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                     if (color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + match.index), document.positionAt(attr.value.start + match.index + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
                   }
                 }
-              } else if (['class', 'className'].includes(attr.key) || attr.key in core.variants) {
+              } else if (['class', 'className'].includes(attr.key) || isAttrVariant(attr.key)) {
                 const elements = new ClassParser(attr.value.raw, core.processor?.config('separator', ':') as string, Object.keys(core.variants)).parse(false);
                 const isValidateColor = (utility: string) => core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
                 for (const element of elements) {
