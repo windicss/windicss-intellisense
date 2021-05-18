@@ -1,12 +1,14 @@
-import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString } from 'vscode';
+import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString, TextDocument } from 'vscode';
 import { highlightCSS, isColor, getConfig, rem2px, hex2RGB } from '../utils';
-import { fileTypes, patterns } from '../utils/filetypes';
+import { fileTypes, patterns, allowAttr } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
 import { generateAttrUtilities } from './core/attributify';
-import type { Core } from '../interfaces';
-import type { Disposable } from 'vscode';
 import { Style } from 'windicss/utils/style';
+
+import type { Disposable } from 'vscode';
+import type { StyleSheet } from 'windicss/utils/style';
+import type { Core } from '../interfaces';
 
 const DISPOSABLES: Disposable[] = [];
 let initialized = false;
@@ -38,6 +40,18 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       return (getConfig('windicss.enableAttrVariantCompletion') && lastKey in core.variants) || (getConfig('windicss.enableAttrUtilityCompletion') && lastKey in attrs);
     }
 
+    function isValidColor(utility: string) {
+      return core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
+    }
+
+    function createColor(document: TextDocument, start: number, offset: number, color: number[]) {
+      return new ColorInformation(new Range(document.positionAt(start + offset), document.positionAt(start + offset + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1));
+    }
+
+    function buildStyle(styleSheet?: StyleSheet) {
+      return styleSheet ? highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(styleSheet.build()) : styleSheet.build()) : undefined;
+    }
+
     function buildEmptyStyle(style: Style) {
       return highlightCSS(style.build().replace('{\n  & {}\n}', '{\n  ...\n}').replace('{}', '{\n  ...\n}').replace('...\n}\n}', '  ...\n  }\n}'));
     }
@@ -65,16 +79,17 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       return buildEmptyStyle(style);
     }
 
-    for (const { extension, type } of fileTypes) {
+    for (const { ext, type } of fileTypes) {
+      // trigger suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...
       disposables.push(languages.registerCompletionItemProvider(
-        extension,
+        ext,
         {
           provideCompletionItems(document, position) {
 
             const text = document.getText(new Range(new Position(0, 0), position));
             if (text.match(patterns[type]) === null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
-              if ((!key) || !(['js', 'html'].includes(type) && isAttrVariant(key))) return [];
+              if ((!key) || !(allowAttr(type) && isAttrVariant(key))) return [];
             }
 
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.staticCompletions.map((classItem, index) => {
@@ -110,12 +125,12 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               return item;
             }): [];
 
-            const colorsCompletion = core.colorCompletions.map(({ label, documentation }, index) => {
+            const colorsCompletion = getConfig('windicss.enableUtilityCompletion') ? core.colorCompletions.map(({ label, documentation }, index) => {
               const color = new CompletionItem(label, CompletionItemKind.Color);
               color.sortText = '0-' + index.toString().padStart(8, '0');
               color.documentation = documentation;
               return color;
-            });
+            }): [];
 
             return [...variantsCompletion, ...colorsCompletion, ...staticCompletion, ...dynamicCompletion];
           },
@@ -123,7 +138,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           resolveCompletionItem(item) {
             switch (item.kind) {
             case CompletionItemKind.Constant:
-              item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(core.processor?.interpret(item.label).styleSheet.build()) : core.processor?.interpret(item.label).styleSheet.build());
+              item.documentation = buildStyle(core.processor?.interpret(item.label).styleSheet);
               break;
             case CompletionItemKind.Module:
               item.documentation = buildVariantDoc(item.detail);
@@ -145,8 +160,9 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         ' ',
       ));
 
-      disposables.push(languages.registerCompletionItemProvider(
-        extension,
+      // trigger suggestion for bg = | text = | sm = | hover = | ...
+      allowAttr(type) && disposables.push(languages.registerCompletionItemProvider(
+        ext,
         {
           provideCompletionItems(document, position) {
             const text = document.getText(new Range(new Position(0, 0), position));
@@ -195,8 +211,9 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         ' '
       ));
 
-      getConfig('windicss.enableAttrUtilityCompletion') && disposables.push(languages.registerCompletionItemProvider(
-        extension,
+      // trigger suggestions in bg = ... | text = ... | border = ... | xxx = ...
+      allowAttr(type) && getConfig('windicss.enableAttrUtilityCompletion') && disposables.push(languages.registerCompletionItemProvider(
+        ext,
         {
           provideCompletionItems(document, position) {
             const text = document.getText(new Range(new Position(0, 0), position));
@@ -214,12 +231,12 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   return item;
                 }): [];
 
-                const valuesCompletion = attrs[key].map((value, index) => {
+                const valuesCompletion = getConfig('windicss.enableUtilityCompletion') ? attrs[key].map((value, index) => {
                   const item = new CompletionItem(value, CompletionItemKind.Constant);
                   item.detail = key;
                   item.sortText = '1-' + index.toString().padStart(8, '0');
                   return item;
-                });
+                }): [];
 
                 const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') && key in dynamics? dynamics[key].map(({ value, position }, index) => {
                   const item = new CompletionItem(value, CompletionItemKind.Variable);
@@ -236,7 +253,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   return item;
                 }): [];
 
-                const colorsCompletion = key in colors ? colors[key].map(({ value, doc }, index) => {
+                const colorsCompletion = getConfig('windicss.enableUtilityCompletion') && key in colors ? colors[key].map(({ value, doc }, index) => {
                   const color = new CompletionItem(value, CompletionItemKind.Color);
                   color.sortText = '0-' + index.toString().padStart(8, '0');
                   color.detail = key;
@@ -253,8 +270,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           resolveCompletionItem(item) {
             switch (item.kind) {
             case CompletionItemKind.Constant:
-              const css = core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
-              item.documentation = highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(css) : css);
+              item.documentation = buildStyle(core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet);
               item.detail = undefined;
               break;
             case CompletionItemKind.Module:
@@ -263,7 +279,6 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
               item.detail = undefined;
               break;
             case CompletionItemKind.Variable:
-              // TODO
               break;
             case CompletionItemKind.Color:
               item.detail = core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
@@ -281,54 +296,38 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
       // moved hover & color swatches out of patterns loop, to only calculcate them one time per file
       if (getConfig('windicss.enableHoverPreview')) {
-        disposables.push(languages.registerHoverProvider(extension, {
-          // hover class show css preview
+        disposables.push(languages.registerHoverProvider(ext, {
           provideHover: (document, position, token) => {
             const range = document.getWordRangeAtPosition(position, /[^\s();{}'"=`]+/);
             const word = document.getText(range);
             if (!range || !word)
               return;
             if (['class', 'className'].includes(word)) {
-              // hover variant attr
+              // hover class or className, e.g. class= className=
               const text = document.getText(new Range(range.end, document.lineAt(document.lineCount-1).range.end));
               const match = text.match(/((?<=^=\s*["'])[^"']*(?=["']))|((?<=^=\s*)[^"'>\s]+)/);
               if (match) {
-                const style = core.processor?.interpret(match[0]).styleSheet.build();
-                if (style)
-                  return new Hover(
-                    highlightCSS(getConfig('windicss.enableRemToPxPreview')
-                      ? rem2px(style)
-                      : style) ?? '',
-                    range,
-                  );
+                const css = buildStyle(core.processor?.interpret(match[0]).styleSheet);
+                if (css) return new Hover(css, range);
               }
             }
 
             if (isAttr(word)) {
-              // hover attr
+              // hover attr, e.g. bg= sm:bg=
               const text = document.getText(new Range(range.end, document.lineAt(document.lineCount-1).range.end));
               const match = text.match(/((?<=^=\s*["'])[^"']*(?=["']))|((?<=^=\s*)[^"'>\s]+)/);
               if (match) {
-                const style = core.processor?.attributify({ [word] : match[0].trim().split(/\s/).filter(i => i) }).styleSheet.build();
-                if (style)
-                  return new Hover(
-                    highlightCSS(getConfig('windicss.enableRemToPxPreview')
-                      ? rem2px(style)
-                      : style) ?? '',
-                    range,
-                  );
+                const css = buildStyle(core.processor?.attributify({ [word] : match[0].trim().split(/\s/).filter(i => i) }).styleSheet);
+                if (css) return new Hover(css, range);
               }
             }
+            // hover attr value or class value, e.g. class="bg-red-500 ..."  bg="red-500 ..."
             const text = document.getText(new Range(new Position(0, 0), position));
             const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
             const style = isAttr(key) ? core.processor?.attributify({ [key]: [ word ] }) : ['className', 'class'].includes(key) ? core.processor?.interpret(word) : undefined;
             if (style && style.ignored.length === 0) {
-              return new Hover(
-                highlightCSS(getConfig('windicss.enableRemToPxPreview')
-                  ? rem2px(style.styleSheet.build())
-                  : style.styleSheet.build()) ?? '',
-                range,
-              );
+              const css = buildStyle(style.styleSheet);
+              if (css) return new Hover(css, range);
             }
           },
         })
@@ -336,7 +335,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       }
 
       if (getConfig('windicss.enableColorDecorators')) {
-        disposables.push(languages.registerColorProvider(extension, {
+        disposables.push(languages.registerColorProvider(ext, {
           // insert color before class
           provideDocumentColors: (document, token) => {
             const colors: ColorInformation[] = [];
@@ -346,34 +345,35 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
             for (const attr of parser.parseAttrs()) {
               if (isAttrUtility(attr.key)) {
+                // inset decoration in bg|text|... = "..."
                 const regex = /\S+/igm;
                 const data = attr.value.raw;
                 let match;
                 while ((match = regex.exec(data as string))) {
                   if (match && match[0] in core.colors) {
                     const color = hex2RGB(core.colors[match[0]] as string);
-                    if (color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + match.index), document.positionAt(attr.value.start + match.index + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                    if (color) colors.push(createColor(document, attr.value.start, match.index, color));
                   }
                 }
               } else if (['class', 'className'].includes(attr.key) || isAttrVariant(attr.key)) {
+                // inset decoration in class|className|sm|hover|... = "..."
                 const elements = new ClassParser(attr.value.raw, core.processor?.config('separator', ':') as string, Object.keys(core.variants)).parse(false);
-                const isValidateColor = (utility: string) => core.processor?.validate(utility).ignored.length === 0 && isColor(utility, core.colors);
                 for (const element of elements) {
                   if (element.type === 'group' && Array.isArray(element.content)) {
                     for (const e of element.content) {
-                      const color = isValidateColor(e.raw);
-                      if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + e.start), document.positionAt(attr.value.start + e.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                      const color = isValidColor(e.raw);
+                      if(color) colors.push(createColor(document, attr.value.start, e.start, color));
                     }
                   }
-                  const color = element.type === 'utility' && isValidateColor(element.raw);
-                  if(color) colors.push(new ColorInformation(new Range(document.positionAt(attr.value.start + element.start), document.positionAt(attr.value.start + element.start + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1)));
+                  const color = element.type === 'utility' && isValidColor(element.raw);
+                  if(color) colors.push(createColor(document, attr.value.start, element.start, color));
                 }
               }
             }
 
             return colors;
           },
-          provideColorPresentations: (color, ctx, token) => {
+          provideColorPresentations: () => {
             return [];
           },
         })

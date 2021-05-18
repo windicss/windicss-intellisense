@@ -1,6 +1,8 @@
-import type { Disposable, ExtensionContext, TextDocument, TextLine } from 'vscode';
 import { Diagnostic, DiagnosticSeverity, languages, Range, window, workspace } from 'vscode';
+
 import type { Core } from '../interfaces';
+import type { Disposable, ExtensionContext, TextDocument, TextLine } from 'vscode';
+
 export function registerDiagnostics(ctx: ExtensionContext,  core: Core): Disposable[] | [] {
   const diagCollection = languages.createDiagnosticCollection('windi');
 

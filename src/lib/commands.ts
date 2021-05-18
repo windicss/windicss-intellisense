@@ -6,6 +6,7 @@ import { StyleSheet } from 'windicss/utils/style';
 import { Log } from '../utils/Log';
 import { getConfig, sortClassNames, toggleConfig } from '../utils';
 import { runAnalysis } from 'windicss-analysis';
+
 import type { ExtensionContext, Disposable } from 'vscode';
 import type { Core } from '../interfaces';
 
@@ -121,7 +122,7 @@ export function registerCommands(ctx: ExtensionContext, core: Core): Disposable[
           // let fileName = 'windicss-analysis-result.json'
           const { result } = await runAnalysis(
             {
-              root: workspace.workspaceFolders![0].uri.fsPath,
+              root: workspace.workspaceFolders?.[0].uri.fsPath,
             },
             { interpretUtilities: true },
           );

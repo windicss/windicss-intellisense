@@ -4,6 +4,11 @@ export function connect(strings: string|string[]) {
   return Array.isArray(strings)? new RegExp(strings.map(i => `(${i})`).join('|')) : new RegExp(strings);
 }
 
+export function allowAttr(type: string): boolean {
+  // check if file type allow attributes
+  return ['html', 'js'].includes(type);
+}
+
 const classRegex = String.raw`(class\s*=\s*["'])[^"']*$`;
 const classNameRegex = String.raw`(className\s*=\s*["'])[^"']*$`;
 // const variantsRegex = String.raw`((dark|light|active|after|before|checked|disabled|focus|hover|tw)\s*=\s*["'])[^"']*$`;
@@ -18,51 +23,51 @@ export const patterns: {[key:string]: RegExp} = {
 
 export const fileTypes: {
   type: string;
-  extension: string;
+  ext: string;
 }[] = [
   {
     type: 'css',
-    extension: 'css',
+    ext: 'css',
   },
   {
     type: 'css',
-    extension: 'sass',
+    ext: 'sass',
   },
   {
     type: 'css',
-    extension: 'less',
+    ext: 'less',
   },
   {
     type: 'js',
-    extension: 'javascript',
+    ext: 'javascript',
   },
   {
     type: 'js',
-    extension: 'javascriptreact',
+    ext: 'javascriptreact',
   },
   {
     type: 'js',
-    extension: 'typescriptreact',
+    ext: 'typescriptreact',
   },
   {
     type: 'html',
-    extension: 'html',
+    ext: 'html',
   },
   {
     type: 'html',
-    extension: 'php',
+    ext: 'php',
   },
   {
     type: 'html',
-    extension: 'vue',
+    ext: 'vue',
   },
   {
     type: 'html',
-    extension: 'svelte',
+    ext: 'svelte',
   },
 ];
 
 if (getConfig('windicss.includeLanguages')) {
   const config = getConfig<Record<string, string>>('windicss.includeLanguages');
-  if (config) Object.entries(config).map(([key, value]) => (fileTypes.push({ extension: key, type: value in patterns ? value : 'css' })));
+  if (config) Object.entries(config).map(([key, value]) => (fileTypes.push({ ext: key, type: value in patterns ? value : 'css' })));
 }
