@@ -230,10 +230,41 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         disposables.push(languages.registerHoverProvider(extension, {
           // hover class show css preview
           provideHover: (document, position, token) => {
-            const range = document.getWordRangeAtPosition(position, /[^\s();{}'"`]+/);
+            const range = document.getWordRangeAtPosition(position, /[^\s();{}'"=`]+/);
             const word = document.getText(range);
             if (!range || !word)
               return;
+            if (['class', 'className'].includes(word)) {
+              // hover variant attr
+              const text = document.getText(new Range(range.end, document.lineAt(document.lineCount-1).range.end));
+              const match = text.match(/((?<=^=\s*["'])[^"']*(?=["']))|((?<=^=\s*)[^"'>\s]+)/);
+              if (match) {
+                const style = core.processor?.interpret(match[0]).styleSheet.build();
+                if (style)
+                  return new Hover(
+                    highlightCSS(getConfig('windicss.enableRemToPxPreview')
+                      ? rem2px(style)
+                      : style) ?? '',
+                    range,
+                  );
+              }
+            }
+
+            if (word in attrs || core.variants.includes(word)) {
+              // hover attr
+              const text = document.getText(new Range(range.end, document.lineAt(document.lineCount-1).range.end));
+              const match = text.match(/((?<=^=\s*["'])[^"']*(?=["']))|((?<=^=\s*)[^"'>\s]+)/);
+              if (match) {
+                const style = core.processor?.attributify({ [word] : match[0].trim().split(/\s/).filter(i => i) }).styleSheet.build();
+                if (style)
+                  return new Hover(
+                    highlightCSS(getConfig('windicss.enableRemToPxPreview')
+                      ? rem2px(style)
+                      : style) ?? '',
+                    range,
+                  );
+              }
+            }
             const text = document.getText(new Range(new Position(0, 0), position));
             const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
             const style = key in attrs || core.variants.includes(key)? core.processor?.attributify({ [key]: [ word ] }) :  core.processor?.interpret(word);
