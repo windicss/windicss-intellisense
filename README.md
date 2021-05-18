@@ -82,8 +82,10 @@ Browse your utilities usages, have an overview of your design system, identify "
 | `windicss.enableUtilityCompletion` | boolean | true     | Enable Utility Completion.                                   |
 | `windicss.enableVariantCompletion` | boolean | true     | Enable Variant Completion.                                   |
 | `windicss.enableDynamicCompletion` | boolean | true     | Enable Dynamic Utilities Completion like p-${int}.           |
+| `windicss.enableAttrUtilityCompletion` | boolean | true | Enable Utility Completion For Attributify Mode.              |
+| `windicss.enableAttrVariantCompletion` | boolean | true | Enable Variant Completion For Attributify Mode.              |
 | `windicss.enableRemToPxPreview`    | boolean | true     | Enable Rem to Px Preview.                                    |
-| `windicss.enableCodeFolding`       | boolean | false     | Enable ClassNames Code Folding.                              |
+| `windicss.enableCodeFolding`       | boolean | false    | Enable ClassNames Code Folding.                              |
 | `windicss.foldByLength`            | boolean | false    | Folding code by length. Default option is false, will fold by utility count. |
 | `windicss.foldCount`               | number  | 3        | Used by foldByCount.                                         |
 | `windicss.foldLength`              | number  | 25       | Used by foldByLength                                         |

@@ -151,6 +151,16 @@
           "default": true,
           "description": "Enable Variant Completion."
         },
+        "windicss.enableAttrUtilityCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Utility Completion For Attributify Mode."
+        },
+        "windicss.enableAttrVariantCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Variant Completion For Attributify Mode."
+        },
         "windicss.enableDynamicCompletion": {
           "type": "boolean",
           "default": true,
