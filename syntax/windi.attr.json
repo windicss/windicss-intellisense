@@ -7,7 +7,6 @@
     { "include": "#alias" },
 		{ "include": "#important" },
 		{ "include": "#bracket" }
-
   ],
   "repository": {
     "variant":   {
@@ -27,8 +26,23 @@
 			"name": "support.class.windicss"
 		},
 		"bracket": {
-			"match": "\\(|\\)",
-			"name": "constant.character.escape.windicss"
+			"begin": "(?i)(?<![\\w-])(\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "constant.character.escape.windicss"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "constant.character.escape.windicss"
+        }
+      },
+      "patterns": [
+        {
+          "include": "source.css#property-values"
+        }
+      ]
 		}
   }
 }
