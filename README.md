@@ -93,6 +93,22 @@ Browse your utilities usages, have an overview of your design system, identify "
 | `windicss.hiddenText`              | string  | ` ...`   | Placeholder used when folding code.                          |
 | `windicss.hiddenTextColor`         | string  | \#AED0A4 | Placeholder Color.                                           |
 | `windicss.sortOnSave`              | boolean | false    | Runs class sorting on file save.                             |
+| `windicss.includeLanguages`        | object  | {}       | Add additional file types.                                   |
+
+Give an example of `windicss.includeLanguages`
+
+```js
+"windicss.includeLanguages": {
+  "abc": "html", // css, js
+  "def": {
+    "type": "css"
+  },
+  "ghi": {
+    "type": "js",
+    "patterns": ["@apply\s+\S+$", "..." ],
+  },
+}
+```
 
 ## For more information
 
