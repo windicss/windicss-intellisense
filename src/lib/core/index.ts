@@ -73,6 +73,16 @@ export async function init(): Promise<Core> {
         }
       });
     }
+    const prefix = processor.config('prefix');
+    if (prefix) {
+      utilities = utilities.map(i => prefix + i);
+      for (const color of colors) {
+        color.label = prefix + color.label;
+      }
+      for (const dynamic of dynamics) {
+        dynamic.label = prefix + dynamic.label;
+      }
+    }
     return {
       processor,
       colors,
