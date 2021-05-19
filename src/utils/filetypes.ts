@@ -9,8 +9,7 @@ export function allowAttr(type: string): boolean {
   return ['html', 'js'].includes(type);
 }
 
-const classPattern = String.raw`(class\s*=\s*["'])[^"']*$`;
-const classNamePttern = String.raw`(className\s*=\s*["'])[^"']*$`;
+const classPattern = String.raw`(class(Name)?\s*=\s*\S?\s*["'\`])[^"'\`]*$`;
 const emmetPattern = String.raw`\.\S*$`;
 const applyPattern = String.raw`@apply\s+[^;]*$`;
 const htmlPattern = getConfig('windicss.enableEmmetCompletion') ? [ classPattern, applyPattern, emmetPattern ] : [ classPattern, applyPattern ];
@@ -19,7 +18,7 @@ export const applyRegex = new RegExp(applyPattern);
 
 export const patterns: {[key:string]: RegExp} = {
   'html': connect(htmlPattern),
-  'js': connect([...htmlPattern, classNamePttern]),
+  'js': connect(htmlPattern),
   'css': connect(applyPattern),
 };
 
