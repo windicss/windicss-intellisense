@@ -88,9 +88,10 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           provideCompletionItems(document, position) {
 
             const text = document.getText(new Range(new Position(0, 0), position));
-            if (text.match(patterns[type]) === null) {
+
+            if ((!pattern || text.match(pattern) === null) && text.match(patterns[type]) === null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
-              if ((!key) || !(allowAttr(type) && isAttrVariant(key)) && (pattern && text.match(pattern) === null)) return [];
+              if ((!key) || !(allowAttr(type) && isAttrVariant(key))) return [];
             }
 
             const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.utilities.map((classItem, index) => {
@@ -168,7 +169,8 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           provideCompletionItems(document, position) {
             const text = document.getText(new Range(new Position(0, 0), position));
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
-              const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
+              const key = text.match(/<\w+\s*\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
+              console.log(key);
               if (!key) {
                 let completions: CompletionItem[] = [];
                 if (getConfig('windicss.enableAttrUtilityCompletion')) completions = completions.concat(Object.keys(attrs).map((name) => {
