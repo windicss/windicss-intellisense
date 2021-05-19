@@ -169,9 +169,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           provideCompletionItems(document, position) {
             const text = document.getText(new Range(new Position(0, 0), position));
             if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
-              const key = text.match(/<\w+\s*\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
-              console.log(key);
-              if (!key) {
+              if (!text.match(/\S+(?=\s*=\s*["']?[^"']*$)/) || text.match(/<\w+\s+$/)) {
                 let completions: CompletionItem[] = [];
                 if (getConfig('windicss.enableAttrUtilityCompletion')) completions = completions.concat(Object.keys(attrs).map((name) => {
                   const item = new CompletionItem(name, CompletionItemKind.Field);
