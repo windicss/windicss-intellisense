@@ -4,33 +4,49 @@ const utilities: { [key:string]: string[]} = {
   ],
   backdropBlur: [
     'backdrop-blur-${static}',
+    'backdrop-blur-[11px]',
   ],
   backdropBrightness: [
     'backdrop-brightness-${static}',
+    'backdrop-brightness-[1.23]',
   ],
   backdropContrast: [
     'backdrop-contrast-${static}',
+    'backdrop-contrast-[0.87]',
   ],
   backdropGrayscale: [
     'backdrop-grayscale-${static}',
+    'backdrop-grayscale-[0.42]',
   ],
   backdropHueRotate: [
     'backdrop-hue-rotate-${static}',
+    'backdrop-hue-rotate-[1.57rad]',
   ],
   backdropInvert: [
     'backdrop-invert-${static}',
+    'backdrop-invert-[0.66]',
   ],
   backdropOpacity: [
     'backdrop-opacity-${static}',
+    'backdrop-opacity-[22%]',
   ],
   backdropSaturate: [
     'backdrop-saturate-${static}',
+    'backdrop-saturate-[144%]',
   ],
   backdropSepia: [
     'backdrop-sepia-${static}',
+    'backdrop-sepia-[0.38]',
   ],
   backgroundColor: [
     'bg-${color}',
+    'bg-[#0f0]',
+    'bg-[#ff0000]',
+    'bg-[#0000ffcc]',
+    'bg-[rgb(123,123,123)]',
+    'bg-[rgba(123,123,123,0.5)]',
+    'bg-[hsl(0,100%,50%)]',
+    'bg-[hsla(0,100%,50%,0.3)]',
   ],
   backgroundImage: [
     'bg-${static}',
@@ -38,6 +54,8 @@ const utilities: { [key:string]: string[]} = {
   backgroundOpacity: [
     'bg-opacity-${static}',
     'bg-opacity-${int<=100}',
+    'bg-opacity-[0.11]',
+    'bg-opacity-[var(--value)]',
   ],
   backgroundPosition: [
     'bg-${static}',
@@ -49,9 +67,11 @@ const utilities: { [key:string]: string[]} = {
     'blur-${static}',
     'blur-${int}',
     'blur-${size}',
+    'blur-[15px]',
   ],
   borderColor: [
     'border-${color}',
+    'border-[#f00]',
   ],
   borderOpacity: [
     'border-opacity-${static}',
@@ -63,6 +83,17 @@ const utilities: { [key:string]: string[]} = {
     'rounded-l-${static}',
     'rounded-r-${static}',
     'rounded-b-${static}',
+
+    'rounded-[11px]',
+    'rounded-t-[var(--radius)]',
+    'rounded-r-[var(--radius)]',
+    'rounded-b-[var(--radius)]',
+    'rounded-l-[var(--radius)]',
+    'rounded-tr-[var(--radius)]',
+    'rounded-br-[var(--radius)]',
+    'rounded-bl-[var(--radius)]',
+    'rounded-tl-[var(--radius)]',
+
     'rounded-tl-${static}',
     'rounded-tr-${static}',
     'rounded-br-${static}',
@@ -91,6 +122,7 @@ const utilities: { [key:string]: string[]} = {
     'border-${static}',
     'border-${int}',
     'border-${size}',
+    'border-[2.5px]',
     'border-t-${int}',
     'border-t-${size}',
     'border-r-${int}',
@@ -108,6 +140,7 @@ const utilities: { [key:string]: string[]} = {
   ],
   brightness: [
     'brightness-${static}',
+    'brightness-[300%]',
   ],
   caretColor: [
     'caret-${color}',
@@ -120,6 +153,7 @@ const utilities: { [key:string]: string[]} = {
   ],
   contrast: [
     'contrast-${static}',
+    'contrast-[2.4]',
   ],
   cursor: [
     'cursor-${static}',
@@ -142,15 +176,20 @@ const utilities: { [key:string]: string[]} = {
   ],
   fill: [
     'fill-${color}',
+    'fill-[#1c1c1e]',
+    'fill-[var(--color)]',
   ],
   flex: [
     'flex-${static}',
+    'flex-[var(--flex)]',
   ],
   flexGrow: [
     'flex-grow-${static}',
+    'flex-grow-[var(--grow)]',
   ],
   flexShrink: [
     'flex-shrink-${static}',
+    'flex-shrink-[var(--shrink)]',
   ],
   fontFamily: [
     'font-${static}',
@@ -158,6 +197,7 @@ const utilities: { [key:string]: string[]} = {
   fontSize: [
     'text-${static}',
     'text-${int}xl',
+    'text-[2.23rem]',
   ],
   fontWeight: [
     'font-${static}',
@@ -178,11 +218,18 @@ const utilities: { [key:string]: string[]} = {
   ],
   gradientColorStops: [
     'from-${color}',
+    'from-[#da5b66]',
+    'from-[var(--color)]',
     'via-${color}',
+    'via-[#da5b66]',
+    'via-[var(--color)]',
     'to-${color}',
+    'to-[#da5b66]',
+    'to-[var(--color)]',
   ],
   grayscale: [
     'grayscale-${static}',
+    'grayscale-[0.55]',
   ],
   gridAutoColumns: [
     'auto-cols-${static}',
@@ -193,34 +240,42 @@ const utilities: { [key:string]: string[]} = {
   gridColumn: [
     'col-${static}',
     'col-span-${int}',
+    'col-[7]',
   ],
   gridColumnEnd: [
     'col-end-${static}',
     'col-end-${int}',
+    'col-end-[7]',
   ],
   gridColumnStart: [
     'col-start-${static}',
     'col-start-${int}',
+    'col-start-[7]',
   ],
   gridRow: [
     'row-${static}',
     'row-span-${int}',
+    'row-[7]',
   ],
   gridRowEnd: [
     'row-end-${static}',
     'row-end-${int}',
+    'row-end-[7]',
   ],
   gridRowStart: [
     'row-start-${static}',
     'row-start-${int}',
+    'row-start-[7]',
   ],
   gridTemplateColumns: [
     'grid-cols-${static}',
     'grid-cols-${int}',
+    'grid-cols-[200px,repeat(auto-fill,minmax(15%,100px)),300px]',
   ],
   gridTemplateRows: [
     'grid-rows-${static}',
     'grid-rows-${int}',
+    'grid-rows-[200px,repeat(auto-fill,minmax(15%,100px)),300px]',
   ],
   height: [
     'h-${static}',
@@ -228,15 +283,20 @@ const utilities: { [key:string]: string[]} = {
     'h-${fraction}',
     'h-${int}xl',
     'h-${size}',
+    'h-[3.23rem]',
+    'h-[calc(100%+1rem)]',
+    'h-[var(--width)]',
   ],
   hueRotate: [
     'hue-rotate-${static}',
+    'hue-rotate-[0.8turn]',
   ],
   inset: [
     'inset-${static}',
     'inset-${float}',
     'inset-${fraction}',
     'inset-${size}',
+    'inset-[11px]',
 
     'inset-y-${static}',
     'inset-y-${float}',
@@ -270,15 +330,18 @@ const utilities: { [key:string]: string[]} = {
   ],
   invert: [
     'invert-${static}',
+    'invert-[0.75]',
   ],
   letterSpacing: [
     'tracking-${static}',
     'tracking-${size}',
+    'tracking-[var(--tracking)]',
   ],
   lineHeight: [
     'leading-${static}',
     'leading-${int}',
     'leading-${size}',
+    'leading-[var(--leading)]',
   ],
   listStyleType: [
     'list-${static}',
@@ -307,6 +370,15 @@ const utilities: { [key:string]: string[]} = {
     'mr-${size}',
     'mb-${size}',
     'ml-${size}',
+
+    'm-[7px]',
+    'my-[7px]',
+    'mx-[7px]',
+    'mt-[7px]',
+    'mr-[7px]',
+    'mb-[7px]',
+    'ml-[7px]',
+    'mt-[clamp(30px,100px)]',
   ],
   maxHeight: [
     'max-h-${static}',
@@ -321,6 +393,12 @@ const utilities: { [key:string]: string[]} = {
     'max-w-${fraction}',
     'max-w-${int}xl',
     'max-w-${size}',
+    'max-w-[3.23rem]',
+    'max-w-[calc(100%+1rem)]',
+    'max-w-[var(--width)]',
+    'max-h-[3.23rem]',
+    'max-h-[calc(100%+1rem)]',
+    'max-h-[var(--width)]',
   ],
   minHeight: [
     'min-h-${static}',
@@ -328,6 +406,9 @@ const utilities: { [key:string]: string[]} = {
     'min-h-${fraction}',
     'min-h-${int}xl',
     'min-h-${size}',
+    'min-h-[3.23rem]',
+    'min-h-[calc(100%+1rem)]',
+    'min-h-[var(--width)]',
   ],
   minWidth: [
     'min-w-${static}',
@@ -335,6 +416,9 @@ const utilities: { [key:string]: string[]} = {
     'min-w-${fraction}',
     'min-w-${int}xl',
     'min-w-${size}',
+    'min-w-[3.23rem]',
+    'min-w-[calc(100%+1rem)]',
+    'min-w-[var(--width)]',
   ],
   objectPosition: [
     'object-${static}',
@@ -342,6 +426,7 @@ const utilities: { [key:string]: string[]} = {
   opacity: [
     'opacity-${static}',
     'opacity-${int<=100}',
+    'opacity-[var(--opacity)]',
   ],
   order: [
     'order-${static}',
@@ -349,6 +434,7 @@ const utilities: { [key:string]: string[]} = {
   ],
   outline: [
     'outline-${static}',
+    'outline-[var(--outline)]',
   ],
   outlineColor: [
     'outline-${color}',
@@ -357,6 +443,7 @@ const utilities: { [key:string]: string[]} = {
   ],
   padding: [
     'p-${static}',
+    'p-[var(--app-padding)]',
     'py-${static}',
     'px-${static}',
     'pt-${static}',
@@ -388,28 +475,35 @@ const utilities: { [key:string]: string[]} = {
   ],
   placeholderColor: [
     'placeholder-${color}',
+    'placeholder-[var(--placeholder)]',
   ],
   placeholderOpacity: [
     'placeholder-opacity-${static}',
     'placeholder-opacity-${int<=100}',
+    'placeholder-opacity-[var(--placeholder)]',
   ],
   ringColor: [
     'ring-${color}',
+    'ring-[#76ad65]',
   ],
   ringOffsetColor: [
     'ring-offset-${color}',
+    'ring-offset-[#76ad65]',
   ],
   ringOffsetWidth: [
     'ring-offset-${static}',
     'ring-offset-${int}',
+    'ring-offset-[10px]',
   ],
   ringOpacity: [
     'ring-${static}',
     'ring-opacity-${int<=100}',
+    'ring-opacity-[var(--ring-opacity)]',
   ],
   ringWidth: [
     'ring-${static}',
     'ring-${int}',
+    'ring-[10px]',
   ],
   rotate: [
     'rotate-${static}',
@@ -420,9 +514,14 @@ const utilities: { [key:string]: string[]} = {
     'rotate-x-${float}',
     'rotate-y-${float}',
     'rotate-z-${float}',
+    'rotate-[23deg]',
+    'rotate-[2.3rad]',
+    'rotate-[401grad]',
+    'rotate-[1.5turn]',
   ],
   saturate: [
     'saturate-${static}',
+    'saturate-[180%]',
   ],
   scale: [
     'scale-${static}',
@@ -436,12 +535,15 @@ const utilities: { [key:string]: string[]} = {
   ],
   sepia: [
     'sepia-${static}',
+    'sepia-[0.2]',
   ],
   skew: [
     'skew-x-${static}',
     'skew-x-${float}',
     'skew-y-${static}',
     'skew-y-${float}',
+    'skew-x-[3px]',
+    'skew-y-[3px]',
   ],
   space: [
     'space-y-${static}',
@@ -450,9 +552,12 @@ const utilities: { [key:string]: string[]} = {
     'space-x-reverse',
     'space-y-${float}',
     'space-x-${float}',
+    'space-x-[20cm]',
+    'space-x-[calc(20%-1cm)]',
   ],
   stroke: [
     'stroke-${color}',
+    'stroke-[#da5b66]',
   ],
   strokeWidth: [
     'stroke-${static}',
@@ -513,10 +618,13 @@ const utilities: { [key:string]: string[]} = {
   transitionDuration: [
     'duration-${static}',
     'duration-${int}',
+    'duration-[2s]',
+    'duration-[var(--app-duration)]',
   ],
   transitionDelay: [
     'delay-${static}',
     'delay-${int}',
+    'delay-[var(--delay)]',
   ],
   transitionProperty: [
     'transition-${static}',
@@ -545,6 +653,12 @@ const utilities: { [key:string]: string[]} = {
     'w-${fraction}',
     'w-${int}xl',
     'w-${size}',
+    'w-[3.23rem]',
+    'w-[calc(100%+1rem)]',
+    'w-[calc(var(--10-10px,calc(-20px-(-30px--40px)))-50px)]',
+    'w-[var(--width)]',
+    'w-[var(--width,calc(100%+1rem))]',
+    'w-[calc(100%/3-1rem*2)]',
   ],
   zIndex: [
     'z-${static}',
