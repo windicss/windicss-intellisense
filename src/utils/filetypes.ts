@@ -6,7 +6,7 @@ export function connect(strings: string|string[]) {
 
 export function allowAttr(type: string): boolean {
   // check if file type allow attributes
-  return ['html', 'js'].includes(type);
+  return type ? ['html', 'js'].includes(type) : true;
 }
 
 const classPattern = String.raw`(class(Name)?\s*=\s*\S?\s*["'\`])[^"'\`]*$`;
@@ -23,6 +23,7 @@ export const patterns: {[key:string]: RegExp} = {
 };
 
 export const fileTypes: {
+  pattern?: RegExp;
   type: string;
   ext: string;
 }[] = [
@@ -65,6 +66,7 @@ export const fileTypes: {
   {
     type: 'html',
     ext: 'svelte',
+    pattern: /class:\S*$/,
   },
 ];
 

@@ -80,7 +80,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
       return buildEmptyStyle(style);
     }
 
-    for (const { ext, type } of fileTypes) {
+    for (const { ext, type, pattern } of fileTypes) {
       // trigger suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...
       disposables.push(languages.registerCompletionItemProvider(
         ext,
@@ -88,7 +88,9 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
           provideCompletionItems(document, position) {
 
             const text = document.getText(new Range(new Position(0, 0), position));
-            if (text.match(patterns[type]) === null) {
+            if (pattern) {
+              if (text.match(pattern) === null) return [];
+            } else if (text.match(patterns[type]) === null) {
               const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
               if ((!key) || !(allowAttr(type) && isAttrVariant(key))) return [];
             }
