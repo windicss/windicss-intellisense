@@ -36,11 +36,14 @@ export const fileTypes: {[key:string]: {pattern?: RegExp, type: string}} = {
   'css': {
     type: 'css',
   },
+  'scss': {
+    type: 'css',
+  },
   'sass': {
-    type: 'sass',
+    type: 'css',
   },
   'less': {
-    type: 'less',
+    type: 'css',
   },
   'javascript': {
     type: 'js',

@@ -343,7 +343,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
             // try one time update instead of line
             const documentText = document.getText();
             const parser = new HTMLParser(documentText);
-
+            parser.removeComments();
             for (const attr of parser.parseAttrs()) {
               if (isAttrUtility(attr.key)) {
                 // insert decoration in bg|text|... = "..."

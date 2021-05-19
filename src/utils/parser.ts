@@ -8,6 +8,17 @@ export class HTMLParser {
     this.html = html;
   }
 
+  removeComments() {
+    if (!this.html) return [];
+    const regex = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*|<!--[\s\S]*?-->$/igm;
+    let match;
+    while ((match = regex.exec(this.html as string))) {
+      if (match) {
+        this.html = (this.html as string).slice(0, match.index) + ' '.repeat(regex.lastIndex - match.index) + this.html.slice(regex.lastIndex);
+      }
+    }
+  }
+
   parseAttrs(): Attr[] {
     if (!this.html) return [];
     const output: Attr[] = [];
