@@ -1,12 +1,27 @@
 {
   "scopeName": "source.windi.scope",
-  "injectionSelector": "L:meta.property-list.css, L:meta.at-rule.body.css, L:meta.property-list.scss",
+  "injectionSelector": "meta.property-list.css, meta.at-rule.body.css, meta.property-list.scss",
   "patterns": [
     { "include": "#apply" },
     { "include": "#functions" }
   ],
   "repository": {
     "apply": {
+      "begin": "(?<!\/\/[^\n]*)(?<!\/\\*[\\s\\S]*)@apply\\b",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword.control.at-rule.windi.css"
+        },
+        "1": {
+          "name": "punctuation.definition.keyword.css"
+        }
+      },
+      "end": ";",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.terminator.rule.tailwind"
+        }
+      },
       "patterns": [
         { "match": "\\!\\s*important(?=\\s*;)", "name": "entity.name.tag.windi" },
         {
@@ -28,14 +43,6 @@
         {
           "match": "(?<=@apply\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
           "name": "entity.name.tag.windi"
-        },
-        {
-          "captures": {
-            "1": { "name": "keyword.control.at-rule.windi.css" },
-            "2": { "name": "punctuation.definition.keyword.css" }
-          },
-          "match": "^\\s*((@)(layer|var|screen|variants|apply)\\b)",
-          "name": "meta.at-rule.windi.css"
         }
       ]
     },
