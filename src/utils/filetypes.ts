@@ -9,6 +9,10 @@ export function allowAttr(type: string): boolean {
   return type ? ['html', 'js'].includes(type) : true;
 }
 
+function printRegex(regex: RegExp) {
+  return regex.source;
+}
+
 const classPattern = String.raw`(class(Name)?\s*=\s*\S?\s*["'\`])[^"'\`]*$`;
 const emmetPattern = String.raw`\.\S*$`;
 const applyPattern = String.raw`@apply\s+[^;]*$`;
@@ -22,55 +26,66 @@ export const patterns: {[key:string]: RegExp} = {
   'css': connect(applyPattern),
 };
 
-export const fileTypes: {
-  pattern?: RegExp;
-  type: string;
-  ext: string;
-}[] = [
-  {
+// export const fileTypes: {
+//   pattern?: RegExp;
+//   type: string;
+//   ext: string;
+// }[] =
+
+export const fileTypes: {[key:string]: {pattern?: RegExp, type: string}} = {
+  'css': {
     type: 'css',
-    ext: 'css',
   },
-  {
-    type: 'css',
-    ext: 'sass',
+  'sass': {
+    type: 'sass',
   },
-  {
-    type: 'css',
-    ext: 'less',
+  'less': {
+    type: 'less',
   },
-  {
+  'javascript': {
     type: 'js',
-    ext: 'javascript',
   },
-  {
+  'javascriptreact': {
     type: 'js',
-    ext: 'javascriptreact',
   },
-  {
+  'typescriptreact': {
     type: 'js',
-    ext: 'typescriptreact',
   },
-  {
+  'html': {
     type: 'html',
-    ext: 'html',
   },
-  {
+  'php': {
     type: 'html',
-    ext: 'php',
   },
-  {
+  'vue': {
     type: 'html',
-    ext: 'vue',
   },
-  {
+  'svelte': {
     type: 'html',
-    ext: 'svelte',
     pattern: /class:\S*$/,
   },
-];
+};
 
 if (getConfig('windicss.includeLanguages')) {
-  const config = getConfig<Record<string, string>>('windicss.includeLanguages');
-  if (config) Object.entries(config).map(([key, value]) => (fileTypes.push({ ext: key, type: value in patterns ? value : 'css' })));
+  // "windicss.includeLanguages": {
+  //   "rust": "html", // css // js
+  //   "abc": {
+  //      "type": "html"
+  //   }
+  //   "def": {
+  //      "type": "html",
+  //      "patterns": ["(class(Name)?\\s*=\\s*\\S?\\s*["'\\`])[^\"'\\`]*$", "..."],
+  //   }>
+  // }
+  const config = getConfig<{[key:string]: (string | { type?: string, patterns?: string[] })}>('windicss.includeLanguages');
+  if (config) Object.entries(config).map(([key, value]) => {
+    if (typeof value === 'string') {
+      fileTypes[key] = { type: value in patterns ? value : 'css' };
+    } else {
+      const pattern = (value.patterns === undefined || value.patterns.length === 0)? undefined : value.patterns;
+      if (key in fileTypes) {
+        fileTypes[key] = { type: value.type || fileTypes[key].type, pattern: fileTypes[key].pattern ? pattern ? connect([(fileTypes[key].pattern as RegExp).source, ...pattern]) : fileTypes[key].pattern : undefined };
+      }
+    }
+  });
 }

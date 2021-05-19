@@ -229,7 +229,7 @@
         "windicss.includeLanguages": {
           "type": "object",
           "default": {},
-          "description": ""
+          "description": "Add additional file types, if it already exist, it will be merged."
         }
       }
     },
