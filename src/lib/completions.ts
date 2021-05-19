@@ -346,7 +346,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
             for (const attr of parser.parseAttrs()) {
               if (isAttrUtility(attr.key)) {
-                // inset decoration in bg|text|... = "..."
+                // insert decoration in bg|text|... = "..."
                 const regex = /\S+/igm;
                 const data = attr.value.raw;
                 let match;
@@ -357,7 +357,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   }
                 }
               } else if (['class', 'className'].includes(attr.key) || isAttrVariant(attr.key)) {
-                // inset decoration in class|className|sm|hover|... = "..."
+                // insert decoration in class|className|sm|hover|... = "..."
                 const elements = new ClassParser(attr.value.raw, core.processor?.config('separator', ':') as string, Object.keys(core.variants)).parse(false);
                 for (const element of elements) {
                   if (element.type === 'group' && Array.isArray(element.content)) {
@@ -369,6 +369,21 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   const color = element.type === 'utility' && isValidColor(element.raw);
                   if(color) colors.push(createColor(document, attr.value.start, element.start, color));
                 }
+              }
+            }
+
+            // insert decoration in @apply ...
+            for (const className of parser.parseApplies()) {
+              const elements = new ClassParser(className.result, core.processor?.config('separator', ':') as string, Object.keys(core.variants)).parse(false);
+              for (const element of elements) {
+                if (element.type === 'group' && Array.isArray(element.content)) {
+                  for (const e of element.content) {
+                    const color = isValidColor(e.raw);
+                    if(color) colors.push(createColor(document, className.start, e.start, color));
+                  }
+                }
+                const color = element.type === 'utility' && isValidColor(element.raw);
+                if(color) colors.push(createColor(document, className.start, element.start, color));
               }
             }
 

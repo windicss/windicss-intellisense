@@ -1,4 +1,5 @@
 export type Attr = { raw: string, key: string, value: { raw: string, start: number }, start: number, end: number };
+export type ClassName = { result: string, start: number, end: number };
 
 export class HTMLParser {
   html?: string;
@@ -39,7 +40,7 @@ export class HTMLParser {
     return output;
   }
 
-  parseClasses(): { start: number; end: number; result: string }[] {
+  parseClasses(): ClassName[] {
     // Match all class properties
     if (!this.html) return [];
     const classRegex = /\s(?:class|className|w:dark|w:light|w:active|w:after|w:before|w:checked|w:disabled|w:focus|w:hover|w:tw)=(["'])([^{}]+)\1/;
@@ -66,5 +67,22 @@ export class HTMLParser {
       propStart = _htmlLeft.search(classRegex);
     }
     return classNames;
+  }
+
+  parseApplies(): ClassName[] {
+    if (!this.html) return [];
+    const output: ClassName[] = [];
+    const regex = /(?<=@apply\s+)[^;]+(?=\s+!important)|(?<=@apply\s+)[^;]+(?=;)/igm;
+    let match;
+    while ((match = regex.exec(this.html as string))) {
+      if (match) {
+        output.push({
+          result: this.html.slice(match.index, regex.lastIndex),
+          start: match.index,
+          end: regex.lastIndex,
+        });
+      }
+    }
+    return output;
   }
 }
