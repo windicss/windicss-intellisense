@@ -1,33 +1,65 @@
 {
   "scopeName": "source.windi.scope",
-  "injectionSelector": "L:meta.attribute, L:meta.property-list.css",
+  "injectionSelector": "L:meta.property-list.css, L:meta.property-list.scss",
   "patterns": [
-    { "include": "#separator" },
-    { "include": "#variant" },
-    { "include": "#alias" },
-		{ "include": "#important" },
-		{ "include": "#bracket" }
+    { "include": "#apply" },
+    { "include": "#functions" }
   ],
   "repository": {
-    "separator":         {
-      "match": "(?<=(\\w|-|\\+)+?):",
-      "name": "punctuation.separator.key-value.css"
+    "apply": {
+      "patterns": [
+        { "match": "\\!\\s*important(?=\\s*;)", "name": "entity.name.tag.windi" },
+        {
+          "match": "[!<@\\w-]+(?=:)",
+          "name": "entity.name.tag.windi"
+        },
+        {
+          "match": "(?<=@apply\\s+[\\s\\S]*?[<@\\w-]+:)[\\w-]+",
+          "name": "variable.apply.windi"
+        },
+        {
+          "match": "(?<=@apply\\s+[\\s\\S]*?\\s?)[\\w-]+(?=[\\s;)])",
+          "name": "variable.apply.windi"
+        },
+        {
+          "match": "(?<=@apply\\s+[\\s\\S]*?)[*][\\w-]+",
+          "name": "support.class.windicss"
+        },
+        {
+          "match": "(?<=@apply\\s+[\\s\\S]*?)[!](?=[<@:*\\w-]+)",
+          "name": "entity.name.tag.windi"
+        },
+        {
+          "captures": {
+            "1": { "name": "keyword.control.at-rule.windi.css" },
+            "2": { "name": "punctuation.definition.keyword.css" }
+          },
+          "match": "^\\s*((@)(layer|var|screen|variants|apply)\\b)",
+          "name": "meta.at-rule.windi.css"
+        }
+      ]
     },
-    "variant": {
-      "match": "[^:\\s]+(?=:)",
-      "name": "entity.name.tag.windi"
-    },
-		"important": {
-			"match": "(?<=\\s|\"|'|`)!(?=(\\w|-|:|\\*)+)",
-			"name": "entity.name.tag.windi"
-		},
-    "alias": {
-			"match": "(?<=\\s|\"|'|`)\\*(\\w|-)+",
-			"name": "support.class.windicss"
-		},
-		"bracket": {
-			"match": "\\(|\\)",
-			"name": "constant.character.escape.windicss"
-		}
+    "functions": {
+      "begin": "(?i)(?<![\\w-])(config|theme)(\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "support.function.config.windi"
+        },
+        "2": {
+          "name": "punctuation.section.function.begin.bracket.round.windi"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.function.end.bracket.round.windi"
+        }
+      },
+      "patterns": [
+        {
+          "include": "source.css#property-values"
+        }
+      ]
+    }
   }
 }

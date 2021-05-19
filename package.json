@@ -114,6 +114,21 @@
         "path": "./syntax/windi.scope.json"
       },
       {
+        "injectTo": [
+          "source.html",
+          "source.js",
+          "source.js.jsx",
+          "source.jsx",
+          "source.ts",
+          "source.tsx",
+          "source.vue",
+          "source.svelte",
+          "text.html"
+        ],
+        "scopeName": "source.windi.attr",
+        "path": "./syntax/windi.attr.json"
+      },
+      {
         "language": "windi",
         "scopeName": "source.windi",
         "path": "./syntax/windi.lang.json",

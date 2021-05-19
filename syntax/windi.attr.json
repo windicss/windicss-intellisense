@@ -1,0 +1,34 @@
+{
+  "scopeName": "source.windi.attr",
+  "injectionSelector": "L:meta.attribute",
+  "patterns": [
+    { "include": "#variant" },
+    { "include": "#separator" },
+    { "include": "#alias" },
+		{ "include": "#important" },
+		{ "include": "#bracket" }
+
+  ],
+  "repository": {
+    "variant":   {
+      "match": "[<@\\w!-]+(?=:)",
+      "name": "entity.name.tag.windi"
+    },
+    "separator": {
+      "match": "(?<=(\\w|-|\\+)+?):",
+      "name": "punctuation.separator.key-value.css"
+    },
+		"important": {
+			"match": "(?<=\\s|\"|'|`)!(?=(\\w|-|:|\\*)+)",
+			"name": "entity.name.tag.windi"
+		},
+    "alias": {
+			"match": "(?<=\\s|\"|'|`)\\*(\\w|-)+",
+			"name": "support.class.windicss"
+		},
+		"bracket": {
+			"match": "\\(|\\)",
+			"name": "constant.character.escape.windicss"
+		}
+  }
+}
