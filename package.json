@@ -107,6 +107,7 @@
           "source.ts",
           "source.tsx",
           "source.vue",
+          "source.css",
           "source.svelte",
           "text.html"
         ],

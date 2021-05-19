@@ -1,6 +1,6 @@
 {
   "scopeName": "source.windi.scope",
-  "injectionSelector": "L:meta.property-list.css, L:meta.property-list.scss",
+  "injectionSelector": "L:meta.property-list.css, L:meta.at-rule.body.css, L:meta.property-list.scss",
   "patterns": [
     { "include": "#apply" },
     { "include": "#functions" }
