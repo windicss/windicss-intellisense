@@ -1,5 +1,5 @@
-import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString, TextDocument } from 'vscode';
-import { highlightCSS, isColor, getConfig, rem2px, hex2RGB, flatColors } from '../utils';
+import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString, TextDocument, window } from 'vscode';
+import { highlightCSS, isColor, getConfig, rem2px, hex2RGB, flatColors, rgb2Hex, arrayEqual } from '../utils';
 import { fileTypes, patterns, allowAttr, applyRegex } from '../utils/filetypes';
 import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from '../utils/parser';
@@ -42,7 +42,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
     }
 
     function isValidColor(utility: string) {
-      return core.processor?.validate(utility).ignored.length === 0 && isColor(utility, coreColors);
+      return core.processor?.validate(utility).ignored.length === 0 && (isColor(utility, coreColors));
     }
 
     function createColor(document: TextDocument, start: number, offset: number, color: number[]) {
@@ -86,7 +86,6 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
         ext,
         {
           provideCompletionItems(document, position) {
-
             const text = document.getText(new Range(new Position(0, 0), position));
 
             if ((!pattern || text.match(pattern) === null) && text.match(patterns[type]) === null) {
@@ -389,7 +388,19 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
             return colors;
           },
-          provideColorPresentations: () => {
+          provideColorPresentations: (color, context) => {
+            const editor = window.activeTextEditor;
+
+            if (editor) {
+              const document = editor.document;
+              const range = context.document.getWordRangeAtPosition(context.range.end);
+              if (!arrayEqual(isValidColor(document.getText(range)) as unknown[], [color.red * 255, color.green * 255, color.blue * 255])) {
+                range && editor.edit(editBuilder => {
+                  editBuilder.replace(range, `bg-hex-${rgb2Hex(color.red, color.green, color.blue).slice(1,)}`);
+                });
+              }
+            }
+
             return [];
           },
         })

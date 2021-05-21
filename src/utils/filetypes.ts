@@ -9,10 +9,6 @@ export function allowAttr(type: string): boolean {
   return type ? ['html', 'js'].includes(type) : true;
 }
 
-function printRegex(regex: RegExp) {
-  return regex.source;
-}
-
 const classPattern = String.raw`(class(Name)?\s*=\s*\S?\s*["'\`])[^"'\`]*$`;
 const emmetPattern = String.raw`\.\S*$`;
 const applyPattern = String.raw`@apply\s+[^;]*$`;
@@ -25,12 +21,6 @@ export const patterns: {[key:string]: RegExp} = {
   'js': connect(htmlPattern),
   'css': connect(applyPattern),
 };
-
-// export const fileTypes: {
-//   pattern?: RegExp;
-//   type: string;
-//   ext: string;
-// }[] =
 
 export const fileTypes: {[key:string]: {pattern?: RegExp, type: string}} = {
   'css': {

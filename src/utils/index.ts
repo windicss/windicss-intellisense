@@ -22,6 +22,7 @@ export function highlightCSS(css?: string): MarkdownString | undefined {
 }
 
 export function isColor(className: string, colors: { [key: string]: string | string[] }): number[] | undefined {
+  if (/hex-?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/.test(className)) return hex2RGB(className.replace(/^\S+-hex-/, '#'));
   for (const [key, value] of Object.entries(colors)) {
     if (className.endsWith('-' + key)) {
       return hex2RGB(Array.isArray(value) ? value[0] : value);
@@ -129,3 +130,17 @@ export function rem2px(str?: string) {
   output.push(str.slice(index,));
   return output.join('');
 }
+
+function componentToHex(c: number) {
+  const hex = c.toString(16);
+  return hex.length === 1 ? '0' + hex : hex;
+}
+
+export function rgb2Hex(r: number, g: number, b: number) {
+  return '#' + componentToHex(r*255) + componentToHex(g*255) + componentToHex(b*255);
+}
+
+export function arrayEqual(array1: unknown[], array2: unknown[]) {
+  return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
+}
+

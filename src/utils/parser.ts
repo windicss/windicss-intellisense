@@ -10,7 +10,7 @@ export class HTMLParser {
 
   removeComments() {
     if (!this.html) return [];
-    const regex = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*|<!--[\s\S]*?-->$/igm;
+    const regex = /\/\*[\s\S]*?\*\/|\/\*[\s\S]*$|([^\\:]|^)\/\/.*|<!--[\s\S]*?-->$/igm;
     let match;
     while ((match = regex.exec(this.html as string))) {
       if (match) {
