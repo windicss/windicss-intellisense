@@ -42,7 +42,7 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
     }
 
     function isValidColor(utility: string) {
-      return core.processor?.validate(utility).ignored.length === 0 && (isColor(utility, coreColors));
+      return isColor(utility, coreColors);
     }
 
     function createColor(document: TextDocument, start: number, offset: number, color: number[]) {
@@ -350,8 +350,13 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                 const data = attr.value.raw;
                 let match;
                 while ((match = regex.exec(data as string))) {
-                  if (match && match[0] in coreColors) {
-                    const color = hex2RGB(coreColors[match[0]] as string);
+                  if (match) {
+                    let color;
+                    if (match[0] in coreColors) {
+                      color = hex2RGB(coreColors[match[0]] as string);
+                    } else if (match[0].startsWith('hex-')) {
+                      color = hex2RGB(match[0].replace(/^hex-/, '#'));
+                    }
                     if (color) colors.push(createColor(document, attr.value.start, match.index, color));
                   }
                 }
@@ -362,11 +367,11 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                   if (element.type === 'group' && Array.isArray(element.content)) {
                     for (const e of element.content) {
                       const color = isValidColor(e.raw);
-                      if(color) colors.push(createColor(document, attr.value.start, e.start, color));
+                      if(color.color) colors.push(createColor(document, attr.value.start, e.start, color.color));
                     }
                   }
                   const color = element.type === 'utility' && isValidColor(element.raw);
-                  if(color) colors.push(createColor(document, attr.value.start, element.start, color));
+                  if(color && color.color) colors.push(createColor(document, attr.value.start, element.start, color.color));
                 }
               }
             }
@@ -378,11 +383,11 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                 if (element.type === 'group' && Array.isArray(element.content)) {
                   for (const e of element.content) {
                     const color = isValidColor(e.raw);
-                    if(color) colors.push(createColor(document, className.start, e.start, color));
+                    if(color && color.color) colors.push(createColor(document, className.start, e.start, color.color));
                   }
                 }
                 const color = element.type === 'utility' && isValidColor(element.raw);
-                if(color) colors.push(createColor(document, className.start, element.start, color));
+                if(color && color.color) colors.push(createColor(document, className.start, element.start, color.color));
               }
             }
 
@@ -393,10 +398,13 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
 
             if (editor) {
               const document = editor.document;
-              const range = context.document.getWordRangeAtPosition(context.range.end);
-              if (!arrayEqual(isValidColor(document.getText(range)) as unknown[], [color.red * 255, color.green * 255, color.blue * 255])) {
-                range && editor.edit(editBuilder => {
-                  editBuilder.replace(range, `bg-hex-${rgb2Hex(color.red, color.green, color.blue).slice(1,)}`);
+              const range = context.document.getWordRangeAtPosition(context.range.end, /[@<:-\w]+/) as Range;
+              const utility = document.getText(range);
+              const vcolor = isValidColor(utility);
+              if (!arrayEqual(vcolor.color as number[], [color.red * 255, color.green * 255, color.blue * 255]) && range) {
+                const vrange = new Range(new Position(range.start.line, range.start.character + utility.indexOf(vcolor.key as string)), range.end);
+                editor.edit(editBuilder => {
+                  editBuilder.replace(vrange, `hex-${rgb2Hex(color.red, color.green, color.blue).slice(1,)}`);
                 });
               }
             }

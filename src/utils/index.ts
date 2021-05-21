@@ -21,13 +21,17 @@ export function highlightCSS(css?: string): MarkdownString | undefined {
   }
 }
 
-export function isColor(className: string, colors: { [key: string]: string | string[] }): number[] | undefined {
-  if (/hex-?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/.test(className)) return hex2RGB(className.replace(/^\S+-hex-/, '#'));
+export function isColor(className: string, colors: { [key: string]: string | string[] }): {color?: number[], key?: string} {
+  if (/hex-?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/.test(className)) {
+    const hex = className.replace(/^\S*hex-/, '');
+    return { color: hex2RGB('#' + hex), key: 'hex-' + hex };
+  }
   for (const [key, value] of Object.entries(colors)) {
-    if (className.endsWith('-' + key)) {
-      return hex2RGB(Array.isArray(value) ? value[0] : value);
+    if (className.endsWith(key)) {
+      return { color: hex2RGB(Array.isArray(value) ? value[0] : value), key };
     }
   }
+  return {};
 }
 
 export function hex2RGB(hex: string): number[] | undefined {
