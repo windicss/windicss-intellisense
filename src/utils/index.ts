@@ -3,6 +3,7 @@ import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from './parser';
 import { keyOrder } from './order';
 import { flatColors as _flatColors } from 'windicss/utils';
+import type { Style, StyleSheet } from 'windicss/utils/style';
 import type { colorObject, DictStr } from 'windicss/types/interfaces';
 
 export function flatColors(colors: colorObject) {
@@ -19,19 +20,6 @@ export function highlightCSS(css?: string): MarkdownString | undefined {
   if (css) {
     return new MarkdownString(`\`\`\`css\n${css}\n\`\`\``);
   }
-}
-
-export function isColor(className: string, colors: { [key: string]: string | string[] }): {color?: number[], key?: string} {
-  if (/hex-?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/.test(className)) {
-    const hex = className.replace(/^\S*hex-/, '');
-    return { color: hex2RGB('#' + hex), key: 'hex-' + hex };
-  }
-  for (const [key, value] of Object.entries(colors)) {
-    if (className.endsWith(key)) {
-      return { color: hex2RGB(Array.isArray(value) ? value[0] : value), key };
-    }
-  }
-  return {};
 }
 
 export function hex2RGB(hex: string): number[] | undefined {
@@ -148,3 +136,10 @@ export function arrayEqual(array1: unknown[], array2: unknown[]) {
   return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }
 
+export function buildStyle(styleSheet?: StyleSheet) {
+  return styleSheet ? highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(styleSheet.build()) : styleSheet.build()) : undefined;
+}
+
+export function buildEmptyStyle(style: Style) {
+  return highlightCSS(style.build().replace('{\n  & {}\n}', '{\n  ...\n}').replace('{}', '{\n  ...\n}').replace('...\n}\n}', '  ...\n  }\n}'));
+}

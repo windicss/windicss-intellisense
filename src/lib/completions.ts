@@ -1,227 +1,316 @@
-import { ExtensionContext, workspace, languages, Range, Position, CompletionItem, CompletionItemKind, Color, ColorInformation, Hover, SnippetString, TextDocument, window } from 'vscode';
-import { highlightCSS, isColor, getConfig, rem2px, hex2RGB, flatColors, rgb2Hex, arrayEqual } from '../utils';
-import { fileTypes, patterns, allowAttr, applyRegex } from '../utils/filetypes';
-import { ClassParser } from 'windicss/utils/parser';
-import { HTMLParser } from '../utils/parser';
-import { generateAttrUtilities } from './core/attributify';
+import { utilities, negative } from '../utils/utilities';
+import { flatColors, hex2RGB, buildStyle, buildEmptyStyle } from '../utils';
 import { Style } from 'windicss/utils/style';
+import { patterns, allowAttr } from '../utils/filetypes';
+import { languages, Range, Position, CompletionItem, SnippetString, CompletionItemKind } from 'vscode';
 
-import type { Disposable } from 'vscode';
-import type { StyleSheet } from 'windicss/utils/style';
-import type { Core } from '../interfaces';
+import type Extension from './index';
+import type { DocumentSelector } from 'vscode';
+import type { Processor } from 'windicss/lib';
+import type { colorObject } from 'windicss/types/interfaces';
 
-const DISPOSABLES: Disposable[] = [];
-let initialized = false;
+export interface Attr {
+  static: {
+    [key:string]: string[]
+  },
+  color: {
+    [key:string]: {
+      label: string
+      doc: string
+    }[]
+  },
+  dynamic: {
+    [key:string]: {
+      label: string
+      pos: number
+    }[]
+  }
+}
 
-export function registerCompletions(ctx: ExtensionContext, core: Core): Disposable[] {
+export interface Completion {
+  static: string[],
+  color: {
+    label: string
+    doc: string
+  }[],
+  dynamic: {
+    label: string
+    pos: number
+  }[]
+  attr: Attr
+}
 
-  function createDisposables() {
-    const disposables: Disposable[] = [];
+export default class Completions {
+  processor: Processor;
+  extension: Extension;
+  separator: string;
+  prefix: string;
+  completions: Completion;
 
-    if (!getConfig('windicss.enableCodeCompletion')) return;
+  constructor(extension: Extension, processor: Processor) {
+    this.processor = processor;
+    this.extension = extension;
+    this.separator = processor.config('separator', ':') as string;
+    this.prefix = processor.config('prefix', '') as string;
+    this.completions = this.generateCompletions();
+  }
 
-    const coreColors = flatColors((core?.processor?.theme('colors') || {}) as Record<string, any>);
-    const { attrs, colors, dynamics } = generateAttrUtilities(core);
+  generateCompletions(attributify = true) {
+    const completions: Completion = {
+      static: [],
+      color: [],
+      dynamic: [],
+      attr: {
+        static: {},
+        color: {},
+        dynamic: {},
+      },
+    };
 
-    const separator = core.processor?.config('separator', ':') as string;
-
-    function isAttrVariant(word: string): boolean {
-      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return getConfig('windicss.enableAttrVariantCompletion') && lastKey in core.variants;
-    }
-
-    function isAttrUtility(word?: string): string | undefined {
-      if (!word) return;
-      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return getConfig('windicss.enableAttrUtilityCompletion') && lastKey in attrs ? lastKey : undefined;
-    }
-
-    function isAttr(word: string): boolean {
-      const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-      return (getConfig('windicss.enableAttrVariantCompletion') && lastKey in core.variants) || (getConfig('windicss.enableAttrUtilityCompletion') && lastKey in attrs);
-    }
-
-    function isValidColor(utility: string) {
-      return isColor(utility, coreColors);
-    }
-
-    function createColor(document: TextDocument, start: number, offset: number, color: number[]) {
-      return new ColorInformation(new Range(document.positionAt(start + offset), document.positionAt(start + offset + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1));
-    }
-
-    function buildStyle(styleSheet?: StyleSheet) {
-      return styleSheet ? highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(styleSheet.build()) : styleSheet.build()) : undefined;
-    }
-
-    function buildEmptyStyle(style: Style) {
-      return highlightCSS(style.build().replace('{\n  & {}\n}', '{\n  ...\n}').replace('{}', '{\n  ...\n}').replace('...\n}\n}', '  ...\n  }\n}'));
-    }
-
-    function buildAttrDoc(attr: string, variant?: string, separator?: string) {
-      let style;
-      if (variant) {
-        style = core.variants[variant]();
-        style.selector = `[${core.processor?.e(attr)}~="${variant}${separator}&"]`;
-      } else {
-        style = new Style(`[${core.processor?.e(attr)}~="&"]`);
-      }
-      return buildEmptyStyle(style);
-    }
-
-    function buildVariantDoc(variant?: string, attributify = false) {
-      if (!variant) return '';
-      const style = core.variants[variant]();
-      if (attributify) {
-        style.selector = `[${core.processor?.e(variant)}~="&"]`;
-      } else {
-        style.selector = '&';
-      }
-
-      return buildEmptyStyle(style);
-    }
-
-    for (const [ext, { type, pattern }] of Object.entries(fileTypes)) {
-      // trigger suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...
-      disposables.push(languages.registerCompletionItemProvider(
-        ext,
-        {
-          provideCompletionItems(document, position) {
-            const text = document.getText(new Range(new Position(0, 0), position));
-
-            if ((!pattern || text.match(pattern) === null) && text.match(patterns[type]) === null) {
-              const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
-              if ((!key) || !(allowAttr(type) && isAttrVariant(key))) return [];
+    // generate normal utilities completions
+    for (const [config, list] of Object.entries(utilities)) {
+      list.forEach(utility => {
+        const mark = utility.search(/\$/);
+        if (mark === -1) {
+          completions.static.push(utility);
+        } else {
+          const prefix = this.prefix + utility.slice(0, mark - 1);
+          const suffix = utility.slice(mark);
+          switch (suffix) {
+          case '${static}':
+            completions.static = completions.static.concat(
+              Object.keys(this.processor.theme(config, {}) as any)
+                .map(i => i === 'DEFAULT' ? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`)
+            );
+            break;
+          case '${color}':
+            for (const [k, v] of Object.entries(flatColors(this.processor.theme(config, this.extension.colors) as colorObject))) {
+              completions.color.push({
+                label: this.prefix + `${prefix}-${k}`,
+                doc: ['transparent', 'currentColor'].includes(v) ? v : `rgb(${hex2RGB(v)?.join(', ')})`,
+              });
             }
-
-            const staticCompletion = getConfig('windicss.enableUtilityCompletion') ? core.utilities.map((classItem, index) => {
-              const item = new CompletionItem(classItem, CompletionItemKind.Constant);
-              item.sortText = '1-' + index.toString().padStart(8, '0');
-              return item;
-            }): [];
-
-            const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? Object.keys(core.variants).map((variant, index) => {
-              const item = new CompletionItem(variant + separator, CompletionItemKind.Module);
-              item.detail = variant;
-              item.sortText = '2-' + index.toString().padStart(8, '0');
-              // trigger suggestion after select variant
-              item.command = {
-                command: 'editor.action.triggerSuggest',
-                title: variant,
-              };
-              return item;
-            }): [];
-
-            const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') ? core.dynamics.map(({ label, position }, index) => {
-              const item = new CompletionItem(label, CompletionItemKind.Variable);
-              item.sortText = '3-' + index.toString().padStart(8, '0');
-              item.command = {
-                command: 'cursorMove',
-                arguments: [{
-                  to: 'left',
-                  select: true,
-                  value: position,
-                }],
-                title: label,
-              };
-              return item;
-            }): [];
-
-            const colorsCompletion = getConfig('windicss.enableUtilityCompletion') ? core.colors.map(({ label, documentation }, index) => {
-              const color = new CompletionItem(label, CompletionItemKind.Color);
-              color.sortText = '0-' + index.toString().padStart(8, '0');
-              color.documentation = documentation;
-              return color;
-            }): [];
-
-            return [...variantsCompletion, ...colorsCompletion, ...staticCompletion, ...dynamicCompletion];
-          },
-
-          resolveCompletionItem(item) {
-            switch (item.kind) {
-            case CompletionItemKind.Constant:
-              item.documentation = buildStyle(core.processor?.interpret(item.label).styleSheet);
-              break;
-            case CompletionItemKind.Module:
-              item.documentation = buildVariantDoc(item.detail);
-              item.detail = undefined;
-              break;
-            case CompletionItemKind.Variable:
-              // TODO
-              break;
-            case CompletionItemKind.Color:
-              item.detail = core.processor?.interpret(item.label).styleSheet.build();
-              break;
+            break;
+          default:
+            completions.dynamic.push({
+              label: this.prefix + utility,
+              pos: utility.length - mark,
+            });
+            if (config in negative) {
+              completions.dynamic.push({
+                label: this.prefix + `-${utility}`,
+                pos: utility.length + 1 - mark,
+              });
             }
-            return item;
-          },
+            break;
+          }
+        }
+      });
+    }
+
+    // generate attributify completions
+    const attr: Attr = { static: {}, color: {}, dynamic: {} };
+    if (attributify) {
+      for (const utility of completions.static) {
+        const { key, body } = split(utility);
+        if (key) {
+          attr.static[key] = key in attr.static ? [...attr.static[key], body] : [ body ];
+        }
+      }
+
+      for (const { label, doc } of completions.color) {
+        const { key, body } = split(label);
+        if (key) {
+          const item = { label: body, doc };
+          attr.color[key] = key in attr.color ? [...attr.color[key], item] : [ item ];
+        }
+      }
+
+      for (const { label, pos } of completions.dynamic) {
+        const { key, body } = split(label);
+        if (key) {
+          const item = { label: body, pos };
+          attr.dynamic[key] = key in attr.dynamic ? [...attr.dynamic[key], item] : [ item ];
+        }
+      }
+    }
+
+    completions.attr = attr;
+    return completions;
+  }
+
+  // register suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...
+  registerUtilities(ext: DocumentSelector, type: string, pattern?: RegExp, enableUtilty = true, enableVariant = true, enableDynamic = true, enableEmmet = false) {
+    return languages.registerCompletionItemProvider(
+      ext,
+      {
+        provideCompletionItems: (document, position) => {
+          const text = document.getText(new Range(new Position(0, 0), position));
+
+          if ((!pattern || text.match(pattern) === null) && text.match(patterns[type]) === null) {
+            const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0];
+            if ((!key) || !(allowAttr(type) && this.extension.isAttrVariant(key))) return [];
+          }
+
+          let completions: CompletionItem[] = [];
+
+          if (enableUtilty) {
+            completions = completions.concat(
+              this.completions.static.map((classItem, index) => {
+                const item = new CompletionItem(classItem, CompletionItemKind.Constant);
+                item.sortText = '1-' + index.toString().padStart(8, '0');
+                return item;
+              })
+            );
+          }
+
+          if (enableVariant) {
+            completions = completions.concat(
+              Object.keys(this.extension.variants).map((variant, index) => {
+                const item = new CompletionItem(variant + this.separator, CompletionItemKind.Module);
+                item.detail = variant;
+                item.sortText = '2-' + index.toString().padStart(8, '0');
+                // register suggestion after select variant
+                item.command = {
+                  command: 'editor.action.triggerSuggest',
+                  title: variant,
+                };
+                return item;
+              })
+            ).concat(
+              this.completions.color.map(({ label, doc }, index) => {
+                const color = new CompletionItem(label, CompletionItemKind.Color);
+                color.sortText = '0-' + index.toString().padStart(8, '0');
+                color.documentation = doc;
+                return color;
+              })
+            );
+          }
+
+          if (enableDynamic) {
+            completions = completions.concat(
+              this.completions.dynamic.map(({ label, pos }, index) => {
+                const item = new CompletionItem(label, CompletionItemKind.Variable);
+                item.sortText = '3-' + index.toString().padStart(8, '0');
+                item.command = {
+                  command: 'cursorMove',
+                  arguments: [{
+                    to: 'left',
+                    select: true,
+                    value: pos,
+                  }],
+                  title: label,
+                };
+                return item;
+              })
+            );
+          }
+
+          return completions;
         },
-        ':',
-        '(',
-        ' ',
-        ...(getConfig('windicss.enableEmmetCompletion') ? [ '.' ] : []),
-      ));
 
-      // trigger suggestion for bg = | text = | sm = | hover = | ...
-      allowAttr(type) && disposables.push(languages.registerCompletionItemProvider(
-        ext,
-        {
-          provideCompletionItems(document, position) {
-            const text = document.getText(new Range(new Position(0, 0), position));
-            if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
-              if (!text.match(/\S+(?=\s*=\s*["']?[^"']*$)/) || text.match(/<\w+\s+$/)) {
-                let completions: CompletionItem[] = [];
-                if (getConfig('windicss.enableAttrUtilityCompletion')) completions = completions.concat(Object.keys(attrs).map((name) => {
-                  const item = new CompletionItem(name, CompletionItemKind.Field);
-                  item.sortText = '0-' + name;
-                  item.insertText = new SnippetString(`${name}="$1"`);
-                  item.command = {
-                    command: 'editor.action.triggerSuggest',
-                    title: name,
-                  };
-                  return item;
-                }));
-                if (getConfig('windicss.enableAttrVariantCompletion')) completions = completions.concat(Object.keys(core.variants).map((name) => {
-                  const item = new CompletionItem(name, CompletionItemKind.Value);
-                  item.sortText = '1-' + name;
-                  item.insertText = new SnippetString(`${name}="$1"`);
-                  item.command = {
-                    command: 'editor.action.triggerSuggest',
-                    title: name,
-                  };
-                  return item;
-                }));
-                return completions;
+        resolveCompletionItem: (item) => {
+          switch (item.kind) {
+          case CompletionItemKind.Constant:
+            item.documentation = buildStyle(this.processor.interpret(item.label).styleSheet);
+            break;
+          case CompletionItemKind.Module:
+            item.documentation = this.buildVariantDoc(item.detail);
+            item.detail = undefined;
+            break;
+          case CompletionItemKind.Variable:
+            // TODO
+            break;
+          case CompletionItemKind.Color:
+            item.detail = this.processor.interpret(item.label).styleSheet.build();
+            break;
+          }
+          return item;
+        },
+      },
+      ':',
+      '(',
+      ' ',
+      ...(enableEmmet ? [ '.' ] : []),
+    );
+  }
+
+  // register suggestion for bg, text, sm, hover ...
+  registerAttrKeys(ext: DocumentSelector, enableUtility = true, enableVariant = true) {
+    return languages.registerCompletionItemProvider(
+      ext,
+      {
+        provideCompletionItems: (document, position) => {
+          const text = document.getText(new Range(new Position(0, 0), position));
+          if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
+            if (!text.match(/\S+(?=\s*=\s*["']?[^"']*$)/) || text.match(/<\w+\s+$/)) {
+              let completions: CompletionItem[] = [];
+              if (enableUtility) {
+                completions = completions.concat(
+                  Object.keys(this.completions.attr.static).map(label => attrKey(label, CompletionItemKind.Field, 0))
+                );
               }
+              if (enableVariant) {
+                completions = completions.concat(
+                  Object.keys(this.extension.variants).map(label => attrKey(label, CompletionItemKind.Value, 1))
+                );
+              }
+              return completions;
             }
-            return [];
-          },
-          resolveCompletionItem(item) {
-            switch (item.kind) {
-            case CompletionItemKind.Field:
-              item.documentation = buildAttrDoc(item.label);
-              break;
-            case CompletionItemKind.Value:
-              item.documentation = buildVariantDoc(item.label, true);
-              break;
-            }
-            return item;
-          },
+          }
+          return [];
         },
-        ':',
-        ' '
-      ));
+        resolveCompletionItem: item => {
+          switch (item.kind) {
+          case CompletionItemKind.Field:
+            item.documentation = this.buildAttrDoc(item.label);
+            break;
+          case CompletionItemKind.Value:
+            item.documentation = this.buildVariantDoc(item.label, true);
+            break;
+          }
+          return item;
+        },
+      },
+      ':',
+      ' '
+    );
+  }
 
-      // trigger suggestions in bg = ... | text = ... | border = ... | xxx = ...
-      allowAttr(type) && getConfig('windicss.enableAttrUtilityCompletion') && disposables.push(languages.registerCompletionItemProvider(
-        ext,
-        {
-          provideCompletionItems(document, position) {
-            const text = document.getText(new Range(new Position(0, 0), position));
-            if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
-              const key = isAttrUtility(text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0]);
-              if (key) {
-                const variantsCompletion = getConfig('windicss.enableVariantCompletion') ? Object.keys(core.variants).map((variant, index) => {
-                  const item = new CompletionItem(variant + separator, CompletionItemKind.Module);
+  registerAttrValues(ext: DocumentSelector, enableUtility = true, enableVariant = true, enableDynamic = true) {
+    return languages.registerCompletionItemProvider(
+      ext,
+      {
+        provideCompletionItems: (document, position) => {
+          const text = document.getText(new Range(new Position(0, 0), position));
+          if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
+            const key = this.extension.isAttrUtility(text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0]);
+            if (!key) return [];
+
+            let completions: CompletionItem[] = [];
+            if (enableUtility) {
+              completions = completions.concat(
+                this.completions.attr.static[key].map((label, index) => {
+                  const item = new CompletionItem(label, CompletionItemKind.Constant);
+                  item.detail = key;
+                  item.sortText = '1-' + index.toString().padStart(8, '0');
+                  return item;
+                })
+              ).concat(
+                key in this.completions.attr.color ? this.completions.attr.color[key].map(({ label, doc }, index) => {
+                  const color = new CompletionItem(label, CompletionItemKind.Color);
+                  color.sortText = '0-' + index.toString().padStart(8, '0');
+                  color.detail = key;
+                  color.documentation = doc;
+                  return color;
+                }) : []
+              );
+            }
+
+            if (enableVariant) {
+              completions = completions.concat(
+                Object.keys(this.extension.variants).map((variant, index) => {
+                  const item = new CompletionItem(variant + this.separator, CompletionItemKind.Module);
                   item.detail = key + ',' + variant;
                   item.sortText = '2-' + index.toString().padStart(8, '0');
                   item.command = {
@@ -229,209 +318,98 @@ export function registerCompletions(ctx: ExtensionContext, core: Core): Disposab
                     title: variant,
                   };
                   return item;
-                }): [];
+                })
+              );
+            }
 
-                const valuesCompletion = getConfig('windicss.enableUtilityCompletion') ? attrs[key].map((value, index) => {
-                  const item = new CompletionItem(value, CompletionItemKind.Constant);
-                  item.detail = key;
-                  item.sortText = '1-' + index.toString().padStart(8, '0');
-                  return item;
-                }): [];
-
-                const dynamicCompletion = getConfig('windicss.enableDynamicCompletion') && key in dynamics? dynamics[key].map(({ value, position }, index) => {
-                  const item = new CompletionItem(value, CompletionItemKind.Variable);
+            if (enableDynamic && key in this.completions.attr.dynamic) {
+              completions = completions.concat(
+                this.completions.attr.dynamic[key].map(({ label, pos }, index) => {
+                  const item = new CompletionItem(label, CompletionItemKind.Variable);
                   item.sortText = '3-' + index.toString().padStart(8, '0');
                   item.command = {
                     command: 'cursorMove',
                     arguments: [{
                       to: 'left',
                       select: true,
-                      value: position,
+                      value: pos,
                     }],
-                    title: value,
+                    title: label,
                   };
                   return item;
-                }): [];
-
-                const colorsCompletion = getConfig('windicss.enableUtilityCompletion') && key in colors ? colors[key].map(({ value, doc }, index) => {
-                  const color = new CompletionItem(value, CompletionItemKind.Color);
-                  color.sortText = '0-' + index.toString().padStart(8, '0');
-                  color.detail = key;
-                  color.documentation = doc;
-                  return color;
-                }) : [];
-
-                return [ ...colorsCompletion, ...valuesCompletion, ...dynamicCompletion, ...variantsCompletion];
-              }
+                })
+              );
             }
-            return [];
-          },
 
-          resolveCompletionItem(item) {
-            switch (item.kind) {
-            case CompletionItemKind.Constant:
-              item.documentation = buildStyle(core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet);
-              item.detail = undefined;
-              break;
-            case CompletionItemKind.Module:
-              const [attr, variant] = item.detail?.split(',') || [];
-              item.documentation = buildAttrDoc(attr, variant, separator);
-              item.detail = undefined;
-              break;
-            case CompletionItemKind.Variable:
-              break;
-            case CompletionItemKind.Color:
-              item.detail = core.processor?.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
-              break;
-            }
-            return item;
-          },
+            return completions;
+          }
         },
-        '"',
-        '=',
-        '\'',
-        ':',
-        ' ',
-      ));
 
-      // moved hover & color swatches out of patterns loop, to only calculcate them one time per file
-      if (getConfig('windicss.enableHoverPreview')) {
-        disposables.push(languages.registerHoverProvider(ext, {
-          provideHover: (document, position, token) => {
-            const range = document.getWordRangeAtPosition(position, /[^\s();{}'"=`]+/);
-            const word = document.getText(range);
-            if (!range || !word)
-              return;
-            if (['class', 'className'].includes(word)) {
-              // hover class or className, e.g. class= className=
-              const text = document.getText(new Range(range.end, document.lineAt(document.lineCount-1).range.end));
-              const match = text.match(/((?<=^=\s*["'])[^"']*(?=["']))|((?<=^=\s*)[^"'>\s]+)/);
-              if (match) {
-                const css = buildStyle(core.processor?.interpret(match[0]).styleSheet);
-                if (css) return new Hover(css, range);
-              }
-            }
+        resolveCompletionItem: item => {
+          switch (item.kind) {
+          case CompletionItemKind.Constant:
+            item.documentation = buildStyle(this.processor.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet);
+            item.detail = undefined;
+            break;
+          case CompletionItemKind.Module:
+            const [attr, variant] = item.detail?.split(',') || [];
+            item.documentation = this.buildAttrDoc(attr, variant, this.separator);
+            item.detail = undefined;
+            break;
+          case CompletionItemKind.Variable:
+            break;
+          case CompletionItemKind.Color:
+            item.detail = this.processor.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
+            break;
+          }
+          return item;
+        },
+      },
+      '"',
+      '=',
+      '\'',
+      ':',
+      ' ',
+    );
+  }
 
-            if (isAttr(word)) {
-              // hover attr, e.g. bg= sm:bg=
-              const text = document.getText(new Range(range.end, document.lineAt(document.lineCount-1).range.end));
-              const match = text.match(/((?<=^=\s*["'])[^"']*(?=["']))|((?<=^=\s*)[^"'>\s]+)/);
-              if (match) {
-                const css = buildStyle(core.processor?.attributify({ [word] : match[0].trim().split(/\s/).filter(i => i) }).styleSheet);
-                if (css) return new Hover(css, range);
-              }
-            }
-            // hover attr value or class value, e.g. class="bg-red-500 ..."  bg="red-500 ..."
-            const text = document.getText(new Range(new Position(0, 0), position));
-            const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
-            const style = isAttr(key) ? core.processor?.attributify({ [key]: [ word ] }) : ['className', 'class'].includes(key) || text.match(applyRegex) ? core.processor?.interpret(word) : undefined;
-            if (style && style.ignored.length === 0) {
-              const css = buildStyle(style.styleSheet);
-              if (css) return new Hover(css, range);
-            }
-          },
-        })
-        );
-      }
+  buildAttrDoc(attr: string, variant?: string, separator?: string) {
+    let style;
+    if (variant) {
+      style = this.extension.variants[variant]();
+      style.selector = `[${this.processor?.e(attr)}~="${variant}${separator}&"]`;
+    } else {
+      style = new Style(`[${this.processor?.e(attr)}~="&"]`);
+    }
+    return buildEmptyStyle(style);
+  }
 
-      if (getConfig('windicss.enableColorDecorators')) {
-        disposables.push(languages.registerColorProvider(ext, {
-          // insert color before class
-          provideDocumentColors: (document, token) => {
-            const colors: ColorInformation[] = [];
-            // try one time update instead of line
-            const documentText = document.getText();
-            const parser = new HTMLParser(documentText);
-            parser.removeComments();
-            for (const attr of parser.parseAttrs()) {
-              if (isAttrUtility(attr.key)) {
-                // insert decoration in bg|text|... = "..."
-                const regex = /\S+/igm;
-                const data = attr.value.raw;
-                let match;
-                while ((match = regex.exec(data as string))) {
-                  if (match) {
-                    let color;
-                    if (match[0] in coreColors) {
-                      color = hex2RGB(coreColors[match[0]] as string);
-                    } else if (match[0].startsWith('hex-')) {
-                      color = hex2RGB(match[0].replace(/^hex-/, '#'));
-                    }
-                    if (color) colors.push(createColor(document, attr.value.start, match.index, color));
-                  }
-                }
-              } else if (['class', 'className'].includes(attr.key) || isAttrVariant(attr.key)) {
-                // insert decoration in class|className|sm|hover|... = "..."
-                const elements = new ClassParser(attr.value.raw, core.processor?.config('separator', ':') as string, Object.keys(core.variants)).parse(false);
-                for (const element of elements) {
-                  if (element.type === 'group' && Array.isArray(element.content)) {
-                    for (const e of element.content) {
-                      const color = isValidColor(e.raw);
-                      if(color.color) colors.push(createColor(document, attr.value.start, e.start, color.color));
-                    }
-                  }
-                  const color = element.type === 'utility' && isValidColor(element.raw);
-                  if(color && color.color) colors.push(createColor(document, attr.value.start, element.start, color.color));
-                }
-              }
-            }
-
-            // insert decoration in @apply ...
-            for (const className of parser.parseApplies()) {
-              const elements = new ClassParser(className.result, core.processor?.config('separator', ':') as string, Object.keys(core.variants)).parse(false);
-              for (const element of elements) {
-                if (element.type === 'group' && Array.isArray(element.content)) {
-                  for (const e of element.content) {
-                    const color = isValidColor(e.raw);
-                    if(color && color.color) colors.push(createColor(document, className.start, e.start, color.color));
-                  }
-                }
-                const color = element.type === 'utility' && isValidColor(element.raw);
-                if(color && color.color) colors.push(createColor(document, className.start, element.start, color.color));
-              }
-            }
-
-            return colors;
-          },
-          provideColorPresentations: (color, context) => {
-            const editor = window.activeTextEditor;
-
-            if (editor) {
-              const document = editor.document;
-              const range = context.document.getWordRangeAtPosition(context.range.end, /[@<:-\w]+/) as Range;
-              const utility = document.getText(range);
-              const vcolor = isValidColor(utility);
-              if (!arrayEqual(vcolor.color as number[], [color.red * 255, color.green * 255, color.blue * 255]) && range) {
-                const vrange = new Range(new Position(range.start.line, range.start.character + utility.indexOf(vcolor.key as string)), range.end);
-                editor.edit(editBuilder => {
-                  editBuilder.replace(vrange, `hex-${rgb2Hex(color.red, color.green, color.blue).slice(1,)}`);
-                });
-              }
-            }
-
-            return [];
-          },
-        })
-        );
-      }
+  buildVariantDoc(variant?: string, attributify = false) {
+    if (!variant) return '';
+    const style = this.extension.variants[variant]();
+    if (attributify) {
+      style.selector = `[${this.processor?.e(variant)}~="&"]`;
+    } else {
+      style.selector = '&';
     }
 
-    ctx.subscriptions.push(...disposables);
-    return disposables;
+    return buildEmptyStyle(style);
   }
+}
 
-  function init() {
-    DISPOSABLES.forEach(i => i.dispose());
-    DISPOSABLES.length = 0;
-    DISPOSABLES.push(...createDisposables() || []);
-  }
+function split(utility: string) {
+  const key = utility.match(/[^-]+/)?.[0];
+  const body = utility.match(/-.+/)?.[0].slice(1) || '~';
+  return { key, body };
+}
 
-  if (!initialized) {
-    workspace.onDidChangeConfiguration(init, null, ctx.subscriptions);
-    initialized = true;
-  }
-
-  init();
-
-  return DISPOSABLES;
+function attrKey(label: string, kind: CompletionItemKind, order: number) {
+  const item = new CompletionItem(label, kind);
+  item.sortText = `${order}-` + label;
+  item.insertText = new SnippetString(`${label}="$1"`);
+  item.command = {
+    command: 'editor.action.triggerSuggest',
+    title: label,
+  };
+  return item;
 }

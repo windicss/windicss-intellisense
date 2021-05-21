@@ -1,28 +1,33 @@
 import { Diagnostic, DiagnosticSeverity, languages, Range, window, workspace } from 'vscode';
 
-import type { Core } from '../interfaces';
-import type { Disposable, ExtensionContext, TextDocument, TextLine } from 'vscode';
+import type { Processor } from 'windicss/lib';
+import type { TextDocument, TextLine, DiagnosticCollection } from 'vscode';
 
-export function registerDiagnostics(ctx: ExtensionContext,  core: Core): Disposable[] | [] {
-  const diagCollection = languages.createDiagnosticCollection('windi');
+export default class Diagnostics {
+  processor?: Processor;
+  collection: DiagnosticCollection;
+  constructor(processor?: Processor) {
+    this.processor = processor;
+    this.collection = languages.createDiagnosticCollection('windi');
+  }
 
-  if (core.processor !== undefined) {
-    if (window.activeTextEditor) _update(window.activeTextEditor.document);
-    return [
-      diagCollection,
-      window.onDidChangeActiveTextEditor(
-        editor => {
-          if (editor) _update(editor.document);
-        }),
-      workspace.onDidChangeTextDocument(editor => _update(editor.document)),
-      workspace.onDidCloseTextDocument(doc => diagCollection.delete(doc.uri)),
-    ];
-  } else {
-    console.log('todo');
+  register() {
+    if (this.processor) {
+      if (window.activeTextEditor) this.update(window.activeTextEditor.document);
+      return [
+        this.collection,
+        window.onDidChangeActiveTextEditor(
+          editor => {
+            if (editor) this.update(editor.document);
+          }),
+        workspace.onDidChangeTextDocument(editor => this.update(editor.document)),
+        workspace.onDidCloseTextDocument(doc => this.collection.delete(doc.uri)),
+      ];
+    }
     return [];
   }
 
-  function _update(doc: TextDocument) {
+  update(doc: TextDocument) {
     const diagnostics: Diagnostic[] = [];
     for (let lineIndex = 0; lineIndex < doc.lineCount; lineIndex++) {
       const lineOfText = doc.lineAt(lineIndex);
@@ -41,11 +46,10 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): Disposa
           diagnostics.push(diag);
         }
       } else {
-        const p = core.processor;
         const match = lineOfText.text.match(/(?<=[^/*]\s@apply\s*)\S(.*)(?=\s*;)/);
-        if (match && match.index && p) {
+        if (match && match.index && this.processor) {
           const utilities = match[0].replace(/!important$/, '');
-          for (const utility of p.validate(utilities).ignored) {
+          for (const utility of this.processor.validate(utilities).ignored) {
             const range = new Range(lineIndex, match.index + utility.start, lineIndex, match.index + utility.end);
             const diagnostic = new Diagnostic(range, `${utility.className} is not valid windi css class`, DiagnosticSeverity.Error);
             diagnostic.code = 'windi_invalid-class';
@@ -54,17 +58,16 @@ export function registerDiagnostics(ctx: ExtensionContext,  core: Core): Disposa
         }
       }
     }
-    diagCollection.set(doc.uri, diagnostics);
+    this.collection.set(doc.uri, diagnostics);
   }
+}
 
-  function _createDiagnostic(doc: TextDocument, lineOfText: TextLine, lineIndex: number, word: string, severity: DiagnosticSeverity, description: string, code: string) {
-    // find where in the line of thet the 'emoji' is mentioned
-    const startIndex = lineOfText.text.indexOf(word);
-    // create range that represents, where in the document the word is
-    const range = new Range(lineIndex, startIndex, lineIndex, startIndex + word.length);
-    const diagnostic = new Diagnostic(range, description, severity);
-    diagnostic.code = code;
-    return diagnostic;
-  }
-
+function _createDiagnostic(doc: TextDocument, lineOfText: TextLine, lineIndex: number, word: string, severity: DiagnosticSeverity, description: string, code: string) {
+  // find where in the line of thet the 'emoji' is mentioned
+  const startIndex = lineOfText.text.indexOf(word);
+  // create range that represents, where in the document the word is
+  const range = new Range(lineIndex, startIndex, lineIndex, startIndex + word.length);
+  const diagnostic = new Diagnostic(range, description, severity);
+  diagnostic.code = code;
+  return diagnostic;
 }
