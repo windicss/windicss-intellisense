@@ -67,6 +67,7 @@ export default class Completions {
       },
     };
 
+    completions.static.push(...Object.keys(this.processor.resolveStaticUtilities(true)));
     // generate normal utilities completions
     for (const [config, list] of Object.entries(utilities)) {
       list.forEach(utility => {
