@@ -197,6 +197,11 @@
           "default": false,
           "description": "Enable ClassNames Code Folding."
         },
+        "windicss.colorDecoratorsType": {
+          "type": "string",
+          "default": "cube",
+          "description": "Configure the type of color decorations, optional ['border', 'bg', 'cube', 'picker'], default is 'cube'."
+        },
         "windicss.foldCount": {
           "type": "number",
           "default": 3,

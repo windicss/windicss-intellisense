@@ -176,9 +176,9 @@ export default class Extension {
   }
 
   registerDecorations() {
-    if (!this.processor) return [];
+    if (!this.processor || !this.get<boolean>('enableColorDecorators')) return [];
     const disposables: Disposable[] = [];
-    const type: 'picker' | 'bg' | 'border' | 'cube' = 'bg';
+    const type = this.get<'picker' | 'bg' | 'border' | 'cube'>('colorDecoratorsType');
     const decoration = new Decorations(this, this.processor);
     if (type === 'picker') {
       for (const [ext] of Object.entries(fileTypes)) {

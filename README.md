@@ -87,6 +87,7 @@ Browse your utilities usages, have an overview of your design system, identify "
 | `windicss.enableRemToPxPreview`    | boolean | true     | Enable Rem to Px Preview.                                    |
 | `windicss.enableEmmetCompletion`   | boolean | false    | Enable . trigger for emmet.                                  |
 | `windicss.enableCodeFolding`       | boolean | false    | Enable ClassNames Code Folding.                              |
+| `windicss.colorDecoratorsType`     | string  | 'cube'   | Configure the type of color decorations, optional ['border', 'bg', 'cube', 'picker'], default is 'cube'. |
 | `windicss.foldByLength`            | boolean | false    | Folding code by length. Default option is false, will fold by utility count. |
 | `windicss.foldCount`               | number  | 3        | Used by foldByCount.                                         |
 | `windicss.foldLength`              | number  | 25       | Used by foldByLength                                         |
