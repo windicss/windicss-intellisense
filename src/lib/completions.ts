@@ -231,6 +231,8 @@ export default class Completions {
           return item;
         },
       },
+      '"',
+      '\'',
       ':',
       '(',
       ' ',
@@ -255,7 +257,7 @@ export default class Completions {
               }
               if (enableVariant) {
                 completions = completions.concat(
-                  Object.keys(this.extension.variants).map(label => attrKey(label, CompletionItemKind.Value, 1))
+                  Object.keys(this.extension.variants).map(label => attrKey(label, CompletionItemKind.Module, 1))
                 );
               }
               return completions;
@@ -268,7 +270,7 @@ export default class Completions {
           case CompletionItemKind.Field:
             item.documentation = this.buildAttrDoc(item.label);
             break;
-          case CompletionItemKind.Value:
+          case CompletionItemKind.Module:
             item.documentation = this.buildVariantDoc(item.label, true);
             break;
           }
@@ -276,7 +278,6 @@ export default class Completions {
         },
       },
       ':',
-      ' '
     );
   }
 
@@ -371,7 +372,6 @@ export default class Completions {
         },
       },
       '"',
-      '=',
       '\'',
       ':',
       ' ',
