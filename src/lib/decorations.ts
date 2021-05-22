@@ -7,7 +7,9 @@ import type Extension from './index';
 import type { TextDocument, DocumentSelector, TextEditor, TextEditorDecorationType } from 'vscode';
 import type { Processor } from 'windicss/lib';
 
-type Decorator = { decoration: TextEditorDecorationType, option: DecorationOptions };
+type Decorator = { decoration: TextEditorDecorationType, option: DecorationOptions, id: string };
+
+const DECORATIONS: { [key: string]: TextEditorDecorationType } = {};
 
 const CUBE = window.createTextEditorDecorationType({
   before: {
@@ -29,20 +31,9 @@ const CUBE = window.createTextEditorDecorationType({
   },
 });
 
-// const BG = window.createTextEditorDecorationType({
-//   backgroundColor: 'transparent',
-//   color: 'black',
-// });
-
-// const BORDER = window.createTextEditorDecorationType({
-//   borderWidth: '2px',
-//   borderColor: 'transparent',
-// });
-
 export default class Decorations {
   extension: Extension;
   processor: Processor;
-  decorations: TextEditorDecorationType[] = [];
   timeout?: NodeJS.Timer;
   constructor(extension: Extension, processor: Processor) {
     this.extension = extension;
@@ -54,7 +45,7 @@ export default class Decorations {
   provideColors(document: TextDocument, type: 'picker') : ColorInformation[];
   provideColors(document: TextDocument, type: 'cube' | 'bg' | 'border' | 'picker' = 'cube') {
     const colors = [];
-    const provider = type === 'cube'? createColorCube : type === 'picker' ? createColorInfo : type === 'bg' ? createColorBg : createColorBorder;
+    const provider = type === 'cube'? this.createColorCube : type === 'picker' ? this.createColorInfo : type === 'bg' ? this.createColorBg : this.createColorBorder;
     const documentText = document.getText();
     const parser = new HTMLParser(documentText);
     parser.removeComments();
@@ -145,38 +136,57 @@ export default class Decorations {
         const colors = this.provideColors(editor.document, type);
         editor.setDecorations(CUBE, colors);
       } else {
-        this.decorations.map(i => i.dispose());
-        const colors = this.provideColors(editor.document, type);
-        colors.forEach(({ decoration, option }) => {
-          this.decorations.push(decoration);
-          editor.setDecorations(decoration, [ option ]);
+        const colors: {[key:string]: { decoration: TextEditorDecorationType, options: DecorationOptions[] }} = {};
+        this.provideColors(editor.document, type).forEach(({ decoration, option, id }) => {
+          if (id in colors) {
+            colors[id].options.push(option);
+          } else {
+            colors[id] = { decoration, options: [ option ] };
+          }
         });
+        Object.values(colors).forEach(({ decoration, options }) => editor.setDecorations(decoration, options));
       }
     }, 200);
+    return Object.values(DECORATIONS);
   }
-}
 
-function createColorInfo(document: TextDocument, start: number, offset: number, raw: string, color: number[]): ColorInformation {
-  return new ColorInformation(new Range(document.positionAt(start + offset), document.positionAt(start + offset + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1));
-}
+  createColorInfo(document: TextDocument, start: number, offset: number, raw: string, color: number[]): ColorInformation {
+    return new ColorInformation(new Range(document.positionAt(start + offset), document.positionAt(start + offset + 1)), new Color(color[0]/255, color[1]/255, color[2]/255, 1));
+  }
 
-function createColorCube(document: TextDocument, start: number, offset: number, raw: string, color: number[]): DecorationOptions {
-  return { range: new Range(document.positionAt(start + offset), document.positionAt(start + offset + raw.length)), renderOptions: { before: {	backgroundColor: `rgba(${color.join(', ')}, 1)` } } };
-}
+  createColorCube(document: TextDocument, start: number, offset: number, raw: string, color: number[]): DecorationOptions {
+    return { range: new Range(document.positionAt(start + offset), document.positionAt(start + offset + raw.length)), renderOptions: { before: {	backgroundColor: `rgba(${color.join(', ')}, 1)` } } };
+  }
 
-function createColorBorder(document: TextDocument, start: number, offset: number, raw: string, color: number[]): Decorator {
-  const decoration = window.createTextEditorDecorationType({
-    borderColor: `rgba(${color.join(', ')}, 1)`,
-    borderStyle: 'solid',
-    borderWidth: '1px',
-  });
-  return { decoration, option: { range: new Range(document.positionAt(start + offset), document.positionAt(start + offset + raw.length)) } };
-}
+  createColorBorder(document: TextDocument, start: number, offset: number, raw: string, color: number[]): Decorator {
+    const borderColor = `rgba(${color.join(', ')}, 1)`;
+    let decoration;
+    if (borderColor in DECORATIONS) {
+      decoration = DECORATIONS[borderColor];
+    } else {
+      decoration = window.createTextEditorDecorationType({
+        borderColor,
+        borderStyle: 'solid',
+        borderWidth: '1px',
+      });
+      DECORATIONS[borderColor] = decoration;
+    }
+    return { decoration, option: { range: new Range(document.positionAt(start + offset), document.positionAt(start + offset + raw.length)) }, id: decoration.key };
+  }
 
-function createColorBg(document: TextDocument, start: number, offset: number, raw: string, color: number[]): Decorator {
-  const decoration = window.createTextEditorDecorationType({
-    backgroundColor: `rgba(${color.join(', ')}, 1)`,
-    color: isDarkColor(color[0], color[1], color[2]) ? '#eeeeee' : '#000000',
-  });
-  return { decoration, option: { range: new Range(document.positionAt(start + offset), document.positionAt(start + offset + raw.length)) } };
+  createColorBg(document: TextDocument, start: number, offset: number, raw: string, color: number[]): Decorator {
+    const bgColor = `rgba(${color.join(', ')}, 1)`;
+    let decoration;
+    if (bgColor in DECORATIONS) {
+      decoration = DECORATIONS[bgColor];
+    } else {
+      decoration = window.createTextEditorDecorationType({
+        backgroundColor: bgColor,
+        color: isDarkColor(color[0], color[1], color[2]) ? '#eeeeee' : '#000000',
+      });
+      DECORATIONS[bgColor] = decoration;
+    }
+    return { decoration, option: { range: new Range(document.positionAt(start + offset), document.positionAt(start + offset + raw.length)) }, id: decoration.key };
+  }
+
 }

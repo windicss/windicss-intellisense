@@ -178,28 +178,31 @@ export default class Extension {
   registerDecorations() {
     if (!this.processor) return [];
     const disposables: Disposable[] = [];
-    const type = 'cube';
+    const type: 'picker' | 'bg' | 'border' | 'cube' = 'bg';
     const decoration = new Decorations(this, this.processor);
-    // for (const [ext] of Object.entries(fileTypes)) {
-    //   disposables.push(decoration.register(ext));
-    // }
-    let activeEditor = window.activeTextEditor;
-    if (activeEditor) {
-      decoration.registerColorBlock(activeEditor, type);
-    }
-
-    window.onDidChangeActiveTextEditor(editor => {
-      activeEditor = editor;
-      if (editor) {
-        decoration.registerColorBlock(editor, type);
+    if (type === 'picker') {
+      for (const [ext] of Object.entries(fileTypes)) {
+        disposables.push(decoration.registerColorPicker(ext));
       }
-    }, null, this.ctx.subscriptions);
-
-    workspace.onDidChangeTextDocument(event => {
-      if (activeEditor && event.document === activeEditor.document) {
+    } else {
+      let activeEditor = window.activeTextEditor;
+      if (activeEditor) {
         decoration.registerColorBlock(activeEditor, type);
       }
-    }, null, this.ctx.subscriptions);
+
+      disposables.push(window.onDidChangeActiveTextEditor(editor => {
+        activeEditor = editor;
+        if (editor) {
+          decoration.registerColorBlock(editor, type);
+        }
+      }, null, this.ctx.subscriptions));
+
+      disposables.push(workspace.onDidChangeTextDocument(event => {
+        if (activeEditor && event.document === activeEditor.document) {
+          decoration.registerColorBlock(activeEditor, type);
+        }
+      }, null, this.ctx.subscriptions));
+    }
     return disposables;
   }
 
