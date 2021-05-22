@@ -1,4 +1,4 @@
-import { getConfig } from '../utils';
+import { getConfig } from './helpers';
 
 export function connect(strings: string|string[]) {
   return Array.isArray(strings)? new RegExp(strings.map(i => `(${i})`).join('|')) : new RegExp(strings);

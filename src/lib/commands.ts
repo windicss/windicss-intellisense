@@ -5,7 +5,8 @@ import { StyleSheet } from 'windicss/utils/style';
 
 import { Log } from '../utils/console';
 import { HTMLParser } from '../utils/parser';
-import { sortClassNames, toggleConfig } from '../utils';
+import { sortClassNames } from '../utils';
+import { toggleConfig } from '../utils/helpers';
 
 import type { Processor } from 'windicss/lib';
 import type { ExtensionContext } from 'vscode';

@@ -1,7 +1,9 @@
 import { negative, utilities } from '../utils/utilities';
-import { flatColors, hex2RGB, buildStyle, buildEmptyStyle } from '../utils';
+import { flatColors, hex2RGB } from '../utils';
+import { buildStyle, buildEmptyStyle } from '../utils/helpers';
 import { Style } from 'windicss/utils/style';
 import { patterns, allowAttr } from '../utils/filetypes';
+import { generateCompletions } from '../utils/completions';
 import { languages, Range, Position, CompletionItem, SnippetString, CompletionItemKind } from 'vscode';
 
 import type Extension from './index';
@@ -52,92 +54,7 @@ export default class Completions {
     this.extension = extension;
     this.separator = processor.config('separator', ':') as string;
     this.prefix = processor.config('prefix', '') as string;
-    this.completions = this.generateCompletions();
-  }
-
-  generateCompletions(attributify = true) {
-    const completions: Completion = {
-      static: [],
-      color: [],
-      dynamic: [],
-      attr: {
-        static: {},
-        color: {},
-        dynamic: {},
-      },
-    };
-
-    completions.static.push(...Object.keys(this.processor.resolveStaticUtilities(true)));
-    // generate normal utilities completions
-    for (const [config, list] of Object.entries(utilities)) {
-      list.forEach(utility => {
-        const mark = utility.search(/\$/);
-        if (mark === -1) {
-          completions.static.push(utility);
-        } else {
-          const prefix = this.prefix + utility.slice(0, mark - 1);
-          const suffix = utility.slice(mark);
-          switch (suffix) {
-          case '${static}':
-            completions.static = completions.static.concat(
-              Object.keys(this.processor.theme(config, {}) as any)
-                .map(i => i === 'DEFAULT' ? prefix : i.charAt(0) === '-' ? `-${prefix}${i}` : `${prefix}-${i}`)
-            );
-            break;
-          case '${color}':
-            for (const [k, v] of Object.entries(flatColors(this.processor.theme(config, this.extension.colors) as colorObject))) {
-              completions.color.push({
-                label: this.prefix + `${prefix}-${k}`,
-                doc: v,
-              });
-            }
-            break;
-          default:
-            completions.dynamic.push({
-              label: this.prefix + utility,
-              pos: utility.length - mark,
-            });
-            if (config in negative) {
-              completions.dynamic.push({
-                label: this.prefix + `-${utility}`,
-                pos: utility.length + 1 - mark,
-              });
-            }
-            break;
-          }
-        }
-      });
-    }
-
-    // generate attributify completions
-    const attr: Attr = { static: {}, color: {}, dynamic: {} };
-    if (attributify) {
-      for (const utility of completions.static) {
-        const { key, body } = split(utility);
-        if (key) {
-          attr.static[key] = key in attr.static ? [...attr.static[key], body] : [ body ];
-        }
-      }
-
-      for (const { label, doc } of completions.color) {
-        const { key, body } = split(label);
-        if (key) {
-          const item = { label: body, doc };
-          attr.color[key] = key in attr.color ? [...attr.color[key], item] : [ item ];
-        }
-      }
-
-      for (const { label, pos } of completions.dynamic) {
-        const { key, body } = split(label);
-        if (key) {
-          const item = { label: body, pos };
-          attr.dynamic[key] = key in attr.dynamic ? [...attr.dynamic[key], item] : [ item ];
-        }
-      }
-    }
-
-    completions.attr = attr;
-    return completions;
+    this.completions = generateCompletions(processor, this.extension.colors, true, this.prefix);
   }
 
   // register suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...
@@ -405,6 +322,9 @@ export default class Completions {
 
 function split(utility: string) {
   const key = utility.match(/[^-]+/)?.[0];
+  if (key) {
+    if (['tracking', 'leading'].includes(key)) return { key: 'font', body: utility };
+  }
   const body = utility.match(/-.+/)?.[0].slice(1) || '~';
   return { key, body };
 }

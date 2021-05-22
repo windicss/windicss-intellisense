@@ -1,4 +1,5 @@
-import { decorateWithLength, decorateWithCount, connectList, getConfig } from '../utils';
+import { connectList } from '../utils';
+import { decorateWithLength, decorateWithCount, getConfig } from '../utils/helpers';
 
 import { window } from 'vscode';
 import type { TextEditor, DecorationOptions, TextEditorDecorationType } from 'vscode';

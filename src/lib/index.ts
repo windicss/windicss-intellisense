@@ -7,7 +7,8 @@ import Decorations from './decorations';
 
 import { resolve } from 'path';
 import { Log } from '../utils/console';
-import { getConfig, hex2RGB, flatColors } from '../utils';
+import { hex2RGB, flatColors } from '../utils';
+import { getConfig } from '../utils/helpers';
 import { allowAttr, fileTypes } from '../utils/filetypes';
 import { Disposable, workspace, window, commands } from 'vscode';
 import { toRGBA } from 'windicss/utils';

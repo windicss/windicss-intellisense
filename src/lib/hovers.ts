@@ -1,5 +1,5 @@
 import { Range, Hover, Position, languages } from 'vscode';
-import { buildStyle } from '../utils';
+import { buildStyle } from '../utils/helpers';
 import { applyRegex } from '../utils/filetypes';
 import type Extension from './index';
 import type { DocumentSelector } from 'vscode';
