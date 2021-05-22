@@ -9,7 +9,7 @@ import { resolve } from 'path';
 import { Log } from '../utils/console';
 import { getConfig, hex2RGB, flatColors } from '../utils';
 import { allowAttr, fileTypes } from '../utils/filetypes';
-import { Disposable, workspace, window } from 'vscode';
+import { Disposable, workspace, window, commands } from 'vscode';
 
 import type { JITI } from 'jiti';
 import type { Attr } from './completions';
@@ -135,6 +135,14 @@ export default class Extension {
       allowAttr(type) && disposables.push(completions.registerAttrKeys(ext, config.enableAttrUtility, config.enableAttrVariant));
       allowAttr(type) && disposables.push(completions.registerAttrValues(ext, config.enableAttrUtility, config.enableVariant, config.enableDynamic));
     }
+    // trigger suggestion when using raw html class completion with tab
+    disposables.push(window.onDidChangeTextEditorSelection((e) => {
+      if (e.kind === undefined) {
+        if(['class=""', 'className=""'].includes(e.textEditor.document.getText(e.textEditor.document.getWordRangeAtPosition(e.textEditor.selection.active, /[\w"=]+/)))) {
+          commands.executeCommand('editor.action.triggerSuggest');
+        }
+      }
+    }));
     return disposables;
   }
 

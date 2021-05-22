@@ -234,6 +234,7 @@ export default class Completions {
       '"',
       '\'',
       ':',
+      '!',
       '(',
       ' ',
       ...(enableEmmet ? [ '.' ] : []),
