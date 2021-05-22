@@ -2,7 +2,6 @@ import { commands, Range, Position, workspace, ViewColumn, window, Uri } from 'v
 import { writeFileSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { StyleSheet } from 'windicss/utils/style';
-import { runAnalysis } from 'windicss-analysis';
 
 import { Log } from '../utils/log';
 import { HTMLParser } from '../utils/parser';
@@ -131,8 +130,7 @@ export default class Commands {
             retainContextWhenHidden: true,
           }
         );
-
-        // let fileName = 'windicss-analysis-result.json'
+        const runAnalysis = require('./dependencies.js').runAnalysis;
         const { result } = await runAnalysis(
           {
             root: workspace.workspaceFolders?.[0].uri.fsPath,

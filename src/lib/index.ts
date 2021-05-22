@@ -1,4 +1,3 @@
-import jiti from 'jiti';
 import Completions from './completions';
 import Commands from './commands';
 import Hovers from './hovers';
@@ -7,18 +6,19 @@ import Diagnostics from './diagnostics';
 import Decorations from './decorations';
 
 import { resolve } from 'path';
-import { Processor } from 'windicss/lib';
 import { Log } from '../utils/log';
 import { getConfig, hex2RGB, flatColors } from '../utils';
 import { allowAttr, fileTypes } from '../utils/filetypes';
 import { Disposable, workspace, window } from 'vscode';
 
+import type { JITI } from 'jiti';
 import type { Attr } from './completions';
+import type { Processor } from 'windicss/lib';
 import type { ExtensionContext, GlobPattern, Uri } from 'vscode';
 import type { DictStr, ResolvedVariants, colorObject } from 'windicss/types/interfaces';
 
 export default class Extension {
-  _jiti = jiti(__filename);
+  jiti?: JITI;
   ctx: ExtensionContext;
   pattern: GlobPattern;
   processor: Processor | undefined;
@@ -39,8 +39,10 @@ export default class Extension {
   init() {
     try {
       workspace.findFiles(this.pattern, '**​/node_modules/**').then(files => {
+        const { jiti, Processor } = require('./dependencies.js');
+        this.jiti = jiti(__filename);
         this.configFile = files[0] ? files[0].fsPath : undefined;
-        this.processor = new Processor(this.loadConfig(this.configFile));
+        this.processor = new Processor(this.loadConfig(this.configFile)) as Processor;
         this.variants = this.processor.resolveVariants();
         this.colors = flatColors(this.processor.theme('colors', {}) as colorObject);
         this.register();
@@ -63,19 +65,20 @@ export default class Extension {
   }
 
   loadConfig(file?: string) {
-    if (!file) return;
+    if (!file || !this.jiti) return;
     const path = resolve(file);
-    if (path in this._jiti.cache) delete this._jiti.cache[path];
-    const exports = this._jiti(path);
+    if (path in this.jiti.cache) delete this.jiti.cache[path];
+    const exports = this.jiti(path);
     const config = exports.__esModule ? exports.default : exports;
     Log.info(`Loading Config File: ${file}`);
     return config;
   }
 
   update(uri?: Uri) {
+    const { Processor } = require('./dependencies.js');
     this.disposables.forEach(i => i.dispose());
     this.disposables.length = 0;
-    this.processor = new Processor(this.loadConfig(uri ? uri.fsPath : this.configFile));
+    this.processor = new Processor(this.loadConfig(uri ? uri.fsPath : this.configFile)) as Processor;
     this.variants = this.processor.resolveVariants();
     this.colors = flatColors(this.processor.theme('colors', {}) as colorObject);
     this.register();

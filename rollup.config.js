@@ -46,5 +46,22 @@ export default [
       commonjs()
     ],
     onwarn
+  },
+  {
+    input: 'src/lib/dependencies.ts',
+    output: [
+      {
+        file: dump("dependencies.js"),
+        format: "cjs",
+        sourcemap: !prod,
+      }
+    ],
+    plugins: [
+      json(),
+      tsPlugin,
+      resolve(),
+      commonjs()
+    ],
+    onwarn
   }
 ]
