@@ -1,4 +1,4 @@
-import { utilities, negative } from '../utils/utilities';
+import { negative, utilities } from '../utils/utilities';
 import { flatColors, hex2RGB, buildStyle, buildEmptyStyle } from '../utils';
 import { Style } from 'windicss/utils/style';
 import { patterns, allowAttr } from '../utils/filetypes';
@@ -88,7 +88,7 @@ export default class Completions {
             for (const [k, v] of Object.entries(flatColors(this.processor.theme(config, this.extension.colors) as colorObject))) {
               completions.color.push({
                 label: this.prefix + `${prefix}-${k}`,
-                doc: ['transparent', 'currentColor'].includes(v) ? v : `rgb(${hex2RGB(v)?.join(', ')})`,
+                doc: v,
               });
             }
             break;
@@ -223,6 +223,8 @@ export default class Completions {
             // TODO
             break;
           case CompletionItemKind.Color:
+            const color = (item.documentation || 'currentColor') as string;
+            item.documentation = ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`;
             item.detail = this.processor.interpret(item.label).styleSheet.build();
             break;
           }
@@ -360,6 +362,8 @@ export default class Completions {
           case CompletionItemKind.Variable:
             break;
           case CompletionItemKind.Color:
+            const color = (item.documentation || 'currentColor') as string;
+            item.documentation = ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`;
             item.detail = this.processor.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
             break;
           }

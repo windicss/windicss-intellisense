@@ -2,18 +2,21 @@ import { workspace, MarkdownString, Range, Position, DecorationOptions } from 'v
 import { ClassParser } from 'windicss/utils/parser';
 import { HTMLParser } from './parser';
 import { keyOrder } from './order';
-import { flatColors as _flatColors } from 'windicss/utils';
 import type { Style, StyleSheet } from 'windicss/utils/style';
 import type { colorObject, DictStr } from 'windicss/types/interfaces';
 
-export function flatColors(colors: colorObject) {
-  colors = _flatColors(colors);
+export function flatColors(colors: colorObject, head?: string): DictStr {
+  let flatten: { [ key:string ]: string } = {};
   for (const [key, value] of Object.entries(colors)) {
-    if (typeof value === 'function') {
-      colors[key] = 'currentColor';
+    if (typeof value === 'string') {
+      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}`: key] = value;
+    } else if (typeof value === 'function') {
+      flatten[(head && key === 'DEFAULT') ? head : head ? `${head}-${key}`: key] = 'currentColor';
+    } else {
+      flatten = { ...flatten, ...flatColors(value, head ? `${head}-${key}`: key) };
     }
   }
-  return colors as DictStr;
+  return flatten;
 }
 
 export function highlightCSS(css?: string): MarkdownString | undefined {

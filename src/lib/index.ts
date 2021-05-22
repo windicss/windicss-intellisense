@@ -14,7 +14,7 @@ import { allowAttr, fileTypes } from '../utils/filetypes';
 import { Disposable, workspace, window } from 'vscode';
 
 import type { Attr } from './completions';
-import type { ExtensionContext, GlobPattern } from 'vscode';
+import type { ExtensionContext, GlobPattern, Uri } from 'vscode';
 import type { DictStr, ResolvedVariants, colorObject } from 'windicss/types/interfaces';
 
 export default class Extension {
@@ -24,6 +24,7 @@ export default class Extension {
   processor: Processor | undefined;
   attrs: Attr;
   colors: DictStr;
+  configFile?: string;
   variants: ResolvedVariants;
   disposables: Disposable[];
   constructor(ctx: ExtensionContext, pattern: GlobPattern) {
@@ -35,22 +36,15 @@ export default class Extension {
     this.disposables = [];
   }
 
-  async init() {
+  init() {
     try {
-      let config;
-      const files = await workspace.findFiles(this.pattern, '**​/node_modules/**');
-      if (files[0]) {
-        const file = files[0].fsPath;
-        const path = resolve(file);
-        if (path in this._jiti.cache) delete this._jiti.cache[path];
-        const exports = this._jiti(path);
-        config = exports.__esModule ? exports.default : exports;
-        Log.info(`Loading Config File: ${file}`);
-      }
-      this.processor = new Processor(config);
-      this.variants = this.processor.resolveVariants();
-      this.colors = flatColors(this.processor.theme('colors', {}) as colorObject);
-      this.register();
+      workspace.findFiles(this.pattern, '**​/node_modules/**').then(files => {
+        this.configFile = files[0] ? files[0].fsPath : undefined;
+        this.processor = new Processor(this.loadConfig(this.configFile));
+        this.variants = this.processor.resolveVariants();
+        this.colors = flatColors(this.processor.theme('colors', {}) as colorObject);
+        this.register();
+      });
     } catch (error) {
       Log.warning(error);
     }
@@ -68,9 +62,22 @@ export default class Extension {
     this.disposables.push(...disposables);
   }
 
-  async update() {
+  loadConfig(file?: string) {
+    if (!file) return;
+    const path = resolve(file);
+    if (path in this._jiti.cache) delete this._jiti.cache[path];
+    const exports = this._jiti(path);
+    const config = exports.__esModule ? exports.default : exports;
+    Log.info(`Loading Config File: ${file}`);
+    return config;
+  }
+
+  update(uri?: Uri) {
     this.disposables.forEach(i => i.dispose());
     this.disposables.length = 0;
+    this.processor = new Processor(this.loadConfig(uri ? uri.fsPath : this.configFile));
+    this.variants = this.processor.resolveVariants();
+    this.colors = flatColors(this.processor.theme('colors', {}) as colorObject);
     this.register();
   }
 
@@ -79,19 +86,19 @@ export default class Extension {
   }
 
   watch() {
-    const watcher = workspace.createFileSystemWatcher(this.pattern);
+    const watcher = workspace.createFileSystemWatcher(`**/${this.pattern}`);
     // Changes configuration should invalidate above cache
-    watcher.onDidChange(this.update);
+    watcher.onDidChange((e) => this.update(e));
 
     // This handles the case where the project didn't have config file
     // but was created after VS Code was initialized
-    watcher.onDidCreate(this.update);
+    watcher.onDidCreate((e) => this.update(e));
 
     // If the config is deleted, utilities&variants should be regenerated
-    watcher.onDidDelete(this.update);
+    watcher.onDidDelete((e) => this.update(e));
 
     // when change vscode configuration should regenerate disposables
-    workspace.onDidChangeConfiguration(this.update, null, this.ctx.subscriptions);
+    workspace.onDidChangeConfiguration(() => this.update(), null, this.ctx.subscriptions);
   }
 
   registerCommands() {
