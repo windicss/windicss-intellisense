@@ -6,7 +6,7 @@ import Diagnostics from './diagnostics';
 import Decorations from './decorations';
 
 import { resolve } from 'path';
-import { Log } from '../utils/log';
+import { Log } from '../utils/console';
 import { getConfig, hex2RGB, flatColors } from '../utils';
 import { allowAttr, fileTypes } from '../utils/filetypes';
 import { Disposable, workspace, window } from 'vscode';

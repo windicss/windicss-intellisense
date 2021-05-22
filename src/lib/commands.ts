@@ -3,7 +3,7 @@ import { writeFileSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { StyleSheet } from 'windicss/utils/style';
 
-import { Log } from '../utils/log';
+import { Log } from '../utils/console';
 import { HTMLParser } from '../utils/parser';
 import { sortClassNames, toggleConfig } from '../utils';
 

@@ -1,5 +1,5 @@
 import Extension from './lib';
-import { Log } from './utils/log';
+import { Log } from './utils/console';
 import type { ExtensionContext } from 'vscode';
 
 
