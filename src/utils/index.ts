@@ -135,6 +135,23 @@ export function rgb2Hex(r: number, g: number, b: number) {
   return '#' + componentToHex(r*255) + componentToHex(g*255) + componentToHex(b*255);
 }
 
+function match(a: [r: number, g: number, b: number], b: [r: number, g: number, b: number]) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+}
+
+export function isDarkColor(r: number, g: number, b: number) {
+  if (match([r, g, b], [20, 184, 166]) || match([r, g, b], [245, 158, 11]) || match([r, g, b], [249, 115, 22]) || match([r, g, b], [217, 70, 239]) || match([r, g, b], [6, 182, 212]) || match([r, g, b], [132, 204, 22])) return true;
+  // special cases: orange-500 yellow-500 teal-500 fuchsia-500 cyan-500 lime-500, With 500 as the dividing line, the view is better
+
+  const hsp = Math.sqrt(
+    0.299 * (r * r) +
+    0.587 * (g * g) +
+    0.114 * (b * b)
+  );
+
+  return hsp <= 150;
+}
+
 export function arrayEqual(array1: unknown[], array2: unknown[]) {
   return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }

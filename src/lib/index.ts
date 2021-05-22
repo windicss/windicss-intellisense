@@ -10,6 +10,7 @@ import { Log } from '../utils/console';
 import { getConfig, hex2RGB, flatColors } from '../utils';
 import { allowAttr, fileTypes } from '../utils/filetypes';
 import { Disposable, workspace, window, commands } from 'vscode';
+import { toRGBA } from 'windicss/utils';
 
 import type { JITI } from 'jiti';
 import type { Attr } from './completions';
@@ -176,11 +177,29 @@ export default class Extension {
 
   registerDecorations() {
     if (!this.processor) return [];
-    const disposables = [];
+    const disposables: Disposable[] = [];
+    const type = 'cube';
     const decoration = new Decorations(this, this.processor);
-    for (const [ext] of Object.entries(fileTypes)) {
-      disposables.push(decoration.register(ext));
+    // for (const [ext] of Object.entries(fileTypes)) {
+    //   disposables.push(decoration.register(ext));
+    // }
+    let activeEditor = window.activeTextEditor;
+    if (activeEditor) {
+      decoration.registerColorBlock(activeEditor, type);
     }
+
+    window.onDidChangeActiveTextEditor(editor => {
+      activeEditor = editor;
+      if (editor) {
+        decoration.registerColorBlock(editor, type);
+      }
+    }, null, this.ctx.subscriptions);
+
+    workspace.onDidChangeTextDocument(event => {
+      if (activeEditor && event.document === activeEditor.document) {
+        decoration.registerColorBlock(activeEditor, type);
+      }
+    }, null, this.ctx.subscriptions);
     return disposables;
   }
 
@@ -211,14 +230,14 @@ export default class Extension {
     return getConfig('windicss.enableAttrUtilityCompletion') && lastKey in { ...this.attrs.static, ...this.attrs.color, ...this.attrs.dynamic } ? lastKey : undefined;
   }
 
-  isValidColor(utility: string) {
+  isValidColor(utility: string, type = 'hex') {
     if (/hex-?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/.test(utility)) {
       const hex = utility.replace(/^\S*hex-/, '');
-      return { color: hex2RGB('#' + hex), key: 'hex-' + hex };
+      return { color: (type === 'hex' ? hex2RGB : toRGBA)('#' + hex), key: 'hex-' + hex };
     }
     for (const [key, value] of Object.entries(this.colors)) {
       if (utility.endsWith(key)) {
-        return { color: hex2RGB(Array.isArray(value) ? value[0] : value), key };
+        return { color: (type === 'hex' ? hex2RGB : toRGBA)(Array.isArray(value) ? value[0] : value), key };
       }
     }
     return {};
