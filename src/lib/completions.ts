@@ -74,9 +74,16 @@ export default class Completions {
 
           if (enableDynamic) {
             completions = completions.concat(
+              this.completions.bracket.map((label, index) => {
+                const item = new CompletionItem(label, CompletionItemKind.Struct);
+                item.sortText = '3-' + index.toString().padStart(8, '0');
+                return item;
+              })
+            );
+            completions = completions.concat(
               this.completions.dynamic.map(({ label, pos }, index) => {
                 const item = new CompletionItem(label, CompletionItemKind.Variable);
-                item.sortText = '3-' + index.toString().padStart(8, '0');
+                item.sortText = '4-' + index.toString().padStart(8, '0');
                 item.command = {
                   command: 'cursorMove',
                   arguments: [{
@@ -102,6 +109,10 @@ export default class Completions {
           case CompletionItemKind.Module:
             item.documentation = this.buildVariantDoc(item.detail);
             item.detail = undefined;
+            break;
+          case CompletionItemKind.Struct:
+            item.documentation = buildStyle(this.processor.interpret(item.label).styleSheet);
+            item.insertText = new SnippetString(`${item.label.replace('-[', '-[${1:').slice(0, -1)}}]`);
             break;
           case CompletionItemKind.Variable:
             // TODO
@@ -213,9 +224,18 @@ export default class Completions {
 
             if (enableDynamic && key in this.completions.attr.dynamic) {
               completions = completions.concat(
+                this.completions.attr.bracket[key].map((label, index) => {
+                  const item = new CompletionItem(label, CompletionItemKind.Struct);
+                  item.detail = key;
+                  item.sortText = '3-' + index.toString().padStart(8, '0');
+                  return item;
+                })
+              );
+
+              completions = completions.concat(
                 this.completions.attr.dynamic[key].map(({ label, pos }, index) => {
                   const item = new CompletionItem(label, CompletionItemKind.Variable);
-                  item.sortText = '3-' + index.toString().padStart(8, '0');
+                  item.sortText = '5-' + index.toString().padStart(8, '0');
                   item.command = {
                     command: 'cursorMove',
                     arguments: [{
@@ -243,6 +263,11 @@ export default class Completions {
           case CompletionItemKind.Module:
             const [attr, variant] = item.detail?.split(',') || [];
             item.documentation = this.buildAttrDoc(attr, variant, this.separator);
+            item.detail = undefined;
+            break;
+          case CompletionItemKind.Struct:
+            item.documentation = buildStyle(this.processor.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet);
+            item.insertText = new SnippetString(`${item.label.replace('[', '[${1:').slice(0, -1)}}]`);
             item.detail = undefined;
             break;
           case CompletionItemKind.Variable:

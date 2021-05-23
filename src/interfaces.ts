@@ -30,6 +30,9 @@ export interface Attr {
       doc: string
     }[]
   },
+  bracket: {
+    [key:string]: string[]
+  },
   dynamic: {
     [key:string]: {
       label: string
@@ -44,6 +47,7 @@ export interface Completion {
     label: string
     doc: string
   }[],
+  bracket: string[]
   dynamic: {
     label: string
     pos: number

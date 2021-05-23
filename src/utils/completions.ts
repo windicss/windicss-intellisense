@@ -9,10 +9,12 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
   const completions: Completion = {
     static: [],
     color: [],
+    bracket: [],
     dynamic: [],
     attr: {
       static: {},
       color: {},
+      bracket: {},
       dynamic: {},
     },
   };
@@ -20,8 +22,13 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
   const staticUtilities = processor.resolveStaticUtilities(true);
   // generate normal utilities completions
   for (const [config, list] of Object.entries(utilities)) {
-    list.forEach(utility => {
-      const mark = utility.search(/\$/);
+    for (const utility of list) {
+      const bracket = utility.indexOf('[');
+      if (bracket !== -1) {
+        completions.bracket.push(utility);
+        continue;
+      }
+      const mark = utility.indexOf('$');
       if (mark === -1) {
         completions.static.push(utility);
       } else {
@@ -55,11 +62,11 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
           break;
         }
       }
-    });
+    }
   }
 
   // generate attributify completions
-  const attr: Attr = { static: {}, color: {}, dynamic: {} };
+  const attr: Attr = { static: {}, color: {}, bracket: {}, dynamic: {} };
   const addStatic = (key: string, value: string) => {
     key in attr.static ? attr.static[key].push(value) : attr.static[key] = [ value ];
   };
@@ -231,6 +238,13 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
           const item = { label, doc };
           attr.color['text'] = 'text' in attr.color ? [...attr.color['text'], item] : [ item ];
         }
+      }
+    }
+
+    for (const utility of completions.bracket) {
+      const { key, body } = split(utility);
+      if (key) {
+        attr.bracket[key] = key in attr.bracket ? [...attr.bracket[key], body] : [ body ];
       }
     }
 
