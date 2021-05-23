@@ -1,5 +1,4 @@
-import { negative, utilities } from '../utils/utilities';
-import { flatColors, hex2RGB } from '../utils';
+import { hex2RGB } from '../utils';
 import { buildStyle, buildEmptyStyle } from '../utils/helpers';
 import { Style } from 'windicss/utils/style';
 import { patterns, allowAttr } from '../utils/filetypes';
@@ -9,52 +8,19 @@ import { languages, Range, Position, CompletionItem, SnippetString, CompletionIt
 import type Extension from './index';
 import type { DocumentSelector } from 'vscode';
 import type { Processor } from 'windicss/lib';
-import type { colorObject } from 'windicss/types/interfaces';
-
-export interface Attr {
-  static: {
-    [key:string]: string[]
-  },
-  color: {
-    [key:string]: {
-      label: string
-      doc: string
-    }[]
-  },
-  dynamic: {
-    [key:string]: {
-      label: string
-      pos: number
-    }[]
-  }
-}
-
-export interface Completion {
-  static: string[],
-  color: {
-    label: string
-    doc: string
-  }[],
-  dynamic: {
-    label: string
-    pos: number
-  }[]
-  attr: Attr
-}
+import type { Completion } from '../interfaces';
 
 export default class Completions {
   processor: Processor;
   extension: Extension;
   separator: string;
-  prefix: string;
   completions: Completion;
 
   constructor(extension: Extension, processor: Processor) {
     this.processor = processor;
     this.extension = extension;
     this.separator = processor.config('separator', ':') as string;
-    this.prefix = processor.config('prefix', '') as string;
-    this.completions = generateCompletions(processor, this.extension.colors, true, this.prefix);
+    this.completions = generateCompletions(processor, this.extension.colors, true, processor.config('prefix', '') as string);
     this.extension.attrs = this.completions.attr.static;
   }
 

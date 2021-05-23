@@ -14,7 +14,7 @@ import { Disposable, workspace, window, commands } from 'vscode';
 import { toRGBA } from 'windicss/utils';
 
 import type { JITI } from 'jiti';
-import type { Attr } from './completions';
+import type { Attr } from '../interfaces';
 import type { Processor } from 'windicss/lib';
 import type { ExtensionContext, GlobPattern, Uri } from 'vscode';
 import type { DictStr, ResolvedVariants, colorObject } from 'windicss/types/interfaces';

@@ -18,3 +18,35 @@ export interface Core {
     position: number;
   }[];
 }
+
+
+export interface Attr {
+  static: {
+    [key:string]: string[]
+  },
+  color: {
+    [key:string]: {
+      label: string
+      doc: string
+    }[]
+  },
+  dynamic: {
+    [key:string]: {
+      label: string
+      pos: number
+    }[]
+  }
+}
+
+export interface Completion {
+  static: string[],
+  color: {
+    label: string
+    doc: string
+  }[],
+  dynamic: {
+    label: string
+    pos: number
+  }[]
+  attr: Attr
+}
