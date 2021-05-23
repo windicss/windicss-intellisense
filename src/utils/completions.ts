@@ -87,6 +87,7 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
     addStatic('backdrop', 'none');
 
     for (const [key, style] of Object.entries(staticUtilities)) {
+      if (!style[0]) continue;
       switch (style[0].meta.group) {
       case 'fontStyle':
       case 'fontSmoothing':
