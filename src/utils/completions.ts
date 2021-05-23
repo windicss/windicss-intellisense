@@ -28,19 +28,19 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
         completions.bracket.push(utility);
         continue;
       }
-      const mark = utility.indexOf('$');
+      const mark = utility.indexOf('{');
       if (mark === -1) {
         completions.static.push(utility);
       } else {
         const key = prefix + utility.slice(0, mark - 1);
         const suffix = utility.slice(mark);
         switch (suffix) {
-        case '${static}':
+        case '{static}':
           for (const i of Object.keys(processor.theme(config, {}) as any)) {
             completions.static.push(i === 'DEFAULT' ? key : i.charAt(0) === '-' ? `-${key}${i}` : `${key}-${i}`);
           }
           break;
-        case '${color}':
+        case '{color}':
           for (const [k, v] of Object.entries(flatColors(processor.theme(config, colors) as colorObject))) {
             completions.color.push({
               label: `${key}-${k}`,

@@ -312,15 +312,6 @@ export default class Completions {
   }
 }
 
-function split(utility: string) {
-  const key = utility.match(/[^-]+/)?.[0];
-  if (key) {
-    if (['tracking', 'leading'].includes(key)) return { key: 'font', body: utility };
-  }
-  const body = utility.match(/-.+/)?.[0].slice(1) || '~';
-  return { key, body };
-}
-
 function attrKey(label: string, kind: CompletionItemKind, order: number) {
   const item = new CompletionItem(label, kind);
   item.sortText = `${order}-` + label;
