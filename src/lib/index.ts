@@ -24,7 +24,7 @@ export default class Extension {
   ctx: ExtensionContext;
   pattern: GlobPattern;
   processor: Processor | undefined;
-  attrs: Attr;
+  attrs: Attr['static'];
   colors: DictStr;
   configFile?: string;
   variants: ResolvedVariants;
@@ -33,7 +33,7 @@ export default class Extension {
     this.ctx = ctx;
     this.pattern = pattern;
     this.colors = {};
-    this.attrs = { static: {}, color: {}, dynamic: {} };
+    this.attrs = {};
     this.variants = {};
     this.disposables = [];
   }
@@ -122,7 +122,6 @@ export default class Extension {
   registerCompletions() {
     if (!this.processor) return [];
     const completions = new Completions(this, this.processor);
-    this.attrs = completions.completions.attr;
     const disposables: Disposable[] = [];
     const config = {
       enableUtilty: this.get<boolean>('enableUtilityCompletion'),
@@ -231,7 +230,7 @@ export default class Extension {
   isAttrUtility(word?: string): string | undefined {
     if (!word) return;
     const lastKey = word.match(/[^:-]+$/)?.[0] || word;
-    return getConfig('windicss.enableAttrUtilityCompletion') && lastKey in { ...this.attrs.static, ...this.attrs.color, ...this.attrs.dynamic } ? lastKey : undefined;
+    return getConfig('windicss.enableAttrUtilityCompletion') && lastKey in this.attrs ? lastKey : undefined;
   }
 
   isValidColor(utility: string, type = 'hex') {

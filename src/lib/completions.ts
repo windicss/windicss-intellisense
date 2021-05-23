@@ -55,6 +55,7 @@ export default class Completions {
     this.separator = processor.config('separator', ':') as string;
     this.prefix = processor.config('prefix', '') as string;
     this.completions = generateCompletions(processor, this.extension.colors, true, this.prefix);
+    this.extension.attrs = this.completions.attr.static;
   }
 
   // register suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...

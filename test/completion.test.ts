@@ -57,6 +57,7 @@ it('generate text completions', () => {
 it('genreate underline utilities', () => {
   match('underline', [
     '~', 'line-through', 'none',
+    'solid', 'double', 'dotted', 'dashed',
     'opacity-50',
     'auto', '0', '2', '4', '8',
     'offset-auto', 'offset-1', 'offset-2',
@@ -212,6 +213,7 @@ it('generate grid utilities', () => {
     '~', 'inline',
     'cols-1', 'cols-3', 'cols-none',
     'col-auto', 'col-span-2',
+    'row-auto', 'row-span-2',
     'rows-1', 'rows-3', 'rows-none',
     'flow-row', 'flow-col', 'flow-row-dense', 'flow-col-dense',
     'auto-cols-auto', 'auto-cols-min',

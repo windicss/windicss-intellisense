@@ -209,6 +209,7 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
       case 'resize':
       case 'overflow':
       case 'appearance':
+      case 'textDecorationStyle':
       case 'overscrollBehavior':
         const over = split(key);
         if (!over.key) break;
