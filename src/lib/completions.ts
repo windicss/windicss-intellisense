@@ -25,7 +25,7 @@ export default class Completions {
   }
 
   // register suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...
-  registerUtilities(ext: DocumentSelector, type: string, pattern?: RegExp, enableUtilty = true, enableVariant = true, enableDynamic = true, enableEmmet = false) {
+  registerUtilities(ext: DocumentSelector, type: string, pattern?: RegExp, enableUtilty = true, enableVariant = true, enableDynamic = true, enableBracket = true, enableEmmet = false) {
     return languages.registerCompletionItemProvider(
       ext,
       {
@@ -72,7 +72,7 @@ export default class Completions {
             );
           }
 
-          if (enableDynamic) {
+          if (enableBracket) {
             completions = completions.concat(
               this.completions.bracket.map((label, index) => {
                 const item = new CompletionItem(label, CompletionItemKind.Struct);
@@ -80,6 +80,9 @@ export default class Completions {
                 return item;
               })
             );
+          }
+
+          if (enableDynamic) {
             completions = completions.concat(
               this.completions.dynamic.map(({ label, pos }, index) => {
                 const item = new CompletionItem(label, CompletionItemKind.Variable);
@@ -168,7 +171,7 @@ export default class Completions {
     );
   }
 
-  registerAttrValues(ext: DocumentSelector, enableUtility = true, enableVariant = true, enableDynamic = true) {
+  registerAttrValues(ext: DocumentSelector, enableUtility = true, enableVariant = true, enableDynamic = true, enableBracket = true) {
     return languages.registerCompletionItemProvider(
       ext,
       {
@@ -213,7 +216,7 @@ export default class Completions {
               );
             }
 
-            if (enableDynamic && key in this.completions.attr.dynamic) {
+            if (enableBracket && key in this.completions.attr.bracket) {
               completions = completions.concat(
                 this.completions.attr.bracket[key].map((label, index) => {
                   const item = new CompletionItem(label, CompletionItemKind.Struct);
@@ -222,7 +225,9 @@ export default class Completions {
                   return item;
                 })
               );
+            }
 
+            if (enableDynamic && key in this.completions.attr.dynamic) {
               completions = completions.concat(
                 this.completions.attr.dynamic[key].map(({ label, pos }, index) => {
                   const item = new CompletionItem(label, CompletionItemKind.Variable);

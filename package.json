@@ -180,7 +180,12 @@
         "windicss.enableDynamicCompletion": {
           "type": "boolean",
           "default": true,
-          "description": "Enable Dynamic Utilities Completion like p-${int}."
+          "description": "Enable Dynamic Utilities Completion like p-{int}."
+        },
+        "windicss.enableBracketCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Square Bracket Utilities Completion like bg-[#ff0]."
         },
         "windicss.enableEmmetCompletion": {
           "type": "boolean",

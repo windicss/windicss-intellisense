@@ -81,7 +81,8 @@ Browse your utilities usages, have an overview of your design system, identify "
 | `windicss.enableCodeCompletion`    | boolean | true     | Enable/Disable all code completions.                         |
 | `windicss.enableUtilityCompletion` | boolean | true     | Enable Utility Completion.                                   |
 | `windicss.enableVariantCompletion` | boolean | true     | Enable Variant Completion.                                   |
-| `windicss.enableDynamicCompletion` | boolean | true     | Enable Dynamic Utilities Completion like p-${int}.           |
+| `windicss.enableDynamicCompletion` | boolean | true     | Enable Dynamic Utilities Completion like p-{int}.           |
+| `windicss.enableBracketCompletion` | boolean | true     | Enable Square Bracket Utilities Completion like bg-[#ff0].           |
 | `windicss.enableAttrUtilityCompletion` | boolean | true | Enable Utility Completion For Attributify Mode.              |
 | `windicss.enableAttrVariantCompletion` | boolean | true | Enable Variant Completion For Attributify Mode.              |
 | `windicss.enableRemToPxPreview`    | boolean | true     | Enable Rem to Px Preview.                                    |

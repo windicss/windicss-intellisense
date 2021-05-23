@@ -127,14 +127,15 @@ export default class Extension {
       enableUtilty: this.get<boolean>('enableUtilityCompletion'),
       enableVariant: this.get<boolean>('enableVariantCompletion'),
       enableDynamic: this.get<boolean>('enableDynamicCompletion'),
+      enableBracket: this.get<boolean>('enableBracketCompletion'),
       enableEmmet: this.get<boolean>('enableEmmetCompletion'),
       enableAttrUtility: this.get<boolean>('enableAttrUtilityCompletion'),
       enableAttrVariant: this.get<boolean>('enableAttrVariantCompletion'),
     };
     for (const [ext, { type, pattern }] of Object.entries(fileTypes)) {
-      disposables.push(completions.registerUtilities(ext, type, pattern, config.enableUtilty, config.enableVariant, config.enableDynamic, config.enableEmmet));
+      disposables.push(completions.registerUtilities(ext, type, pattern, config.enableUtilty, config.enableVariant, config.enableDynamic, config.enableBracket, config.enableEmmet));
       allowAttr(type) && disposables.push(completions.registerAttrKeys(ext, config.enableAttrUtility, config.enableAttrVariant));
-      allowAttr(type) && disposables.push(completions.registerAttrValues(ext, config.enableAttrUtility, config.enableVariant, config.enableDynamic));
+      allowAttr(type) && disposables.push(completions.registerAttrValues(ext, config.enableAttrUtility, config.enableVariant, config.enableDynamic, config.enableBracket));
     }
     // trigger suggestion when using raw html class completion with tab
     disposables.push(window.onDidChangeTextEditorSelection((e) => {
