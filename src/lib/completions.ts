@@ -84,15 +84,6 @@ export default class Completions {
               this.completions.dynamic.map(({ label, pos }, index) => {
                 const item = new CompletionItem(label, CompletionItemKind.Variable);
                 item.sortText = '4-' + index.toString().padStart(8, '0');
-                item.command = {
-                  command: 'cursorMove',
-                  arguments: [{
-                    to: 'left',
-                    select: true,
-                    value: pos,
-                  }],
-                  title: label,
-                };
                 return item;
               })
             );
@@ -115,7 +106,7 @@ export default class Completions {
             item.insertText = new SnippetString(`${item.label.replace('-[', '-[${1:').slice(0, -1)}}]`);
             break;
           case CompletionItemKind.Variable:
-            // TODO
+            this.generateDynamicInfo(item, false);
             break;
           case CompletionItemKind.Color:
             const color = (item.documentation || 'currentColor') as string;
@@ -235,16 +226,8 @@ export default class Completions {
               completions = completions.concat(
                 this.completions.attr.dynamic[key].map(({ label, pos }, index) => {
                   const item = new CompletionItem(label, CompletionItemKind.Variable);
-                  item.sortText = '5-' + index.toString().padStart(8, '0');
-                  item.command = {
-                    command: 'cursorMove',
-                    arguments: [{
-                      to: 'left',
-                      select: true,
-                      value: pos,
-                    }],
-                    title: label,
-                  };
+                  item.detail = key;
+                  item.sortText = '4-' + index.toString().padStart(8, '0');
                   return item;
                 })
               );
@@ -271,6 +254,7 @@ export default class Completions {
             item.detail = undefined;
             break;
           case CompletionItemKind.Variable:
+            this.generateDynamicInfo(item, true);
             break;
           case CompletionItemKind.Color:
             const color = (item.documentation || 'currentColor') as string;
@@ -286,6 +270,38 @@ export default class Completions {
       ':',
       ' ',
     );
+  }
+
+  generateDynamicInfo(item: CompletionItem, attributify = false) {
+    const match = item.label.match(/{\w+}$/);
+    if (!match) return;
+    switch (match[0]) {
+    case '{int}':
+      this.setDynamicInfo(item, 'int', '99', attributify);
+      break;
+    case '{float}':
+      this.setDynamicInfo(item, 'float', '5.21', attributify);
+      break;
+    case '{fraction}':
+      this.setDynamicInfo(item, 'fraction', '13/14', attributify);
+      break;
+    case '{size}':
+      this.setDynamicInfo(item, 'size', '25px', attributify);
+      break;
+    case '{nxl}':
+      this.setDynamicInfo(item, 'nxl', '9xl', attributify);
+      break;
+    case '{var}':
+      this.setDynamicInfo(item, 'var', 'forever-and-ever', attributify);
+      break;
+    }
+  }
+
+  setDynamicInfo(item: CompletionItem, type: string, example: string, attributify = false) {
+    const regex = new RegExp(`{${type}}$`);
+    item.documentation = buildStyle(attributify? this.processor.attributify({ [item.detail ?? ''] : [ item.label.replace(regex, example) ] }).styleSheet : this.processor.interpret(item.label.replace(regex, example)).styleSheet);
+    item.detail = `type.${type}(${example})`;
+    item.insertText = new SnippetString(item.label.replace(regex, `\${1:${example}}`));
   }
 
   buildAttrDoc(attr: string, variant?: string, separator?: string) {
