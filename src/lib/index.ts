@@ -26,11 +26,13 @@ export default class Extension {
   processor: Processor | undefined;
   attrs: Attr['static'];
   colors: DictStr;
+  attrPrefix?: string;
   configFile?: string;
   variants: ResolvedVariants;
   disposables: Disposable[];
   constructor(ctx: ExtensionContext, pattern: GlobPattern) {
     this.ctx = ctx;
+    this.attrPrefix = undefined;
     this.pattern = pattern;
     this.colors = {};
     this.attrs = {};
@@ -45,6 +47,7 @@ export default class Extension {
         this.jiti = jiti(__filename);
         this.configFile = files[0] ? files[0].fsPath : undefined;
         this.processor = new Processor(this.loadConfig(this.configFile)) as Processor;
+        this.attrPrefix = this.processor.config('attributify.prefix') as string | undefined;
         this.variants = this.processor.resolveVariants();
         this.colors = flatColors(this.processor.theme('colors', {}) as colorObject);
         this.register();
@@ -224,12 +227,20 @@ export default class Extension {
   }
 
   isAttrVariant(word: string): boolean {
+    if (this.attrPrefix) {
+      if (!word.startsWith(this.attrPrefix)) return false;
+      word = word.slice(this.attrPrefix.length);
+    }
     const lastKey = word.match(/[^:-]+$/)?.[0] || word;
     return getConfig('windicss.enableAttrVariantCompletion') && lastKey in this.variants;
   }
 
   isAttrUtility(word?: string): string | undefined {
     if (!word) return;
+    if (this.attrPrefix) {
+      if (!word.startsWith(this.attrPrefix)) return;
+      word = word.slice(this.attrPrefix.length);
+    }
     const lastKey = word.match(/[^:-]+$/)?.[0] || word;
     return getConfig('windicss.enableAttrUtilityCompletion') && lastKey in this.attrs ? lastKey : undefined;
   }

@@ -69,11 +69,9 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
   const attr: Attr = { static: {}, color: {}, bracket: {}, dynamic: {} };
 
   if (attributify) {
-    const attrPrefix = processor.config('attributify.prefix') as string | undefined;
     const attrDisable = processor.config('attributify.disable') as string[] | undefined;
     const addAttr = (key: string, value: any, type: 'static' | 'color' | 'bracket' | 'dynamic' = 'static') => {
       if (attrDisable && attrDisable.includes(key)) return;
-      if (attrPrefix) key = attrPrefix + key;
       key in attr[type] ? attr[type][key].push(value) : attr[type][key] = [ value ];
     };
 

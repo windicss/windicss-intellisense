@@ -140,16 +140,22 @@ export default class Completions {
           if (text.match(/(<\w+\s*)[^>]*$/) !== null) {
             if (!text.match(/\S+(?=\s*=\s*["']?[^"']*$)/) || text.match(/<\w+\s+$/)) {
               let completions: CompletionItem[] = [];
-              if (enableUtility) {
-                completions = completions.concat(
-                  Object.keys(this.completions.attr.static).map(label => attrKey(label, CompletionItemKind.Field, 0))
-                );
+              const prefix = this.processor.config('attributify.prefix');
+              const disable = this.processor.config('attributify.disable') as string[] | undefined;
+              let prevKey = undefined;
+              if (text.endsWith(':')) {
+                prevKey = document.getText(document.getWordRangeAtPosition(new Position(position.line, position.character-1), /[^:\s]+/));
               }
-              if (enableVariant) {
-                const prefix = this.processor.config('attributify.prefix');
-                completions = completions.concat(
-                  Object.keys(this.extension.variants).map(label => attrKey(prefix ? prefix + label: label, CompletionItemKind.Module, 1))
-                );
+              if (!prevKey || (prevKey && (prevKey in this.extension.variants || this.extension.isAttrVariant(prevKey)))) {
+                if (enableUtility) {
+                  completions = completions.concat(
+                    Object.keys(this.completions.attr.static).map(label => attrKey(prefix && !text.endsWith(':') ? prefix + label : label, CompletionItemKind.Field, 0))
+                  );
+                }
+                if (enableVariant) {
+                  const variants = disable ? Object.keys(this.extension.variants).filter(i => !disable.includes(i)) : Object.keys(this.extension.variants);
+                  completions = completions.concat(variants.map(label => attrKey(prefix && !text.endsWith(':') ? prefix + label : label, CompletionItemKind.Module, 1)));
+                }
               }
               return completions;
             }
