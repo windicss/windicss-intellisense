@@ -9,10 +9,11 @@ export function allowAttr(type: string): boolean {
   return type ? ['html', 'js'].includes(type) : true;
 }
 
-const classPattern = String.raw`(class(Name)?\s*=\s*{?\s*["'\`])[^"'\`]*$`;
+const classPattern = String.raw`(\s+class(Name)?\s*=\s*{?\s*["'\`])[^"'\`]*$`;
 const emmetPattern = String.raw`\.\S*$`;
 const applyPattern = String.raw`@apply\s+[^;]*$`;
-const htmlPattern = getConfig('windicss.enableEmmetCompletion') ? [ classPattern, applyPattern, emmetPattern ] : [ classPattern, applyPattern ];
+const windiPattern = String.raw`\Wwindi\`[^\`]*$`;
+const htmlPattern = getConfig('windicss.enableEmmetCompletion') ? [ classPattern, applyPattern, emmetPattern, windiPattern ] : [ classPattern, applyPattern, windiPattern ];
 
 export const applyRegex = new RegExp(applyPattern);
 
@@ -52,10 +53,11 @@ export const fileTypes: {[key:string]: {pattern?: RegExp, type: string}} = {
   },
   'vue': {
     type: 'html',
+    pattern: /(\s+(v-bind)?:class\s*=\s*["][{[][^"]*$)|(\s+(v-bind)?:class\s*=\s*['][{[][^']*$)/,
   },
   'svelte': {
     type: 'html',
-    pattern: /(class:\S*$)|((class\s*=\s*["'`]?\s*{\s*)[^}]*$)/,
+    pattern: /(\s+class:\S*$)|((\s+class\s*=\s*["'`]?\s*{\s*)[^}]*$)/,
   },
 };
 
