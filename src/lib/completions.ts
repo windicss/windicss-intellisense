@@ -146,8 +146,9 @@ export default class Completions {
                 );
               }
               if (enableVariant) {
+                const prefix = this.processor.config('attributify.prefix');
                 completions = completions.concat(
-                  Object.keys(this.extension.variants).map(label => attrKey(label, CompletionItemKind.Module, 1))
+                  Object.keys(this.extension.variants).map(label => attrKey(prefix ? prefix + label: label, CompletionItemKind.Module, 1))
                 );
               }
               return completions;
