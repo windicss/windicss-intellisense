@@ -170,6 +170,13 @@ const utilities: { [key:string]: string[]} = {
     'caret-opacity-{static}',
     'caret-opacity-${var}',
   ],
+  content: [
+    'content-{static}',
+    'content-{string}',
+    'content-${var}',
+    'content-["👍"]',
+    'content-[attr(data-content)]',
+  ],
   container: [
     'container',
   ],

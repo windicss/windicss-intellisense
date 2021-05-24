@@ -300,6 +300,9 @@ export default class Completions {
     case '{size}':
       this.setDynamicInfo(item, 'size', '25px', attributify);
       break;
+    case '{string}':
+      this.setDynamicInfo(item, 'string', 'i-love-u', attributify);
+      break;
     case '{nxl}':
       this.setDynamicInfo(item, 'nxl', '9xl', attributify);
       break;
