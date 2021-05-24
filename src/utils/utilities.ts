@@ -786,32 +786,6 @@ const utilities: { [key:string]: string[]} = {
     'z-{int}',
     'z-${var}',
   ],
-
-  // Plugins
-  typography: [
-    'prose-sm',
-    'prose',
-    'prose-lg',
-    'prose-xl',
-    'prose-2xl',
-    'prose-red',
-    'prose-yellow',
-    'prose-green',
-    'prose-blue',
-    'prose-indigo',
-    'prose-purple',
-    'prose-pink',
-  ],
-  aspectRatio: [
-    'aspect-none',
-    'aspect-w-{float}',
-    'aspect-h-{float}',
-    'aspect-{fraction}',
-  ],
-  lineClamp: [
-    'line-clamp-none',
-    'line-clamp-{int}',
-  ],
 };
 
 const negative: { [key:string]: true} = {

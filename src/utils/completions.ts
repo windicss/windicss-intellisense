@@ -18,10 +18,9 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
       dynamic: {},
     },
   };
-
   const staticUtilities = processor.resolveStaticUtilities(true);
   // generate normal utilities completions
-  for (const [config, list] of Object.entries(utilities)) {
+  for (const [config, list] of Object.entries({ ...utilities, ...processor._plugin.completions })) {
     for (const utility of list) {
       const bracket = utility.indexOf('[');
       if (bracket !== -1) {
