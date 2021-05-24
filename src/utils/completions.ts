@@ -67,24 +67,28 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
 
   // generate attributify completions
   const attr: Attr = { static: {}, color: {}, bracket: {}, dynamic: {} };
-  const addStatic = (key: string, value: string) => {
-    key in attr.static ? attr.static[key].push(value) : attr.static[key] = [ value ];
-  };
 
   if (attributify) {
+    const attrPrefix = processor.config('attributify.prefix') as string | undefined;
+    const attrDisable = processor.config('attributify.disable') as string[] | undefined;
+    const addAttr = (key: string, value: any, type: 'static' | 'color' | 'bracket' | 'dynamic' = 'static') => {
+      if (attrDisable && attrDisable.includes(key)) return;
+      if (attrPrefix) key = attrPrefix + key;
+      key in attr[type] ? attr[type][key].push(value) : attr[type][key] = [ value ];
+    };
 
-    addStatic('flex', '~');
-    addStatic('flex', 'inline');
-    addStatic('grid', '~');
-    addStatic('grid', 'inline');
-    addStatic('gradient', 'none');
-    addStatic('underline', '~');
-    addStatic('underline', 'line-through');
-    addStatic('underline', 'none');
-    addStatic('filter', '~');
-    addStatic('filter', 'none');
-    addStatic('backdrop', '~');
-    addStatic('backdrop', 'none');
+    addAttr('flex', '~');
+    addAttr('flex', 'inline');
+    addAttr('grid', '~');
+    addAttr('grid', 'inline');
+    addAttr('gradient', 'none');
+    addAttr('underline', '~');
+    addAttr('underline', 'line-through');
+    addAttr('underline', 'none');
+    addAttr('filter', '~');
+    addAttr('filter', 'none');
+    addAttr('backdrop', '~');
+    addAttr('backdrop', 'none');
 
     for (const [key, style] of Object.entries(staticUtilities)) {
       if (!style[0]) continue;
@@ -92,16 +96,16 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
       case 'fontStyle':
       case 'fontSmoothing':
       case 'fontVariantNumeric':
-        addStatic('font', key);
+        addAttr('font', key);
         break;
       case 'textAlign':
-        addStatic('text', key.slice(5)); // text-
+        addAttr('text', key.slice(5)); // text-
         break;
       case 'verticalAlign':
-        addStatic('text', key.slice(6)); // align-
+        addAttr('text', key.slice(6)); // align-
         break;
       case 'textDecoration':
-        addStatic('text', key);
+        addAttr('text', key);
         break;
       case 'textTransform':
       case 'textOverflow':
@@ -109,71 +113,71 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
       case 'writingMode':
       case 'writingOrientation':
       case 'hyphens':
-        addStatic('text', key);
+        addAttr('text', key);
         break;
       case 'whitespace':
-        addStatic('text', key.slice(5)); // whitespace -> space
+        addAttr('text', key.slice(5)); // whitespace -> space
         break;
       case 'listStylePosition':
-        addStatic('list', key.slice(5)); // list-
+        addAttr('list', key.slice(5)); // list-
         break;
       case 'backgroundAttachment':
       case 'backgroundRepeat':
       case 'backgroundClip':
       case 'backgroundOrigin':
       case 'backgroundBlendMode':
-        addStatic('bg', key.slice(3)); // bg-
+        addAttr('bg', key.slice(3)); // bg-
         break;
       case 'borderStyle':
-        addStatic('border', key.slice(7)); // border-
-        addStatic('divide', key.slice(7)); // border-
+        addAttr('border', key.slice(7)); // border-
+        addAttr('divide', key.slice(7)); // border-
         break;
       case 'borderCollapse':
-        addStatic('border', key.slice(7)); // border-
+        addAttr('border', key.slice(7)); // border-
         break;
       case 'strokeDashArray':
       case 'strokeDashOffset':
       case 'stroke':
-        addStatic('icon', key);
+        addAttr('icon', key);
         break;
       case 'flexWrap':
       case 'flexDirection':
-        addStatic('flex', key.slice(5)); // flex-
+        addAttr('flex', key.slice(5)); // flex-
         break;
       case 'gridAutoFlow':
-        addStatic('grid', key.slice(5)); // grid-
+        addAttr('grid', key.slice(5)); // grid-
         break;
       case 'display':
         if (key.startsWith('table') || key === 'inline-table') {
-          addStatic('table', key.replace(/-?table-?/, '') || '~');
+          addAttr('table', key.replace(/-?table-?/, '') || '~');
         } else {
-          addStatic('display', key);
+          addAttr('display', key);
         }
         break;
       case 'position':
       case 'float':
       case 'clear':
-        addStatic('pos', key);
+        addAttr('pos', key);
         break;
       case 'isolation':
-        addStatic('pos', key);
-        addStatic('isolation', key.replace('isolation-', ''));
+        addAttr('pos', key);
+        addAttr('isolation', key.replace('isolation-', ''));
         break;
       case 'visibility':
       case 'backfaceVisibility':
-        addStatic('display', key);
+        addAttr('display', key);
         break;
       case 'tableLayout':
-        addStatic('table', key.slice(6)); // table-
+        addAttr('table', key.slice(6)); // table-
         break;
       case 'captionSide':
       case 'emptyCells':
-        addStatic('table', key);
+        addAttr('table', key);
         break;
       case 'alignContent':
       case 'alignItems':
       case 'alignSelf':
-        addStatic('align', key);
+        addAttr('align', key);
         break;
       case 'justifyContent':
       case 'justifyItems':
@@ -189,35 +193,35 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
       case 'overscrollBehavior':
         const splits = split(key);
         if (!splits.key) break;
-        addStatic(splits.key, splits.body);
+        addAttr(splits.key, splits.body);
         break;
       case 'boxDecorationBreak':
-        addStatic('box', key);
+        addAttr('box', key);
         break;
       case 'boxSizing':
-        addStatic('box', key.slice(4)); // box-
+        addAttr('box', key.slice(4)); // box-
         break;
       case 'objectFit':
-        addStatic('object', key.slice(7)); // object-
+        addAttr('object', key.slice(7)); // object-
         break;
       case 'transform':
         if (key.startsWith('preserve')) {
-          addStatic('transform', key);
+          addAttr('transform', key);
         } else {
-          addStatic('transform', key.slice(10) || '~'); // transform-
+          addAttr('transform', key.slice(10) || '~'); // transform-
         }
         break;
       case 'perspectOrigin':
-        addStatic('transform', key);
+        addAttr('transform', key);
         break;
       case 'pointerEvents':
-        addStatic('pointer', key.slice(15)); // pointer-events-
+        addAttr('pointer', key.slice(15)); // pointer-events-
         break;
       case 'mixBlendMode':
-        addStatic('blend', key.slice(10)); // mix-blend-
+        addAttr('blend', key.slice(10)); // mix-blend-
         break;
       case 'accessibility':
-        addStatic('sr', key.replace(/sr-/, ''));
+        addAttr('sr', key.replace(/sr-/, ''));
         break;
       }
     }
@@ -225,36 +229,27 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
     for (const utility of completions.static) {
       const { key, body } = split(utility);
       if (key) {
-        if (key === 'underline') Array.isArray(attr.static['text']) ? attr.static['text'].push(utility) : attr.static['text'] = [ utility ];
-        attr.static[key] = key in attr.static ? [...attr.static[key], body] : [ body ];
+        if (key === 'underline') addAttr('text', utility);
+        addAttr(key, body);
       }
     }
 
     for (const { label, doc } of completions.color) {
       const { key, body } = split(label);
       if (key) {
-        const item = { label: body, doc };
-        attr.color[key] = key in attr.color ? [...attr.color[key], item] : [ item ];
-        if (key === 'underline') {
-          const item = { label, doc };
-          attr.color['text'] = 'text' in attr.color ? [...attr.color['text'], item] : [ item ];
-        }
+        addAttr(key, { label: body, doc }, 'color');
+        if (key === 'underline') addAttr('text', { label, doc }, 'color');
       }
     }
 
     for (const utility of completions.bracket) {
       const { key, body } = split(utility);
-      if (key) {
-        attr.bracket[key] = key in attr.bracket ? [...attr.bracket[key], body] : [ body ];
-      }
+      if (key) addAttr(key, body, 'bracket');
     }
 
     for (const { label, pos } of completions.dynamic) {
       const { key, body } = split(label);
-      if (key) {
-        const item = { label: body, pos };
-        attr.dynamic[key] = key in attr.dynamic ? [...attr.dynamic[key], item] : [ item ];
-      }
+      if (key) addAttr(key, { label: body, pos }, 'dynamic');
     }
   }
 
