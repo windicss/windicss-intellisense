@@ -41,6 +41,7 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
           break;
         case '{color}':
           for (const [k, v] of Object.entries(flatColors(processor.theme(config, colors) as colorObject))) {
+            if (k === 'DEFAULT') continue;
             completions.color.push({
               label: `${key}-${k}`,
               doc: v,
