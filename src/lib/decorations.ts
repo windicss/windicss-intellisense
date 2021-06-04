@@ -52,7 +52,7 @@ export default class Decorations {
     for (const attr of parser.parseAttrs()) {
       if (this.extension.isAttrUtility(attr.key)) {
         // insert decoration in bg|text|... = "..."
-        const regex = /\S+/igm;
+        const regex = /[^\s/]+/igm;
         const data = attr.value.raw;
         let match;
         while ((match = regex.exec(data as string))) {

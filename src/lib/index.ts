@@ -246,6 +246,8 @@ export default class Extension {
   }
 
   isValidColor(utility: string, type = 'hex') {
+    const sep = utility.search('/');
+    if (sep !== -1) utility = utility.slice(0, sep);
     if (/hex-?(?:([\da-f]{3})[\da-f]?|([\da-f]{6})(?:[\da-f]{2})?)$/.test(utility)) {
       const hex = utility.replace(/^\S*hex-/, '');
       return { color: (type === 'hex' ? hex2RGB : toRGBA)('#' + hex), key: 'hex-' + hex };
