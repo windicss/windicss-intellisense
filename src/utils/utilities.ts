@@ -2,6 +2,29 @@ const utilities: { [key:string]: string[]} = {
   animation: [
     'animate-{static}',
   ],
+  animationDelay: [
+    'animate-delay-{static}',
+    'animate-delay-{int}',
+    'animate-delay-{time}',
+    'animate-delay-${var}',
+    'animate-delay-[1.3s]',
+  ],
+  animationDuration: [
+    'animate-duration-{static}',
+    'animate-duration-{int}',
+    'animate-duration-{time}',
+    'animate-duration-${var}',
+    'animate-duration-[1.3s]',
+  ],
+  animationIterationCount: [
+    'animate-{static}',
+    'animate-repeat-{int}',
+    'animate-repeat-[23]',
+  ],
+  animationTimingFunction: [
+    'animate-ease-{static}',
+    'animate-ease-[cubic-bezier(0.25,0.1,0.25,1)]',
+  ],
   backdropBlur: [
     'backdrop-blur-{static}',
     'backdrop-blur-[11px]',
@@ -75,6 +98,10 @@ const utilities: { [key:string]: string[]} = {
     'border-{color}',
     'border-${var}',
     'border-[#f00]',
+    'border-t-{color}',
+    'border-l-{color}',
+    'border-b-{color}',
+    'border-r-{color}',
   ],
   borderOpacity: [
     'border-opacity-{static}',
@@ -174,7 +201,7 @@ const utilities: { [key:string]: string[]} = {
     'content-{static}',
     'content-{string}',
     'content-${var}',
-    'content-["👍"]',
+    'content-[\'👍\']',
     'content-[attr(data-content)]',
   ],
   container: [
@@ -733,15 +760,16 @@ const utilities: { [key:string]: string[]} = {
   transitionDuration: [
     'duration-{static}',
     'duration-{int}',
+    'duration-{time}',
     'duration-${var}',
     'duration-[2s]',
-    'duration-[var(--app-duration)]',
   ],
   transitionDelay: [
     'delay-{static}',
     'delay-{int}',
+    'delay-{time}',
     'delay-${var}',
-    'delay-[var(--delay)]',
+    'delay-[2s]',
   ],
   transitionProperty: [
     'transition-{static}',

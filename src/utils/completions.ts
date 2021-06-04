@@ -36,6 +36,7 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
         switch (suffix) {
         case '{static}':
           for (const i of Object.keys(processor.theme(config, {}) as any)) {
+            if (i === 'DEFAULT' && key === 'animate') continue; // animate not an available utility
             completions.static.push(i === 'DEFAULT' ? key : i.charAt(0) === '-' ? `-${key}${i}` : `${key}-${i}`);
           }
           break;

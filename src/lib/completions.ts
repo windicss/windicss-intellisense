@@ -297,6 +297,9 @@ export default class Completions {
     case '{fraction}':
       this.setDynamicInfo(item, 'fraction', '13/14', attributify);
       break;
+    case '{time}':
+      this.setDynamicInfo(item, 'time', '1.25s', attributify);
+      break;
     case '{size}':
       this.setDynamicInfo(item, 'size', '25px', attributify);
       break;
