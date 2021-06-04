@@ -8,7 +8,7 @@ export async function activate(ctx: ExtensionContext) {
   extension.init();
   extension.watch();
   extension.registerCodeFolding();
-  Log.info('Windi CSS Intellisense is now active!');
+  Log.info('Windi CSS Intellisense Is Now Active!');
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

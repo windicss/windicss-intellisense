@@ -70,7 +70,10 @@ export default class Extension {
   }
 
   loadConfig(file?: string) {
-    if (!file || !this.jiti) return;
+    if (!file || !this.jiti) {
+      Log.info('Loading Default Config');
+      return;
+    }
     const path = resolve(file);
     if (path in this.jiti.cache) delete this.jiti.cache[path];
     const exports = this.jiti(path);
@@ -96,17 +99,31 @@ export default class Extension {
   watch() {
     const watcher = workspace.createFileSystemWatcher(`**/${this.pattern}`);
     // Changes configuration should invalidate above cache
-    watcher.onDidChange((e) => this.update(e));
+    watcher.onDidChange((e) => {
+      Log.info(`Config File: ${e.fsPath} Changed, Reloading...`);
+      this.update(e);
+    });
 
     // This handles the case where the project didn't have config file
     // but was created after VS Code was initialized
-    watcher.onDidCreate((e) => this.update(e));
+    watcher.onDidCreate((e) => {
+      Log.info(`Found New Config File: ${e.fsPath}, Reloading...`);
+      this.configFile = e.fsPath;
+      this.update(e);
+    });
 
     // If the config is deleted, utilities&variants should be regenerated
-    watcher.onDidDelete((e) => this.update(e));
+    watcher.onDidDelete((e) => {
+      Log.info(`Config File ${e.fsPath} Has Been Deleted, Reloading...`);
+      this.configFile = undefined;
+      this.update();
+    });
 
     // when change vscode configuration should regenerate disposables
-    workspace.onDidChangeConfiguration(() => this.update(), null, this.ctx.subscriptions);
+    workspace.onDidChangeConfiguration(() => {
+      Log.info('Global Configuration Changed, Reloading...');
+      this.update();
+    }, null, this.ctx.subscriptions);
   }
 
   registerCommands() {
