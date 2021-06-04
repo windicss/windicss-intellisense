@@ -25,7 +25,7 @@ export default class Completions {
   }
 
   // register suggestions in class = ... | className = ... | @apply ... | sm = ... | hover = ...
-  registerUtilities(ext: DocumentSelector, type: string, pattern?: RegExp, enableUtilty = true, enableVariant = true, enableDynamic = true, enableBracket = true, enableEmmet = false) {
+  registerUtilities(ext: DocumentSelector, type: string, pattern?: RegExp, enableUtility = true, enableVariant = true, enableDynamic = true, enableBracket = true, enableEmmet = false) {
     return languages.registerCompletionItemProvider(
       ext,
       {
@@ -39,7 +39,18 @@ export default class Completions {
 
           let completions: CompletionItem[] = [];
 
-          if (enableUtilty) {
+          if (enableUtility && text.endsWith('/')) {
+            const utility = text.match(/[\w-:!<@]+(?=\/$)/);
+            if (!utility) return [];
+            return Object.keys(this.processor.theme('opacity', {}) as string[]).map((opacity, index) => {
+              const item = new CompletionItem(opacity, CompletionItemKind.Unit);
+              item.detail = utility[0];
+              item.sortText = '1-' + index.toString().padStart(8, '0');
+              return item;
+            });
+          }
+
+          if (enableUtility) {
             completions = completions.concat(
               this.completions.static.map((classItem, index) => {
                 const item = new CompletionItem(classItem, CompletionItemKind.Constant);
@@ -116,12 +127,17 @@ export default class Completions {
             item.documentation = ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`;
             item.detail = this.processor.interpret(item.label).styleSheet.build();
             break;
+          case CompletionItemKind.Unit:
+            item.documentation = item.detail ? buildStyle(this.processor.interpret(`${item.detail}/${item.label}`).styleSheet) : undefined;
+            item.detail = undefined;
+            break;
           }
           return item;
         },
       },
       '"',
       '\'',
+      '/',
       ':',
       '!',
       '(',
@@ -189,6 +205,18 @@ export default class Completions {
             if (!key) return [];
 
             let completions: CompletionItem[] = [];
+
+            if (enableUtility && text.endsWith('/')) {
+              const utility = text.match(/[\w-:!<@]+(?=\/$)/);
+              if (!utility) return [];
+              return Object.keys(this.processor.theme('opacity', {}) as string[]).map((opacity, index) => {
+                const item = new CompletionItem(opacity, CompletionItemKind.Unit);
+                item.detail = [key, utility[0]].join('____');
+                item.sortText = '1-' + index.toString().padStart(8, '0');
+                return item;
+              });
+            }
+
             if (enableUtility) {
               completions = completions.concat(
                 this.completions.attr.static[key].map((label, index) => {
@@ -273,6 +301,11 @@ export default class Completions {
             item.documentation = ['transparent', 'currentColor'].includes(color) ? color : `rgb(${hex2RGB(color)?.join(', ')})`;
             item.detail = this.processor.attributify({ [item.detail ?? ''] : [ item.label ] }).styleSheet.build();
             break;
+          case CompletionItemKind.Unit:
+            const [ key, utility ] = item.detail?.split('____') || [];
+            item.documentation = buildStyle(this.processor.attributify({ [key] : [ `${utility}/${item.label}` ] }).styleSheet);
+            item.detail = undefined;
+            break;
           }
           return item;
         },
@@ -280,6 +313,7 @@ export default class Completions {
       '"',
       '\'',
       ':',
+      '/',
       ' ',
     );
   }
