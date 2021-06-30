@@ -3,7 +3,7 @@
   "displayName": "WindiCSS IntelliSense",
   "description": "Intelligent WindiCSS tooling for VS Code",
   "publisher": "voorjaar",
-  "version": "0.18.3",
+  "version": "0.19.0",
   "license": "MIT",
   "engines": {
     "vscode": "^1.48.0"
