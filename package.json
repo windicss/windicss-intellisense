@@ -286,6 +286,6 @@
     "tslib": "2.3.0",
     "typescript": "4.3.4",
     "windicss": "3.1.3",
-    "windicss-analysis": "0.3.2"
+    "windicss-analysis": "0.3.4"
   }
 }
