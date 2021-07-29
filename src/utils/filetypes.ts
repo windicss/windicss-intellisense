@@ -79,7 +79,7 @@ if (getConfig('windicss.includeLanguages')) {
     } else {
       const pattern = (value.patterns === undefined || value.patterns.length === 0)? undefined : value.patterns;
       if (key in fileTypes) {
-        fileTypes[key] = { type: value.type || fileTypes[key].type, pattern: fileTypes[key].pattern ? pattern ? connect([(fileTypes[key].pattern as RegExp).source, ...pattern]) : fileTypes[key].pattern : undefined };
+        fileTypes[key] = { type: value.type || fileTypes[key].type, pattern: fileTypes[key].pattern ? pattern ? connect([(fileTypes[key].pattern as RegExp).source, ...pattern]) : fileTypes[key].pattern : pattern ? connect([...pattern]) : undefined };
       }
     }
   });
