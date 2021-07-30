@@ -57,7 +57,7 @@ export const fileTypes: {[key:string]: {pattern?: RegExp, type: string}} = {
   },
   'svelte': {
     type: 'html',
-    pattern: /(\s+class:\S*$)|((\s+class\s*=\s*["]?\s*{?\s*)[^"]*$)|((\s+class\s*=\s*[']?\s*{?\s*)[^']*$)/,
+    pattern: /(\s+class:\S*$)|((\s+class\s*=\s*["]\s*{?\s*)[^"]*$)|((\s+class\s*=\s*[']\s*{?\s*)[^']*$)|((\s+class\s*=\s*[`]\s*{?\s*)[^`]*$)/,
   },
 };
 
