@@ -35,7 +35,8 @@ export function connectList<T>(list: T[][]) {
 }
 
 export function sortClassNames(classNames: string, variantsMap: { [key: string]: number }) {
-  const ast = new ClassParser(classNames).parse();
+  const variantsArray = Object.keys(variantsMap);
+  const ast = new ClassParser(classNames, ":", variantsArray).parse();
   return ast.map(({ raw, variants, important }) => {
     const head = variants.join(':') + ':';
     const utility = raw.replace(head, '');
