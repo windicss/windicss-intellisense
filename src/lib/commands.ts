@@ -5,7 +5,7 @@ import { StyleSheet } from 'windicss/utils/style';
 
 import { Log } from '../utils/console';
 import { HTMLParser } from '../utils/parser';
-import { sortClassNames } from '../utils';
+import { combineSeparators, getAllSeparators, sortClassNames } from '../utils';
 import { toggleConfig } from '../utils/helpers';
 
 import type { Processor } from 'windicss/lib';
@@ -80,7 +80,9 @@ export default class Commands {
 
       for (const p of classes) {
         const sortedP = sortClassNames(p.result, variantsMap);
-        textEdit.replace(new Range(textEditor.document.positionAt(p.start), textEditor.document.positionAt(p.end)), sortedP);
+        const separators = getAllSeparators(p.result);
+        const toReplace = combineSeparators(separators, sortedP);
+        textEdit.replace(new Range(textEditor.document.positionAt(p.start), textEditor.document.positionAt(p.end)), toReplace);
       }
     });
   }
