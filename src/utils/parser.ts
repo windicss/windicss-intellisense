@@ -54,7 +54,8 @@ export class HTMLParser {
   parseClasses(): ClassName[] {
     // Match all class properties
     if (!this.html) return [];
-    const classRegex = /\s(?:class|className|w:dark|w:light|w:active|w:after|w:before|w:checked|w:disabled|w:focus|w:hover|w:tw)=(["'])([^{}]+)\1/;
+    const classRegex =
+      /\s(?:class|className|bg|text|hover|border|flex|grid)=(["'])([^{}]+)\1/;
     const quoteRegex = /["']/;
     const classNames = [];
     let _indexStart = 0;
