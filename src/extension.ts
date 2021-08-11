@@ -1,10 +1,21 @@
 import Extension from './lib';
 import { Log } from './utils/console';
-import type { ExtensionContext } from 'vscode';
+import {
+  ExtensionContext,
+  RelativePattern,
+  workspace as Workspace,
+} from 'vscode';
 
+const CONFIG_FILE_GLOB = '{tailwind,windi}.config.{js,cjs,mjs,ts}';
 
 export async function activate(ctx: ExtensionContext) {
-  const extension = new Extension(ctx, '{tailwind,windi}.config.{js,cjs,mjs,ts}');
+  const extension = new Extension(
+    ctx,
+    new RelativePattern(
+      Workspace.workspaceFolders?.[0].uri.fsPath as string,
+      `**/${CONFIG_FILE_GLOB}`
+    )
+  );
   extension.init();
   extension.watch();
   extension.registerCodeFolding();
