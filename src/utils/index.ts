@@ -36,7 +36,7 @@ export function connectList<T>(list: T[][]) {
 
 export function sortClassNames(classNames: string, variantsMap: { [key: string]: number }) {
   const variantsArray = Object.keys(variantsMap);
-  const ast = new ClassParser(classNames, ":", variantsArray).parse();
+  const ast = new ClassParser(classNames, ':', variantsArray).parse();
   return ast.map(({ raw, variants, important }) => {
     const head = variants.join(':') + ':';
     const utility = raw.replace(head, '');
@@ -45,7 +45,39 @@ export function sortClassNames(classNames: string, variantsMap: { [key: string]:
     const offset = variants.map(i => variantsMap[i] * 100).reduce((p, c) => p + c, 0) + (important ? 500 : 0) + (hasDynamicValue ? 25 : 0);
     if (key === null) return { raw, weight: offset };
     return { raw, weight: (keyOrder[key[0]] ?? 300) + offset };
-  }).sort((a, b) => a.weight - b.weight).map(i => i.raw).join(' ');
+  }).sort((a, b) => a.weight - b.weight).map(i => i.raw);
+}
+
+function replaceBetweenIndices(
+  origin: string,
+  startIndex: number,
+  endIndex: number,
+  find: string,
+  replace: string
+) {
+  return (
+    origin.substring(0, startIndex) +
+    origin.substring(startIndex, endIndex).replace(find, replace)
+  );
+}
+
+export function rearrangeClasses(classesText: string, sortedP: string[]) {
+  const unsortedClasses = classesText
+    .split(/\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  let occurrenceIndex = 0;
+  for (let i = 0; i < sortedP.length; i++) {
+    classesText = replaceBetweenIndices(
+      classesText,
+      occurrenceIndex,
+      classesText.length,
+      unsortedClasses[i],
+      sortedP[i]
+    );
+    occurrenceIndex = occurrenceIndex + sortedP[0].length + 1;
+  }
+  return classesText;
 }
 
 export function rem2px(str?: string) {
