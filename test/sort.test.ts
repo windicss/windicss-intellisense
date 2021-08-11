@@ -1,8 +1,7 @@
 import { HTMLParser } from 'windicss/utils/parser';
 import {
   sortClassNames,
-  getAllSeparators,
-  combineSeparators,
+  rearrangeClasses,
 } from '../src/utils';
 
 it('sorts classes single line', () => {
@@ -13,8 +12,7 @@ it('sorts classes single line', () => {
   const p = parser.parseClasses()[0];
   const expected = 'bg-transparent text-transparent p-4 backdrop-blur';
   const sortedP = sortClassNames(p.result, {});
-  const separators = getAllSeparators(p.result);
-  const toReplace = combineSeparators(separators, sortedP);
+  const toReplace = rearrangeClasses(p.result, sortedP);
   expect(toReplace).toBe(expected);
 });
 
@@ -26,8 +24,7 @@ it('sorts classes single line but malformed', () => {
   const p = parser.parseClasses()[0];
   const expected = ' bg-transparent text-transparent  p-4 backdrop-blur';
   const sortedP = sortClassNames(p.result, {});
-  const separators = getAllSeparators(p.result);
-  const toReplace = combineSeparators(separators, sortedP);
+  const toReplace = rearrangeClasses(p.result, sortedP);
   expect(toReplace).toBe(expected);
 });
 
@@ -52,8 +49,7 @@ it('sorts classes multi line', () => {
   `;
 
   const sortedP = sortClassNames(p.result, {});
-  const separators = getAllSeparators(p.result);
-  const toReplace = combineSeparators(separators, sortedP);
+  const toReplace = rearrangeClasses(p.result, sortedP);
   expect(toReplace).toBe(expected);
 });
 
@@ -78,7 +74,6 @@ backdrop-blur
   `;
 
   const sortedP = sortClassNames(p.result, {});
-  const separators = getAllSeparators(p.result);
-  const toReplace = combineSeparators(separators, sortedP);
+  const toReplace = rearrangeClasses(p.result, sortedP);
   expect(toReplace).toBe(expected);
 });
