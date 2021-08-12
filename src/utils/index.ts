@@ -48,37 +48,37 @@ export function sortClassNames(classNames: string, variantsMap: { [key: string]:
   }).sort((a, b) => a.weight - b.weight).map(i => i.raw);
 }
 
-function replaceBetweenIndices(
-  origin: string,
-  startIndex: number,
-  endIndex: number,
-  find: string,
-  replace: string
-) {
-  return (
-    origin.substring(0, startIndex) +
-    origin.substring(startIndex, endIndex).replace(find, replace)
-  );
+export function getAllSeparators(text: string) {
+  const separators = [''];
+  let last = '';
+  if (!/\s/g.test(text[0])) {
+    separators.push('');
+  }
+  for (const ch of text) {
+    if (/\s/.test(ch)) {
+      separators[separators.length - 1] += ch;
+      last = ch;
+    } else {
+      if (/\s/g.test(last)) {
+        separators.push('');
+        last = ch;
+      }
+    }
+  }
+  return separators;
 }
 
-export function rearrangeClasses(classesText: string, sortedP: string[]) {
-  const unsortedClasses = classesText
-    .split(/\s+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  let occurrenceIndex = 0;
-  for (let i = 0; i < sortedP.length; i++) {
-    classesText = replaceBetweenIndices(
-      classesText,
-      occurrenceIndex,
-      classesText.length,
-      unsortedClasses[i],
-      sortedP[i]
-    );
-    occurrenceIndex = occurrenceIndex + sortedP[0].length + 1;
+export function combineSeparators(separators: string[], sortedP: string[]) {
+  let ret = '';
+  let i = 0;
+  for (i = 0; i < sortedP.length; i++) {
+    ret += separators[i];
+    ret += sortedP[i];
   }
-  return classesText;
+  ret += separators[i];
+  return ret;
 }
+
 
 export function rem2px(str?: string) {
   if (!str) return;
