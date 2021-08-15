@@ -36,7 +36,7 @@ export function connectList<T>(list: T[][]) {
 
 export function sortClassNames(classNames: string, variantsMap: { [key: string]: number }) {
   const variantsArray = Object.keys(variantsMap);
-  const ast = new ClassParser(classNames, ":", variantsArray).parse();
+  const ast = new ClassParser(classNames, ':', variantsArray).parse();
   return ast.map(({ raw, variants, important }) => {
     const head = variants.join(':') + ':';
     const utility = raw.replace(head, '');
@@ -45,8 +45,40 @@ export function sortClassNames(classNames: string, variantsMap: { [key: string]:
     const offset = variants.map(i => variantsMap[i] * 100).reduce((p, c) => p + c, 0) + (important ? 500 : 0) + (hasDynamicValue ? 25 : 0);
     if (key === null) return { raw, weight: offset };
     return { raw, weight: (keyOrder[key[0]] ?? 300) + offset };
-  }).sort((a, b) => a.weight - b.weight).map(i => i.raw).join(' ');
+  }).sort((a, b) => a.weight - b.weight).map(i => i.raw);
 }
+
+export function getAllSeparators(text: string) {
+  const separators = [''];
+  let last = '';
+  if (!/\s/g.test(text[0])) {
+    separators.push('');
+  }
+  for (const ch of text) {
+    if (/\s/.test(ch)) {
+      separators[separators.length - 1] += ch;
+      last = ch;
+    } else {
+      if (/\s/g.test(last)) {
+        separators.push('');
+        last = ch;
+      }
+    }
+  }
+  return separators;
+}
+
+export function combineSeparators(separators: string[], sortedP: string[]) {
+  let ret = '';
+  let i = 0;
+  for (i = 0; i < sortedP.length; i++) {
+    ret += separators[i];
+    ret += sortedP[i];
+  }
+  ret += separators[i];
+  return ret;
+}
+
 
 export function rem2px(str?: string) {
   if (!str) return;
