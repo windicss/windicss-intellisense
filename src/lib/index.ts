@@ -97,7 +97,8 @@ export default class Extension {
   }
 
   watch() {
-    const watcher = workspace.createFileSystemWatcher(`**/${this.pattern}`);
+    const watcher = workspace.createFileSystemWatcher(`${this.pattern}`);
+
     // Changes configuration should invalidate above cache
     watcher.onDidChange((e) => {
       Log.info(`Config File: ${e.fsPath} Changed, Reloading...`);
