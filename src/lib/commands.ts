@@ -74,11 +74,14 @@ export default class Commands {
       const text = textEditor.document.getText();
       const parser = new HTMLParser(text);
 
+      let toSort = [];
       const classes = parser.parseClasses();
+      const applies = parser.parseApplies();
+      toSort = [...classes, ...applies];
       const variants = Object.keys(this.processor?.resolveVariants() ?? {});
       const variantsMap = Object.assign({}, ...variants.map((value, index) => ({ [value]: index + 1 })));
 
-      for (const p of classes) {
+      for (const p of toSort) {
         const sortedP = sortClassNames(p.result, variantsMap);
         const separators = getAllSeparators(p.result);
         const toReplace = combineSeparators(separators, sortedP);
