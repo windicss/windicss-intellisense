@@ -73,14 +73,20 @@ if (getConfig('windicss.includeLanguages')) {
   //   }>
   // }
   const config = getConfig<{[key:string]: (string | { type?: string, patterns?: string[] })}>('windicss.includeLanguages');
-  if (config) Object.entries(config).map(([key, value]) => {
-    if (typeof value === 'string') {
-      fileTypes[key] = { type: value in patterns ? value : 'css' };
-    } else {
-      const pattern = (value.patterns === undefined || value.patterns.length === 0)? undefined : value.patterns;
-      if (key in fileTypes) {
-        fileTypes[key] = { type: value.type || fileTypes[key].type, pattern: fileTypes[key].pattern ? pattern ? connect([(fileTypes[key].pattern as RegExp).source, ...pattern]) : fileTypes[key].pattern : pattern ? connect([...pattern]) : undefined };
+  if (config) {
+    Object.entries(config).map(([key, value]) => {
+      if (typeof value === 'string') {
+        fileTypes[key] = { type: value in patterns ? value : 'css' };
+      } else {
+        const pattern = (value.patterns === undefined || value.patterns.length === 0) ? undefined : value.patterns;
+        if (key in fileTypes) {
+          fileTypes[key] = { type: value.type || fileTypes[key].type, pattern: fileTypes[key].pattern ? pattern ? connect([(fileTypes[key].pattern as RegExp).source, ...pattern]) : fileTypes[key].pattern : pattern ? connect([...pattern]) : undefined };
+        } else if (value.type && value.type in fileTypes) {
+          fileTypes[key] = {
+            type: value.type || fileTypes[value.type].type,
+            pattern: fileTypes[value.type].pattern ? pattern ? connect([(fileTypes[value.type].pattern as RegExp).source, ...pattern]) : fileTypes[value.type].pattern : pattern ? connect([...pattern]) : undefined };
+        }
       }
-    }
-  });
+    });
+  }
 }
