@@ -42,7 +42,7 @@ export default class Hovers {
 
         // hover attr value or class value, e.g. class="bg-red-500 ..."  bg="red-500 ..."
         const text = document.getText(new Range(new Position(0, 0), position));
-        const key = text.match(/\S+(?=\s*=\s*["']?[^"']*$)/)?.[0] ?? '';
+        const key = text.match(/\S+(?=\s*(=|:)\s*["']?[^"']*$)/)?.[0] ?? '';
         const style = this.extension.isAttr(key) ? this.processor.attributify({ [key]: [ word ] }) : ['className', 'class'].includes(key) || text.match(applyRegex) ? this.processor.interpret(word) : undefined;
         if (style && style.ignored.length === 0) {
           const css = buildStyle(style.styleSheet);
