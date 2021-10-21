@@ -36,6 +36,9 @@ export const fileTypes: {[key:string]: {pattern?: RegExp, type: string}} = {
   'less': {
     type: 'css',
   },
+  'postcss': {
+    type: 'css',
+  },
   'javascript': {
     type: 'js',
   },
