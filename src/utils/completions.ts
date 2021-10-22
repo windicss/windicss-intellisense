@@ -222,6 +222,10 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
       case 'accessibility':
         addAttr('sr', key.replace(/sr-/, ''));
         break;
+      case 'plugin':
+        const [_, attr, value] = new RegExp(/(^[^-]+)-(.*)/).exec(key) || []
+        attr && addAttr(attr, value);
+        break
       }
     }
 
