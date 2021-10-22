@@ -235,7 +235,7 @@
         "windicss.sortOnSave": {
           "type": "boolean",
           "default": false,
-          "description": "A flag that controls whether or not Windi CSS classes will be sorted on save on save."
+          "description": "A flag that controls whether or not Windi CSS classes will be sorted on save."
         },
         "windicss.includeLanguages": {
           "type": "object",
