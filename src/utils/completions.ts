@@ -256,7 +256,7 @@ export function generateCompletions(processor: Processor, colors: colorObject, a
     }
   }
 
-  completions.static.push(...Object.keys(staticUtilities));
+  completions.static.push(...Object.keys(staticUtilities).map((key) => prefix + key));
   completions.attr = attr;
   return completions;
 }
