@@ -42,7 +42,7 @@ export default class Extension {
 
   init() {
     try {
-      workspace.findFiles(this.pattern, '**​/node_modules/**').then(files => {
+      workspace.findFiles(this.pattern, '**​/node_modules/**/*').then(files => {
         const { jiti, Processor } = require('./dependencies.js');
         this.jiti = jiti(__filename);
         this.configFile = files[0] ? files[0].fsPath : undefined;
