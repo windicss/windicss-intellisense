@@ -1,37 +1,14 @@
 {
   "name": "windicss-intellisense",
-  "displayName": "WindiCSS IntelliSense",
   "description": "Intelligent WindiCSS tooling for VS Code",
-  "publisher": "voorjaar",
   "version": "0.21.4",
-  "license": "MIT",
-  "engines": {
-    "vscode": "^1.48.0"
-  },
-  "keywords": [
-    "windi",
-    "windicss",
-    "tailwind",
-    "tailwindcss",
-    "css",
-    "intellisense",
-    "autocomplete",
-    "vscode"
-  ],
-  "categories": [
-    "Other"
-  ],
   "activationEvents": [
     "onStartupFinished"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/windicss/windicss-intellisense"
-  },
-  "homepage": "https://github.com/windicss/windicss-intellisense",
   "bugs": "https://github.com/windicss/windicss-intellisense/issues",
-  "icon": "res/logo.png",
-  "main": "./out/extension.js",
+  "categories": [
+    "Other"
+  ],
   "contributes": {
     "commands": [
       {
@@ -251,15 +228,6 @@
       }
     ]
   },
-  "scripts": {
-    "build": "rimraf out && cross-env NODE_ENV=production rollup -c && ncp node_modules/windicss-analysis/dist/app out/analyzer",
-    "watch": "rollup -cw",
-    "test": "jest",
-    "test:update": "jest -u",
-    "lint": "eslint src --ext ts",
-    "lint:fix": "npm run lint -- --fix",
-    "release": "bumpp --tag --commit --push"
-  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "20.0.0",
     "@rollup/plugin-json": "4.1.0",
@@ -285,7 +253,39 @@
     "ts-jest": "27.0.4",
     "tslib": "2.3.1",
     "typescript": "4.3.5",
-    "windicss": "3.1.7",
+    "windicss": "3.3.0",
     "windicss-analysis": "0.3.2"
+  },
+  "displayName": "WindiCSS IntelliSense",
+  "engines": {
+    "vscode": "^1.48.0"
+  },
+  "homepage": "https://github.com/windicss/windicss-intellisense",
+  "icon": "res/logo.png",
+  "keywords": [
+    "autocomplete",
+    "css",
+    "intellisense",
+    "tailwind",
+    "tailwindcss",
+    "vscode",
+    "windi",
+    "windicss"
+  ],
+  "license": "MIT",
+  "main": "./out/extension.js",
+  "publisher": "voorjaar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/windicss/windicss-intellisense"
+  },
+  "scripts": {
+    "build": "rimraf out && cross-env NODE_ENV=production rollup -c && ncp node_modules/windicss-analysis/dist/app out/analyzer",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "npm run lint -- --fix",
+    "release": "bumpp --tag --commit --push",
+    "test": "jest",
+    "test:update": "jest -u",
+    "watch": "rollup -cw"
   }
 }
