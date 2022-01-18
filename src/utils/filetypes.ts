@@ -9,7 +9,7 @@ export function allowAttr(type: string): boolean {
   return type ? ['html', 'js'].includes(type) : true;
 }
 
-const classPattern = String.raw`(\s+class(Name)?\s*=\s*{?\s*["'\`])[^"'\`]*$`;
+const classPattern = String.raw`(\s+class(Name|List)?\s*=\s*{?\s*["'\`])[^"'\`]*$`;
 const emmetPattern = String.raw`\.\S*$`;
 const applyPattern = String.raw`@apply\s+[^;]*$`;
 const windiPattern = String.raw`\Wwindi\`[^\`]*$`;
