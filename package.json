@@ -238,7 +238,7 @@
     "@types/jest": "26.0.23",
     "@types/mocha": "8.2.2",
     "@types/node": "15.12.5",
-    "@types/vscode": "1.48.0",
+    "@types/vscode": "1.63.1",
     "@typescript-eslint/eslint-plugin": "4.28.1",
     "@typescript-eslint/parser": "4.28.1",
     "bumpp": "6.0.6",
