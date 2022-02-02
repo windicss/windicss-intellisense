@@ -1,13 +1,15 @@
-name: Release
+name: Pre-Release
 
 on:
   push:
     tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+      - v*-beta*
+      - v*-alpha*
+      - v*-next*
   workflow_dispatch:
 
 jobs:
-  release:
+  pre-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,12 +21,6 @@ jobs:
       - run: npm install -g vsce
       - run: npm ci
       - run: npm run build
-      - run: npx conventional-github-releaser -p angular
-        env:
-          CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: vsce publish -p ${{secrets.VSCE_TOKEN}}
+      - run: vsce publish --pre-release -p ${{secrets.VSCE_TOKEN}}
         env:
           VSCE_TOKEN: ${{secrets.VSCE_TOKEN}}
-      - run: npx ovsx publish -p ${{secrets.OVSX_TOKEN}}
-        env:
-          OVSX_TOKEN: ${{secrets.OVSX_TOKEN}}
