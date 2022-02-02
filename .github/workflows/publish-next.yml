@@ -1,12 +1,12 @@
 name: Pre-Release
 
 on:
-  push:
-    tags:
-      - v*-beta*
-      - v*-alpha*
-      - v*-next*
   workflow_dispatch:
+  # push:
+  #   tags:
+  #     - v*-beta*
+  #     - v*-alpha*
+  #     - v*-next*
 
 jobs:
   pre-release:
