@@ -264,7 +264,7 @@
   },
   "displayName": "WindiCSS IntelliSense",
   "engines": {
-    "vscode": "^1.48.0"
+    "vscode": ">=1.63.0"
   },
   "homepage": "https://github.com/windicss/windicss-intellisense",
   "icon": "res/logo.png",
