@@ -180,6 +180,11 @@
           "default": true,
           "description": "Enable rem to px preview."
         },
+        "windicss.rootFontSize": {
+          "type": "number",
+          "default": 16,
+          "description": "Used to convert rem CSS values to their px equivalents."
+        },
         "windicss.enableCodeFolding": {
           "type": "boolean",
           "default": false,

@@ -80,7 +80,7 @@ export function combineSeparators(separators: string[], sortedP: string[]) {
 }
 
 
-export function rem2px(str?: string) {
+export function rem2px(str?: string, rootFontSize: number = 16) {
   if (!str) return;
   let index = 0;
   const output: string[] = [];
@@ -88,7 +88,7 @@ export function rem2px(str?: string) {
   while (index < str.length) {
     const rem = str.slice(index,).match(/-?[\d.]+rem;/);
     if (!rem || !rem.index) break;
-    const px = ` /* ${parseFloat(rem[0].slice(0, -4)) * 16}px */`;
+    const px = ` /* ${parseFloat(rem[0].slice(0, -4)) * rootFontSize}px */`;
     const end = index + rem.index + rem[0].length;
     output.push(str.slice(index, end));
     output.push(px);
