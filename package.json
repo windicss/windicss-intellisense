@@ -256,7 +256,7 @@
     "cross-env": "7.0.3",
     "eslint": "8.8.0",
     "eslint-plugin-jest": "26.0.0",
-    "jest": "27.4.7",
+    "jest": "27.5.0",
     "jiti": "1.12.15",
     "ncp": "2.0.0",
     "rimraf": "3.0.2",
