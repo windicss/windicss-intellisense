@@ -86,6 +86,7 @@ Browse your utilities usages, have an overview of your design system, identify "
 | `windicss.enableAttrUtilityCompletion` | boolean | true | Enable Utility Completion For Attributify Mode.              |
 | `windicss.enableAttrVariantCompletion` | boolean | true | Enable Variant Completion For Attributify Mode.              |
 | `windicss.enableRemToPxPreview`    | boolean | true     | Enable Rem to Px Preview.                                    |
+| `windicss.rootFontSize`            | number  | 16       | Used to convert rem CSS values to their px equivalents.      |
 | `windicss.enableEmmetCompletion`   | boolean | false    | Enable . trigger for emmet.                                  |
 | `windicss.enableCodeFolding`       | boolean | false    | Enable ClassNames Code Folding.                              |
 | `windicss.colorDecoratorsType`     | string  | 'cube'   | Configure the type of color decorations, optional ['border', 'bg', 'cube', 'picker'], default is 'cube'. |

@@ -29,7 +29,7 @@ export function toggleConfig(key: string) {
 }
 
 export function buildStyle(styleSheet?: StyleSheet) {
-  return styleSheet ? highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(styleSheet.build()) : styleSheet.build()) : undefined;
+  return styleSheet ? highlightCSS(getConfig('windicss.enableRemToPxPreview') ? rem2px(styleSheet.build(), getConfig('windicss.rootFontSize')) : styleSheet.build()) : undefined;
 }
 
 export function buildEmptyStyle(style: Style) {
