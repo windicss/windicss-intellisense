@@ -1,7 +1,7 @@
 {
   "name": "windicss-intellisense",
   "description": "Intelligent WindiCSS tooling for VS Code",
-  "version": "0.23.2",
+  "version": "0.23.3",
   "activationEvents": [
     "workspaceContains:node_modules/windicss/package.json",
     "workspaceContains:node_modules/vite-plugin-windicss/package.json",
