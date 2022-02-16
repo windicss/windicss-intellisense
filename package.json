@@ -255,7 +255,7 @@
     "bumpp": "7.1.1",
     "cross-env": "7.0.3",
     "eslint": "8.8.0",
-    "eslint-plugin-jest": "26.0.0",
+    "eslint-plugin-jest": "26.1.1",
     "jest": "27.4.7",
     "jiti": "1.12.15",
     "ncp": "2.0.0",
