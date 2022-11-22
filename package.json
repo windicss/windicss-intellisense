@@ -1,7 +1,7 @@
 {
   "name": "windicss-intellisense",
   "description": "Intelligent WindiCSS tooling for VS Code",
-  "version": "0.23.5",
+  "version": "0.23.6",
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -297,7 +297,5 @@
   "volta": {
     "node": "16.14.2"
   },
-  "dependencies": {
-
-  }
+  "dependencies": {}
 }
