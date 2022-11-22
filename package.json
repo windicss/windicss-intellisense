@@ -3,13 +3,7 @@
   "description": "Intelligent WindiCSS tooling for VS Code",
   "version": "0.23.5",
   "activationEvents": [
-    "workspaceContains:node_modules/windicss/package.json",
-    "workspaceContains:node_modules/vite-plugin-windicss/package.json",
-    "workspaceContains:node_modules/rollup-plugin-windicss/package.json",
-    "workspaceContains:node_modules/windicss-webpack-plugin/package.json",
-    "workspaceContains:node_modules/nuxt-windicss/package.json",
-    "workspaceContains:node_modules/svelte-windicss-preprocess/package.json",
-    "workspaceContains:node_modules/stencil-windics/package.json"
+    "onStartupFinished"
   ],
   "bugs": "https://github.com/windicss/windicss-intellisense/issues",
   "categories": [
