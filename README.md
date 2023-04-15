@@ -1,3 +1,10 @@
+<p align="center" style="background-color: #FFFF99; padding: 15px; border-radius: 5px;">
+  <strong>⚠️ Windi CSS is Sunsetting ⚠️</strong><br>
+  We are sunsetting Windi CSS and we recommend new projects to seek for alternatives. Read the <a href="https://windicss.org/posts/sunsetting.html">full blog post</a>.
+</p>
+
+<hr>
+
 # Windi CSS Intellisense
 
 Windi CSS IntelliSense enhances the Windi development experience by providing Visual Studio Code users with advanced features such as autocomplete, syntax highlighting, code folding, and building.
